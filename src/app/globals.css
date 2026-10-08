@@ -1,0 +1,286 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@keyframes banner-content-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(1.5rem, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.banner-content-enter {
+  animation: banner-content-enter 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner-content-enter {
+    animation: none;
+  }
+}
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-anek), "Anek Bangla", system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-surface: var(--surface);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/*
+  NEEL design tokens.
+  Indigo (primary) is the brand — the colour of neel dye.
+  Brass (accent) is reserved for ratings and "Best seller" only.
+  Status roles (success / warning / info / destructive) are functional, never decorative.
+*/
+:root {
+  color-scheme: light;
+  --radius: 0.375rem;
+
+  --background: oklch(0.982 0.003 250);
+  --foreground: oklch(0.21 0.025 262);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.025 262);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.025 262);
+  --surface: oklch(0.935 0.006 250);
+
+  --primary: oklch(0.34 0.1 263);
+  --primary-foreground: oklch(0.985 0.004 250);
+  --secondary: oklch(0.945 0.007 255);
+  --secondary-foreground: oklch(0.21 0.025 262);
+  --muted: oklch(0.945 0.007 255);
+  --muted-foreground: oklch(0.47 0.02 262);
+  --accent: oklch(0.74 0.11 78);
+  --accent-foreground: oklch(0.21 0.025 262);
+
+  --success: oklch(0.5 0.11 155);
+  --success-foreground: oklch(0.985 0.004 250);
+  --warning: oklch(0.72 0.15 58);
+  --warning-foreground: oklch(0.21 0.025 262);
+  --info: oklch(0.5 0.1 238);
+  --info-foreground: oklch(0.985 0.004 250);
+  --destructive: oklch(0.54 0.19 27);
+  --destructive-foreground: oklch(0.985 0.004 250);
+
+  --border: oklch(0.9 0.007 255);
+  --input: oklch(0.86 0.009 255);
+  --ring: oklch(0.34 0.1 263);
+}
+
+.dark {
+  color-scheme: dark;
+  --background: oklch(0.165 0.018 262);
+  --foreground: oklch(0.95 0.006 250);
+  --card: oklch(0.2 0.02 262);
+  --card-foreground: oklch(0.95 0.006 250);
+  --popover: oklch(0.21 0.02 262);
+  --popover-foreground: oklch(0.95 0.006 250);
+  --surface: oklch(0.24 0.02 262);
+
+  --primary: oklch(0.8 0.075 262);
+  --primary-foreground: oklch(0.18 0.03 262);
+  --secondary: oklch(0.25 0.02 262);
+  --secondary-foreground: oklch(0.95 0.006 250);
+  --muted: oklch(0.25 0.02 262);
+  --muted-foreground: oklch(0.73 0.015 255);
+  --accent: oklch(0.8 0.11 80);
+  --accent-foreground: oklch(0.18 0.03 262);
+
+  --success: oklch(0.74 0.13 155);
+  --success-foreground: oklch(0.18 0.03 262);
+  --warning: oklch(0.8 0.14 62);
+  --warning-foreground: oklch(0.18 0.03 262);
+  --info: oklch(0.76 0.1 238);
+  --info-foreground: oklch(0.18 0.03 262);
+  --destructive: oklch(0.7 0.17 25);
+  --destructive-foreground: oklch(0.18 0.03 262);
+
+  --border: oklch(1 0 0 / 11%);
+  --input: oklch(1 0 0 / 17%);
+  --ring: oklch(0.8 0.075 262);
+}
+
+/* Typography scale — one family (Anek Bangla), two widths. Condensed caps carry the brand voice. */
+@utility type-display {
+  font-stretch: 75%;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 0.9;
+  letter-spacing: -0.005em;
+  font-size: clamp(3rem, 8vw, 6.5rem);
+}
+@utility type-h1 {
+  font-stretch: 75%;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 0.95;
+  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+}
+@utility type-h2 {
+  font-stretch: 75%;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+}
+@utility type-h3 {
+  font-weight: 600;
+  line-height: 1.3;
+  font-size: 1.25rem;
+}
+@utility type-h4 {
+  font-weight: 600;
+  line-height: 1.35;
+  font-size: 1rem;
+}
+@utility type-eyebrow {
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+@utility type-price {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility container-page {
+  width: 100%;
+  max-width: 90rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (width >= 48rem) {
+    padding-inline: 1.5rem;
+  }
+  @media (width >= 64rem) {
+    padding-inline: 2.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    line-height: 1.55;
+  }
+  .dark img[data-product-image] {
+    filter: brightness(0.94);
+  }
+
+  a,
+  button,
+  [role="button"],
+  input,
+  select,
+  textarea {
+    transition-property:
+      color, background-color, border-color, box-shadow, opacity, transform;
+    transition-duration: 220ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  button:not(:disabled):active,
+  [role="button"]:not([aria-disabled="true"]):active {
+    transform: scale(0.98);
+  }
+
+  .page-transition {
+    animation: page-fade-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    transform-origin: top center;
+  }
+
+  .fade-panel {
+    animation: fade-panel-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .fade-overlay {
+    animation: overlay-in 240ms ease-out both;
+  }
+
+  @keyframes fade-panel-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes overlay-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes page-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
