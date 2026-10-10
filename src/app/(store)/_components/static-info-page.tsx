@@ -24,7 +24,6 @@ export function StaticInfoPage({
   contact = false,
 }: StaticInfoPageProps) {
   return (
-    <StoreShell>
       <main>
         <header className="border-b border-border bg-surface">
           <div className="mx-auto max-w-4xl px-5 py-20 sm:px-8 lg:py-28">
@@ -70,7 +69,6 @@ export function StaticInfoPage({
           {contact ? <ContactCard /> : <HelpfulCard />}
         </div>
       </main>
-    </StoreShell>
   );
 }
 

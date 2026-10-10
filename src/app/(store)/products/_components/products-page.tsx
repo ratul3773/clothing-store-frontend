@@ -39,7 +39,7 @@ export default function ShopPage() {
     return x;
   }, [category, sale, sort]);
   return (
-    <StoreShell>
+    <>
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="border-b border-border pb-8">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-accent-foreground">
@@ -181,6 +181,6 @@ export default function ShopPage() {
           </aside>
         </div>
       )}
-    </StoreShell>
+      </>
   );
 }

@@ -57,7 +57,6 @@ export default function ProductPage() {
   }
   if (!product) return notFound();
   return (
-    <StoreShell>
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-8 text-sm text-muted-foreground">
           <Link href="/shop">Shop</Link>
@@ -129,7 +128,7 @@ export default function ProductPage() {
             </div>
             <div className="relative aspect-[4/5] max-h-[38rem] bg-surface">
               <Image
-                src={product.images[selectedImageIndex]}
+                src={product.images[selectedImageIndex] ?? "/placeholder-image.jpg"}
                 fill
                 priority
                 alt={product.name}
@@ -342,6 +341,5 @@ export default function ProductPage() {
           </div>
         </section>
       </main>
-    </StoreShell>
   );
 }
