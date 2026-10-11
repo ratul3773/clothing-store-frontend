@@ -56,7 +56,7 @@ const categoryMenus = [
 ] as const;
 
 function categoryHref(category: string, subcategory: string) {
-  return `/shop?category=${category}&subcategory=${subcategory}`;
+  return `/products?category=${category}&subcategory=${subcategory}`;
 }
 
 export function SiteHeader() {
@@ -119,7 +119,7 @@ export function SiteHeader() {
             {categoryMenus.map((category) => (
               <div key={category.slug} className="group relative">
                 <Link
-                  href={`/shop?category=${category.slug}`}
+                  href={`/products?category=${category.slug}`}
                   className="inline-flex items-center gap-1 py-5 transition-colors hover:text-primary"
                 >
                   {category.label}
