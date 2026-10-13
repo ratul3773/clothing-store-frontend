@@ -1,14 +1,12 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { type ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 
 export function PageTransition({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
 
   return (
-    <div key={pathname} className="page-transition" aria-live="polite">
+    <Suspense fallback={<div className="page-transition" aria-live="polite" />}>
       {children}
-    </div>
+    </Suspense>
   );
 }
