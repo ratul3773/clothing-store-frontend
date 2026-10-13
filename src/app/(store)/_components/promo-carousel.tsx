@@ -41,7 +41,7 @@ One easy answer.`,
 
 export function PromoCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const activeBanner = banners[activeIndex];
+  const activeBanner = banners[activeIndex] ?? banners[0];
 
   useEffect(() => {
     const timer = window.setInterval(showNext, 7500);

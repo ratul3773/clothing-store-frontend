@@ -19,7 +19,6 @@ export default function CartPage() {
     .filter((i) => i.product);
   const totals = calculateCartTotals(items);
   return (
-    <StoreShell>
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <h1 className="font-display text-5xl font-black tracking-[-0.06em] text-primary">
           Your bag.
@@ -41,9 +40,9 @@ export default function CartPage() {
                 <div key={key} className="flex gap-4 py-5">
                   <div className="relative size-28 shrink-0 bg-surface sm:size-36">
                     <Image
-                      src={product!.images[0]}
+                      src={product?.images[0] || ""}
                       fill
-                      alt={product!.name}
+                      alt={product?.name || "Product Image"}
                       className="object-cover"
                     />
                   </div>
@@ -122,6 +121,5 @@ export default function CartPage() {
           </div>
         )}
       </main>
-    </StoreShell>
   );
 }

@@ -11,7 +11,6 @@ import { PromoCarousel } from "./promo-carousel";
 export default function Page() {
   const featured = products.slice(0, 4);
   return (
-    <StoreShell>
       <main>
         <PromoCarousel />
         <TrustStrip />
@@ -114,6 +113,5 @@ export default function Page() {
           </div>
         </div>
       </main>
-    </StoreShell>
   );
 }

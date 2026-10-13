@@ -1,5 +1,7 @@
+import { StoreShell } from "@/components/layout/site-header";
+
 export default function AuthLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return children;
+  return <StoreShell>{children}</StoreShell>;
 }
