@@ -36,9 +36,9 @@ export default function ShopPage() {
   );
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([500, 5000]);
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [sort, setSort] = useState("featured");
-  const [sale, setSale] = useState(false);
+  const [filterOpen, setFilterOpen] = useState<boolean>(false);
+  const [sort, setSort] = useState<"featured" | "low" | "high">("featured");
+  const [sale, setSale] = useState<boolean>(false);
   const subcategories = {
     shirts: ["Oxford", "Linen", "Casual"],
     pants: ["Chinos", "Tailored", "Casual"],
