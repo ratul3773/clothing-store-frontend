@@ -16,7 +16,6 @@ export default function CheckoutPage() {
   const totals = calculateCartTotals(items);
   if (done)
     return (
-      <StoreShell>
         <main className="mx-auto max-w-xl px-4 py-24 text-center">
           <div className="mx-auto grid size-14 place-items-center rounded-full bg-success text-success-foreground">
             ✓
@@ -34,10 +33,8 @@ export default function CheckoutPage() {
             Back to shop
           </Link>
         </main>
-      </StoreShell>
     );
   return (
-    <StoreShell>
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-10">
           <Link href="/cart" className="text-sm text-muted-foreground">
@@ -159,6 +156,5 @@ export default function CheckoutPage() {
           </aside>
         </div>
       </main>
-    </StoreShell>
   );
 }

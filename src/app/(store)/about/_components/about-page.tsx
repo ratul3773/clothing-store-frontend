@@ -2,7 +2,6 @@ import Image from "next/image";
 import { StoreShell, TrustStrip } from "@/components/layout/site-header";
 export default function AboutPage() {
   return (
-    <StoreShell>
       <main>
         <section className="mx-auto grid max-w-7xl lg:grid-cols-2">
           <div className="flex flex-col justify-center bg-surface px-5 py-16 sm:px-12 lg:px-16">
@@ -66,6 +65,5 @@ export default function AboutPage() {
           </div>
         </section>
       </main>
-    </StoreShell>
   );
 }

@@ -5,12 +5,15 @@ import {
   ChevronDown,
   Heart,
   Menu,
+  Moon,
   Search,
+  Sun,
   ShoppingBag,
   UserRound,
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,12 +56,14 @@ const categoryMenus = [
 ] as const;
 
 function categoryHref(category: string, subcategory: string) {
-  return `/shop?category=${category}&subcategory=${subcategory}`;
+  return `/products?category=${category}&subcategory=${subcategory}`;
 }
 
 export function SiteHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const count = useAppSelector((state) =>
     state.cart.items.reduce((sum, item) => sum + item.quantity, 0),
   );
@@ -68,8 +73,26 @@ export function SiteHeader() {
 
   return (
     <>
-      <div className="bg-primary px-4 py-2 text-center text-xs font-medium tracking-[0.12em] text-primary-foreground">
-        ঢাকার ভেতরে ৭০৳ ডেলিভারি · ৩,০০০৳ এর বেশি অর্ডারে ফ্রি
+      <div className="bg-primary flex items-center px-4 py-2 text-center text-xs font-medium tracking-[0.12em] text-primary-foreground">
+        <div className="flex-1">
+          ঢাকার ভেতরে ৭০৳ ডেলিভারি · ৩,০০০৳ এর বেশি অর্ডারে ফ্রি
+        </div>
+        <div>
+        <Button
+              variant="ghost"
+              size="icon"
+              aria-label={
+                isDark ? "Switch to light mode" : "Switch to dark mode"
+              }
+              onClick={() => setTheme(isDark ? "light" : "dark")}
+            >
+              {isDark ? (
+                <Sun className="size-4" />
+              ) : (
+                <Moon className="size-4" />
+              )}
+            </Button>
+          </div>
       </div>
       <header className="sticky top-0 z-40 border-b border-border/70 bg-background/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-5 px-4 sm:px-6 lg:h-[76px] lg:px-8">
@@ -90,13 +113,13 @@ export function SiteHeader() {
             NEEL<span className="text-accent">.</span>
           </Link>
           <nav className="hidden items-center gap-8 text-sm font-medium lg:flex">
-            <Link href="/shop" className="transition-colors hover:text-primary">
+            <Link href="/products" className="transition-colors hover:text-primary">
               Shop
             </Link>
             {categoryMenus.map((category) => (
               <div key={category.slug} className="group relative">
                 <Link
-                  href={`/shop?category=${category.slug}`}
+                  href={`/products?category=${category.slug}`}
                   className="inline-flex items-center gap-1 py-5 transition-colors hover:text-primary"
                 >
                   {category.label}
@@ -124,7 +147,7 @@ export function SiteHeader() {
           </nav>
           <div className="flex items-center gap-1">
             <form
-              action="/shop"
+              action="/products"
               className="hidden items-center gap-1 rounded-md border border-border bg-background px-1 py-1 sm:flex"
             >
               <label htmlFor="nav-search" className="sr-only">
@@ -183,7 +206,7 @@ export function SiteHeader() {
           </div>
         </div>
         <form
-          action="/shop"
+          action="/products"
           className="flex items-center gap-2 border-t border-border/60 px-4 py-3 sm:hidden"
         >
           <label htmlFor="mobile-nav-search" className="sr-only">
@@ -223,7 +246,7 @@ export function SiteHeader() {
               </Button>
             </div>
             <nav className="mt-10 grid gap-6 text-lg">
-              <Link href="/shop">Shop all</Link>
+              <Link href="/products">Shop all</Link>
               {categoryMenus.map((category) => (
                 <details key={category.slug} className="group">
                   <summary className="flex cursor-pointer list-none items-center justify-between">
@@ -275,10 +298,10 @@ export function SiteFooter() {
             Shop
           </h2>
           <div className="mt-4 grid gap-3 text-sm text-muted-foreground">
-            <Link href="/shop">All products</Link>
-            <Link href="/shop?category=shirts">Shirts</Link>
-            <Link href="/shop?category=pants">Pants</Link>
-            <Link href="/shop?category=combo">Combo</Link>
+            <Link href="/products">All products</Link>
+            <Link href="/products?category=shirts">Shirts</Link>
+            <Link href="/products?category=pants">Pants</Link>
+            <Link href="/products?category=combo">Combo</Link>
             <Link href="/account?tab=wishlist">Wishlist</Link>
           </div>
         </div>
