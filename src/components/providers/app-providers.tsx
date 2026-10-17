@@ -8,9 +8,11 @@ import { makeStore, type AppStore } from "@/lib/redux/store";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-export function AppProviders({ children }: { children: ReactNode }) {
+export function AppProviders(
+  { children,}: 
+  { children: ReactNode}) {
   const storeRef = useRef<AppStore | null>(null);
-
+  
   if (!storeRef.current) {
     storeRef.current = makeStore();
   }
