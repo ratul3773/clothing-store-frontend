@@ -1,63 +1,88 @@
+
+"use client";
+
 import type { LucideIcon } from "lucide-react";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import type { InputHTMLAttributes, ReactNode } from "react";
+import type { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
+import { Controller } from "react-hook-form";
+
+import {
+  Field,
+  FieldDescription,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-type FormFieldProps = Omit<
-  React.InputHTMLAttributes<HTMLInputElement>,
-  "id" | "name" | "type" | "value" | "defaultValue" | "onChange"
+type FormFieldProps<T extends FieldValues> = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "id" | "name" | "type" | "value" | "defaultValue" | "onChange"|"form"
 > & {
+  form: UseFormReturn<T>;
   id: string;
-  label: React.ReactNode;
-  name?: string;
+  name: FieldPath<T>;
+  label: ReactNode;
   type?: React.HTMLInputTypeAttribute;
-  value?: string;
-  defaultValue?: string;
-  description?: React.ReactNode;
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  description?: ReactNode;
   startIcon?: LucideIcon;
-  endAction?: React.ReactNode;
+  endAction?: ReactNode;
 };
 
-export function FormField({
+export function FormField<T extends FieldValues>({
+  form,
   id,
-  label,
   name,
+  label,
   type = "text",
-  value,
-  defaultValue,
-  placeholder,
   description,
-  required,
-  disabled,
-  inputMode,
-  onChange,
   startIcon: StartIcon,
   endAction,
   className,
   ...inputProps
-}: FormFieldProps) {
+}: FormFieldProps<T>) {
   return (
-    <Field>
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
-      <div className="relative">
-        {StartIcon && (
-          <StartIcon className="pointer-events-none absolute left-3 top-2 size-4 text-muted-foreground" />
-        )}
-        <Input
-          id={id}
-          name={name ?? id}
-          type={type}
-          value={value}
-          defaultValue={defaultValue}
-          placeholder={placeholder}
-          onChange={onChange}
-          {...inputProps}
-          className={cn(StartIcon && "pl-10 mx-auto", className)}
-        />
-      </div>
-      {description && <FieldDescription>{description}</FieldDescription>}
-    </Field>
+    <Controller
+      control={form.control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <Field data-invalid={fieldState.invalid} className={cn("px-2", className)}>
+          <FieldLabel htmlFor={id}>{label}</FieldLabel>
+
+          <div className="relative">
+            {StartIcon && (
+              <StartIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            )}
+
+            <Input
+              {...field}
+              {...inputProps}
+              id={id}
+              type={type}
+              value={field.value ?? ""}
+              aria-invalid={fieldState.invalid}
+              className={cn(
+                StartIcon && "pl-10",
+                endAction && "pr-12",
+                "h-10",
+                className,
+              )}
+            />
+
+            {endAction}
+          </div>
+
+          {description && (
+            <FieldDescription>{description}</FieldDescription>
+          )}
+
+          {fieldState.error && (
+            <FieldDescription className="text-destructive">
+              {fieldState.error.message}
+            </FieldDescription>
+          )}
+        </Field>
+      )}
+    />
   );
 }
 
