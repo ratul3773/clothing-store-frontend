@@ -1,10 +1,9 @@
-import { Suspense } from "react";
-import LoginPage from "../_components/auth-page";
+import { AuthForm } from "../_components/auth-form";
 
-export default function Page() {
+export default function LoginPage() {
   return (
-      <Suspense fallback={<div className="h-9 w-20 animate-pulse rounded bg-muted" />}>
-          <LoginPage/>
-      </Suspense>
+      <div className="p-4 sm:p-6 md:p-8 flex items-center justify-center w-full">
+          <AuthForm />
+        </div>
   );
 }
