@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, MoveRight } from "lucide-react";
-import { StoreShell, TrustStrip } from "@/components/layout/site-header";
+import { TrustStrip } from "@/components/layout/site-header";
 import { ProductCard } from "@/components/common/product-card";
 import { SectionHeading } from "@/components/common/section-header";
 import { categories, products } from "@/lib/data/products";
@@ -25,7 +25,7 @@ export default function Page() {
             {categories.map((category) => (
               <Link
                 key={category.slug}
-                href={`/shop?category=${category.slug}`}
+                href={`/products?category=${category.slug}`}
                 className="group relative min-h-[300px] overflow-hidden bg-surface"
               >
                 <Image

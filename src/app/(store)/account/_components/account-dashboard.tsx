@@ -10,8 +10,11 @@ import {
   Overview,
   SettingsPanel,
 } from "./account-sections";
-
-export function AccountDashboard() {
+interface Customer {
+  name: string;
+  email: string;
+}
+export function AccountDashboard({customer}: {customer: Customer}) {
   const searchParams = useSearchParams();
   const requestedTab = searchParams.get("tab") || "overview";
   const activeTab = [
@@ -36,7 +39,7 @@ export function AccountDashboard() {
         </p>
       </div>
       <div className="grid gap-8 lg:grid-cols-[250px_1fr] lg:gap-14">
-        <AccountSidebar activeTab={activeTab} />
+        <AccountSidebar activeTab={activeTab} customer={customer} />
         <section
           key={activeTab}
           className="page-transition min-w-0"
@@ -45,7 +48,7 @@ export function AccountDashboard() {
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent-foreground">
             {activeLabel}
           </p>
-          {activeTab === "overview" && <Overview />}
+          {activeTab === "overview" && <Overview name={customer.name} />}
           {activeTab === "orders" && <Orders />}
           {activeTab === "wishlist" && (
             <EmptySection

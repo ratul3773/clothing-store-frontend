@@ -1,4 +1,4 @@
-import { StoreShell } from "@/components/layout/site-header";
+import { StoreShell } from "@/components/layout/StoreShell";
 
 export default function StoreLayout({
   children,

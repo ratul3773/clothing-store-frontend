@@ -36,7 +36,7 @@ export function CartSheet({ open, onOpenChange }: CartSheetProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="flex w-full flex-col sm:max-w-md">
+      <SheetContent side="right" className="flex w-full flex-col sm:max-w-lg">
         <SheetHeader>
           <SheetTitle>Your bag</SheetTitle>
           <SheetDescription>
@@ -60,12 +60,12 @@ export function CartSheet({ open, onOpenChange }: CartSheetProps) {
               </Link>
             </div>
           ) : (
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5 px-4">
               {lines.map(({ key, product, color, size, quantity }) => (
                 <div key={key} className="flex gap-3">
                   <div className="relative size-20 shrink-0 overflow-hidden rounded-md bg-surface">
                     <Image
-                      src={product!.images[0]}
+                      src={product!.images[0] || ""}
                       alt={product!.name}
                       fill
                       className="object-cover"

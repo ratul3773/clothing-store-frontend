@@ -6,14 +6,14 @@ import { addresses, customer, orders } from "@/lib/data/account";
 import { formatBDT } from "@/lib/format/currency";
 import { useState } from "react";
 
-export function Overview() {
+export function Overview({name}: {name: string}) {
   return (
     <>
       <h2
         id="account-section-title"
         className="mt-3 font-display text-3xl font-black tracking-[-0.04em] text-primary"
       >
-        Welcome back, {customer.name.split(" ")[0]}.
+        Welcome back, {name.split(" ")[0]}.
       </h2>
       <div className="mt-8 grid gap-4 sm:grid-cols-3">
         <Stat label="Orders" value={String(orders.length)} />

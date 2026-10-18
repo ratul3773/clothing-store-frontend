@@ -1,13 +1,11 @@
-import { StoreShell } from "@/components/layout/site-header";
-import { AccountDashboard } from "./_components/account-dashboard";
 import { Suspense } from "react";
+import AccountPage from "./_components/account-page";
+import { AccountPageSkeleton } from "./_components/account-skeleton";
 
-export default function AccountPage() {
+export default function Page() {
   return (
-    <StoreShell>
-     <Suspense  fallback={<div>Loading...</div>}>
-      <AccountDashboard />
-      </Suspense>
-    </StoreShell>
+    <Suspense fallback={<AccountPageSkeleton />}>
+      <AccountPage />
+    </Suspense>
   );
 }
