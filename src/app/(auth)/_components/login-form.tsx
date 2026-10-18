@@ -13,6 +13,7 @@ import { FormField } from "@/components/common/form-field";
 import { authClient } from "@/lib/auth-client";
 import { loginSchema, type LoginFormValues } from "../_utils/schema";
 import { OtpModal } from "./otp-modal";
+import AlertText from "@/components/common/Alert";
 
 type LoginMethod = "password" | "otp";
 
@@ -132,6 +133,15 @@ export default function LoginForm() {
                 )}
                 className="grid gap-5"
             >
+                {errorMessage && (
+                    <AlertText 
+                        title="Login Error"
+                        description={errorMessage}
+                        className="bg-destructive/3"
+                        setSubmitError={setErrorMessage}
+                        showCrossIcon={true}
+                    />
+                )}
                 {/* {method === "password" ? ( */}
                 <>
                     <FormField
@@ -190,12 +200,6 @@ export default function LoginForm() {
         //     required
         //   />
         )} */}
-
-                {errorMessage && (
-                    <p className="text-sm text-destructive" role="alert">
-                        {errorMessage}
-                    </p>
-                )}
 
                 <Button type="submit" className="h-12" disabled={isSubmitting}>
                     {isSubmitting

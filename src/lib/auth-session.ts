@@ -6,7 +6,9 @@ import { cache } from "react";
 export interface AuthState {
   isAuthenticated: boolean;
   token?: string | null;
-  role?: string;
+  role: string;
+  name: string;
+  email: string;
 }
 
 export const getServerSession = cache(async () => {
@@ -22,11 +24,16 @@ export const getServerSession = cache(async () => {
     return {
       isAuthenticated: false,
       token: null,
+      role: "",
+      name: "",
+      email: ""
     };
   }
   return {
     isAuthenticated: true,
     token: session.session.token,
-    role: session.user.role
+    role: session.user.role,
+    name: session.user.name,
+    email: session.user.email
   };
 });

@@ -18,9 +18,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CartSheet } from "@/components/layout/cart-sheet";
 import { useAppSelector } from "@/lib/redux/store";
-import { authClient } from "@/lib/auth-client";
-import { SiteFooter } from "./site-footer";
-import { AuthSlot } from "./auth-button";
 
 const categoryMenus = [
   {

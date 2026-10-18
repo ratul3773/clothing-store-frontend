@@ -3,6 +3,7 @@ import Link from "next/link";
 import { UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getServerSession } from "@/lib/auth-session";
+import { SignOutButton } from "../common/sign-out-button";
 
 export async function AuthSlot() {
   const session = await getServerSession();
@@ -18,10 +19,13 @@ export async function AuthSlot() {
   }
 
   return (
+    <div className="flex items-center">
     <Link href="/account" className="hidden sm:inline-flex">
       <Button variant="ghost" size="icon" aria-label="Account">
         <UserRound className="size-[18px]" />
       </Button>
     </Link>
+      <SignOutButton />
+    </div>
   );
 }

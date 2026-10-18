@@ -11,7 +11,7 @@ import {
   UserRound,
 } from "lucide-react";
 
-import { customer } from "@/lib/data/account";
+// import { customer } from "@/lib/data/account";
 import {
   Sidebar,
   SidebarContent,
@@ -23,6 +23,8 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from "@/components/ui/sidebar";
+import { SignOutButton } from "@/components/common/sign-out-button";
+import { useLogout } from "@/hooks/useLogout";
 
 const navigationItems = [
   { key: "overview", label: "Account overview", icon: UserRound },
@@ -34,13 +36,18 @@ const navigationItems = [
 
 interface AccountSidebarProps {
   activeTab: string;
+  customer: {
+    name: string;
+    email: string;
+  };
 }
 
-export function AccountSidebar({ activeTab }: AccountSidebarProps) {
+export function AccountSidebar({ activeTab, customer }: AccountSidebarProps) {
   const initials = customer.name
     .split(" ")
     .map((word) => word[0])
     .join("");
+  const { handleSignOut, isSigningOut } = useLogout();
 
   return (
     <SidebarProvider
@@ -96,9 +103,11 @@ export function AccountSidebar({ activeTab }: AccountSidebarProps) {
                 <SidebarMenuButton
                   tooltip="Sign out"
                   className="min-h-11 font-semibold"
+                  onClick={handleSignOut}
+                  disabled={isSigningOut}
                 >
                   <LogOut />
-                  <span>Sign out</span>
+                  <span>{isSigningOut ? "Signing out..." : "Sign out"}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
