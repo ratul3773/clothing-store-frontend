@@ -18,7 +18,7 @@ export default function HeroClassic() {
     <section ref={ref} className="relative mx-auto grid max-w-[88rem] items-center gap-8 px-5 pb-16 pt-10 lg:grid-cols-[1.25fr_1fr] lg:px-10 lg:pt-16">
       <div className="relative z-10">
         <p className="label-mono mb-6 flex items-center gap-3"><span className="h-px w-10 bg-accent" /> Men's shirts &amp; pants · Dhaka</p>
-        <h1 className="font-display text-[clamp(4.5rem,15vw,13.5rem)]">
+        <h1 className="font-display text-8xl">
           {HERO_WORDS.map((w, i) => (
             <span key={w} className="block overflow-hidden pb-[0.06em]">
               <motion.span
