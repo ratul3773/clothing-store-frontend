@@ -13,7 +13,7 @@ export default function CheckoutForm({ f, set }: Props) {
   const s = useStore()
   return (
     <>
-      <h1 className="font-display text-[clamp(4rem,9vw,8rem)]">Checkout</h1>
+      <h1 className="font-display text-lg sm:text-2xl font-medium">Checkout</h1>
       {!s.user && (
         <p className="mt-4 rounded-[3px] border border-border bg-card/70 p-4 text-sm">
           No account needed. Already a member? <button onClick={() => s.setAuthOpen(true)} className="font-semibold text-accent underline underline-offset-4">Sign in</button> to use saved addresses.

@@ -40,7 +40,7 @@ export default function OrderSummary({ disc, fee, total, pay, valid, onPlace }: 
           <div className="flex justify-between"><dt>Subtotal</dt><dd>{bdt(s.subtotal)}</dd></div>
           {disc > 0 && <div className="flex justify-between text-accent"><dt>Coupon</dt><dd>−{bdt(disc)}</dd></div>}
           <div className="flex justify-between"><dt>Delivery</dt><dd>{fee === 0 ? `Free (above ${bdt(settings.delivery.freeAbove)})` : bdt(fee)}</dd></div>
-          <motion.div key={total} initial={{ scale: 1.05 }} animate={{ scale: 1 }} className="flex items-end justify-between border-t border-background/20 pt-4"><dt className="label-mono">Total</dt><dd className="font-display text-5xl">{bdt(total)}</dd></motion.div>
+          <motion.div key={total} initial={{ scale: 1.05 }} animate={{ scale: 1 }} className="flex items-end justify-between border-t border-background/20 pt-4"><dt className="label-mono">Total</dt><dd className="font-display text-lg sm:text-2xl">{bdt(total)}</dd></motion.div>
         </dl>
         <Button size="lg" variant="accent" className="mt-6 w-full" disabled={!valid} onClick={onPlace}>Place order · {pay === 'COD' ? 'COD' : 'Pay online'}</Button>
         <p className="mt-3 text-xs text-background/60">Every order is confirmed by our team before packing. You can cancel until then. <Link href="/shop" className="underline">Keep shopping</Link></p>

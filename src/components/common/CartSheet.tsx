@@ -65,7 +65,10 @@ export default function CartSheet() {
         <div className="space-y-3 border-t border-border p-5">
           <div className="flex justify-between text-sm"><span>Subtotal</span><b>{bdt(subtotal)}</b></div>
           <p className="text-xs text-muted-foreground">Delivery and coupons are calculated at checkout.</p>
-          <Button size="lg" variant="accent" className="w-full" onClick={() => { setCartOpen(false); navigate('/checkout') }}>Checkout as guest or member</Button>
+          <div className="flex gap-2">
+          <Button variant="outline" className="w-full" onClick={() => { setCartOpen(false); navigate('/cart') }}>View cart</Button>
+          <Button variant="accent" className="w-full" onClick={() => { setCartOpen(false); navigate('/checkout') }}>Checkout</Button>
+          </div>
         </div>
       )}
     </Sheet>
