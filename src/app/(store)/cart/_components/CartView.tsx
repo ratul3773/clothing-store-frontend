@@ -14,17 +14,17 @@ export default function CartView() {
   const discount = couponDiscount(subtotal)
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-12 lg:px-10">
+    <>
       <p className="label-mono text-muted-foreground">Your selections</p>
       <div className="mt-2 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6">
-        <h1 className="font-display text-[clamp(3.5rem,8vw,6rem)] leading-none">Your cart</h1>
+        <h1 className="font-display text-lg sm:text-2xl font-medium leading-none">Your cart</h1>
         {lines.length > 0 && <p className="label-mono text-muted-foreground">{count} {count === 1 ? 'item' : 'items'}</p>}
       </div>
 
       {lines.length === 0 ? (
         <div className="py-24 text-center">
           <ShoppingBag size={30} className="mx-auto text-muted-foreground" />
-          <h2 className="mt-5 font-display text-3xl">Your cart is empty</h2>
+          <h2 className="mt-5 font-display sm:text-lg">Your cart is empty</h2>
           <p className="mt-2 text-sm text-muted-foreground">Find something you love and it will show up here.</p>
           <Button to="/shop" variant="accent" className="mt-7">Explore the shop</Button>
         </div>
@@ -81,6 +81,6 @@ export default function CartView() {
           </aside>
         </div>
       )}
-    </div>
+    </>
   )
 }

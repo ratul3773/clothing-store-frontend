@@ -16,7 +16,7 @@ export default function Page() {
   if (s.lines.length === 0) return <EmptyBag />
 
   return (
-    <div className="mx-auto grid max-w-[88rem] gap-12 px-5 py-12 lg:grid-cols-[1.2fr_1fr] lg:px-10">
+    <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr]">
       <div>
         <CheckoutForm f={c.f} set={c.set} />
         <ZoneAndPayment zone={c.zone} setZone={c.setZone} pay={c.pay} setPay={c.setPay} methods={c.methods} />

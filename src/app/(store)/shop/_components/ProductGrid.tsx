@@ -16,7 +16,7 @@ export default function ProductGrid({ list, onClear }: { list: Product[]; onClea
   if (list.length === 0) return <EmptyState onClear={onClear} />
   return (
     <>
-      <motion.div layout className="grid grid-cols-2 gap-x-4 gap-y-10 xl:grid-cols-3">
+      <motion.div layout className="grid grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-4">
         <AnimatePresence mode="popLayout">
           {pg.pageItems.map((p, i) => <ProductCard key={p.id} p={p} index={i} />)}
         </AnimatePresence>

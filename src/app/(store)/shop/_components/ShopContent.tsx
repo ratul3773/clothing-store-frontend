@@ -15,7 +15,7 @@ export default function ShopContent() {
   const filters = <ProductFilters f={f} />
 
   return (
-    <div className="mx-auto max-w-[88rem] px-5 py-12 lg:px-10">
+    <>
       <ShopHeader count={f.list.length} q={f.q} cat={f.cat} sub={f.sub} sort={f.sort} onSort={f.setSort} onToggleFilters={() => setOpen((o) => !o)} />
       <AnimatePresence>
         {open && <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden lg:hidden"><div className="pt-8">{filters}</div></motion.div>}
@@ -24,6 +24,6 @@ export default function ShopContent() {
         <aside className="hidden lg:block"><div className="sticky top-32">{filters}</div></aside>
         <div><ProductGrid list={f.list} onClear={f.reset} /></div>
       </div>
-    </div>
+    </>
   )
 }

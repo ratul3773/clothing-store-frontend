@@ -14,7 +14,7 @@ export default function ProductDetail({ slug }: { slug?: string }) {
   if (!p || p.status !== 'active') {
     return (
       <div className="py-40 text-center">
-        <p className="font-display text-7xl">{p ? 'Not available' : 'Not found'}</p>
+        <p className="font-display text-3xl">{p ? 'Not available' : 'Not found'}</p>
         <p className="mt-3 text-muted-foreground">{p ? 'This piece is not on sale right now.' : 'We could not find that product.'}</p>
         <Button to="/shop" className="mt-6">Back to shop</Button>
       </div>

@@ -10,7 +10,7 @@ export default function ShopHeader({ count, q, cat, sub, sort, onSort, onToggleF
     <div className="flex flex-wrap items-end justify-between gap-6">
       <div>
         <p className="label-mono text-muted-foreground">{count} pieces{q && <> for “{q}”</>}</p>
-        <h1 className="font-display text-4xl">{shopTitle(cat, sub)}</h1>
+        <h1 className="font-display sm:text-2xl font-medium">{shopTitle(cat, sub)}</h1>
       </div>
       <div className="flex items-center gap-3">
         <Button variant="outline" className="lg:hidden" onClick={onToggleFilters}><SlidersHorizontal size={15} /> Filters</Button>

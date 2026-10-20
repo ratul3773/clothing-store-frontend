@@ -41,7 +41,7 @@ export default function Header() {
           <button className="lg:hidden" aria-label="Menu" onClick={() => setMenu((m) => !m)}>
             {menu ? <X size={22} /> : <Menu size={22} />}
           </button>
-          <Link href="/" className="font-display text-[2rem] leading-none">
+          <Link href="/" className="font-display leading-none">
             <BrandName name={settings.store.name} />
           </Link>
           <div className="ml-6"><NavMenu /></div>

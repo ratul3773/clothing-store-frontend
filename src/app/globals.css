@@ -169,14 +169,14 @@ body {
   font-family: var(--font-display);
   letter-spacing: -0.005em;
   line-height: 0.88;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
 }
 
 .label-mono {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
 }
 
 @keyframes marquee {
