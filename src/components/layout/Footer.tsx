@@ -15,7 +15,7 @@ export default function Footer() {
   const shopLinks = [...taxonomy.map((t) => [t.label, `/shop?cat=${t.cat}`]), ['Offers', '/shop?offers=1'], ['Combos', '/#combos'], ['Contact', '/contact']]
   return (
     <footer className="mt-32 bg-foreground text-background">
-      <div className="mx-auto max-w-[88rem] px-5 pb-10 pt-20 lg:px-10">
+      <div className="mx-auto max-w-340 px-5 pb-10 pt-20 lg:px-10">
         <p className="font-display leading-[0.8] text-background/95">
           <BrandName name={store.name} />
         </p>
