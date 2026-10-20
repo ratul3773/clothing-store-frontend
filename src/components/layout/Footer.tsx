@@ -16,7 +16,7 @@ export default function Footer() {
   return (
     <footer className="mt-32 bg-foreground text-background">
       <div className="mx-auto max-w-[88rem] px-5 pb-10 pt-20 lg:px-10">
-        <p className="font-display text-[clamp(4rem,17vw,16rem)] leading-[0.8] text-background/95">
+        <p className="font-display leading-[0.8] text-background/95">
           <BrandName name={store.name} />
         </p>
         {store.tagline && <p className="label-mono mt-6 text-background/60">{store.tagline}</p>}
@@ -56,7 +56,7 @@ export default function Footer() {
               >
                 <span>
                   <span className="label-mono block text-background/60 group-hover:text-background">Questions about fit?</span>
-                  <span className="font-display mt-2 block text-3xl">Chat on WhatsApp</span>
+                  <span className=" mt-2 block">Chat on WhatsApp</span>
                 </span>
                 <MessageCircle className="transition group-hover:rotate-12" />
               </a>

@@ -19,7 +19,7 @@ export default function ReviewSlider() {
   return (
     <section className="mt-28">
       <div className="mx-auto max-w-[88rem] px-5 lg:px-10">
-        <Reveal><h2 className="font-display text-[clamp(3rem,7vw,6rem)]">Verified <span className="text-accent">fit</span> notes</h2></Reveal>
+        <Reveal><h2 className="font-display text-4xl">Verified <span className="text-accent">fit</span> notes</h2></Reveal>
       </div>
       <div className="marquee-pause mt-10 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
         <div className="marquee-rtl flex w-max gap-4 px-2">

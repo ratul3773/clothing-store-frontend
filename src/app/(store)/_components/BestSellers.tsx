@@ -16,7 +16,7 @@ export default function BestSellers() {
   return (
     <section className="mx-auto mt-28 max-w-[88rem] px-5 lg:px-10">
       <Reveal className="mb-10 flex items-end justify-between">
-        <h2 className="font-display text-[clamp(3rem,7vw,6rem)]">Best <span className="text-accent">sellers</span></h2>
+        <h2 className="font-display text-4xl">Best <span className="text-accent">sellers</span></h2>
         <Link href="/shop" className="label-mono group hidden items-center gap-2 sm:flex">View all <ArrowUpRight size={14} className="transition group-hover:translate-x-1 group-hover:-translate-y-1" /></Link>
       </Reveal>
       <div className="grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4 lg:gap-x-6">

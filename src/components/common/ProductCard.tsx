@@ -44,7 +44,7 @@ export default function ProductCard({ p, index = 0, now }: { p: Product; index?:
         <div className="mt-4 flex items-start justify-between gap-3">
           <div>
             <p className="label-mono text-muted-foreground">{p.sub} · {p.sku}</p>
-            <h3 className="font-display mt-1.5 text-[1.7rem] leading-none transition-colors group-hover:text-accent">{p.name}</h3>
+            <h3 className="font-display mt-1.5  leading-none transition-colors group-hover:text-accent">{p.name}</h3>
           </div>
           <div className="text-right">
             <p className="font-semibold">{bdt(price)}</p>
