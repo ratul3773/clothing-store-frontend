@@ -37,7 +37,7 @@ export default function Header() {
         </div>
       )}
       <div className="border-b border-border bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-[88rem] items-center gap-6 px-5 lg:px-10">
+        <div className="mx-auto flex h-16 max-w-340 items-center gap-6 px-5 lg:px-10">
           <button className="lg:hidden" aria-label="Menu" onClick={() => setMenu((m) => !m)}>
             {menu ? <X size={22} /> : <Menu size={22} />}
           </button>
