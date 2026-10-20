@@ -11,7 +11,7 @@ export default function EmailChange() {
   const e = useEmailChange()
   return (
     <section className="space-y-5">
-      <h2 className="font-display text-4xl">Email address</h2>
+      <h2 className="font-display sm:text-lg">Email address</h2>
       <div className="flex items-center gap-3 rounded-[3px] border border-border bg-card/70 p-4">
         <MailCheck className="text-moss" size={20} />
         <div className="min-w-0 flex-1"><p className="label-mono text-muted-foreground">Current · verified</p><p className="truncate font-semibold">{e.user.email}</p></div>

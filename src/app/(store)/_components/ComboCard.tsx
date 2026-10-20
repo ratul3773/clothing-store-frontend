@@ -23,7 +23,7 @@ export default function ComboCard({ combo: c, index }: { combo: ReturnType<typeo
         </div>
         <div className="p-5">
           <p className="label-mono text-background/50">{c.tag}</p>
-          <h3 className="font-display mt-1 text-4xl">{c.name}</h3>
+          <h3 className="font-display mt-1 text-lg">{c.name}</h3>
           <div className="mt-4 flex items-center justify-between">
             <p><span className="text-xl font-semibold">{bdt(c.price)}</span> <span className="text-sm text-background/50 line-through">{bdt(sum)}</span></p>
             <Button size="sm" variant="light" onClick={() => addCombo(c.id)}>Add combo</Button>

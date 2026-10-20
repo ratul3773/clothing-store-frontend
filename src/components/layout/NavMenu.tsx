@@ -36,7 +36,7 @@ export default function NavMenu() {
                   <li>
                     <NM.Link asChild>
                       <Link href={`/shop?cat=${t.cat}`} className="group flex items-center justify-between rounded-[2px] px-3 py-2.5 transition hover:bg-foreground hover:text-background">
-                        <span className="font-display text-3xl">All {t.label}</span>
+                        <span className="sm:text-lg">All {t.label}</span>
                         <ArrowUpRight size={16} className="transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                       </Link>
                     </NM.Link>

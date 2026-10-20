@@ -41,13 +41,13 @@ export function Sheet({ open, onOpenChange, title, description, side = 'right', 
                 )}
                 initial={side === 'right' ? { x: '100%' } : { opacity: 0, y: 30, x: '-50%', scale: 0.96 }}
                 animate={side === 'right' ? { x: 0 } : { opacity: 1, y: '-50%', x: '-50%', scale: 1 }}
-                exit={side === 'right' ? { x: '100%' } : { opacity: 0, y: 20, x: '-50%', scale: 0.97 }}
+                exit={side === 'right' ? { x: '100%' } : { opacity: 0, y: 0, x: '-50%', scale: 0.97 }}
                 transition={{ type: 'spring', damping: 32, stiffness: 320 }}
               >
                 <div className="flex items-start justify-between gap-4 border-b border-border p-5">
                   <div>
-                    <Dialog.Title className="font-display text-3xl">{title}</Dialog.Title>
-                    <Dialog.Description className={description ? 'mt-1 text-sm text-muted-foreground' : 'sr-only'}>
+                    <Dialog.Title className="font-display text-xl">{title}</Dialog.Title>
+                    <Dialog.Description className={description ? 'mt-5 text-sm text-muted-foreground' : 'sr-only'}>
                       {description ?? title}
                     </Dialog.Description>
                   </div>

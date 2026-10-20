@@ -14,7 +14,7 @@ export default function ComboDeals() {
       <div className="mx-auto max-w-[88rem] px-5 lg:px-10">
         <Reveal className="mb-12 max-w-2xl">
           <p className="label-mono text-accent">Combos · stock reserved from each piece</p>
-          <h2 className="font-display mt-3 text-[clamp(3.5rem,8vw,7rem)]">Wear it as a pair</h2>
+          <h2 className="font-display mt-3 text-4xl">Wear it as a pair</h2>
         </Reveal>
         <div className="grid gap-5 md:grid-cols-3">
           {list.map((c, i) => <ComboCard key={c.id} combo={c} index={i} />)}

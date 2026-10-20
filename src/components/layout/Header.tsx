@@ -115,11 +115,11 @@ export default function Header() {
               <div className="flex flex-col px-5 py-3">
                 {[{ to: '/shop', label: 'All', subs: [] as string[], cat: '' }, ...taxonomy.map((t) => ({ to: `/shop?cat=${t.cat}`, label: t.label, subs: t.subs, cat: t.cat })), { to: '/shop?offers=1', label: 'Offers', subs: [] as string[], cat: '' }, { to: '/contact', label: 'Contact', subs: [] as string[], cat: '' }, { to: '/account', label: 'Account', subs: [] as string[], cat: '' }].map((n, i) => (
                   <motion.div key={n.label} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: i * 0.05 }} className="border-b border-border/60 py-2">
-                    <Link href={n.to} onClick={() => setMenu(false)} className="font-display block text-4xl">{n.label}</Link>
+                    <Link href={n.to} onClick={() => setMenu(false)} className="block text-lg">{n.label}</Link>
                     {n.subs.length > 0 && (
                       <div className="mt-1 flex flex-wrap gap-2 pb-2">
                         {n.subs.map((s) => (
-                          <Link key={s} href={`/shop?cat=${n.cat}&sub=${s}`} onClick={() => setMenu(false)} className="label-mono rounded-full border border-foreground/30 px-3 py-1.5 transition hover:bg-foreground hover:text-background">{s}</Link>
+                          <Link key={s} href={`/shop?cat=${n.cat}&sub=${s}`} onClick={() => setMenu(false)} className="rounded-full border border-foreground/30 px-3 py-1.5 transition hover:bg-foreground hover:text-background">{s}</Link>
                         ))}
                       </div>
                     )}

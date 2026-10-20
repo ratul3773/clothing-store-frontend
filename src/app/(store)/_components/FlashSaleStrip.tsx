@@ -25,7 +25,7 @@ export default function FlashSaleStrip() {
         <Reveal className="mb-10 flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-2xl">
             <p className="label-mono flex items-center gap-2 text-accent"><Zap size={14} className="fill-accent" /> Flash sale · extra {f.discountPct}% off</p>
-            <h2 className="font-display mt-3 text-[clamp(3rem,7vw,6rem)]">{f.title}</h2>
+            <h2 className="font-display mt-3 text-4xl">{f.title}</h2>
             {f.subtitle && <p className="mt-3 text-background/70">{f.subtitle}</p>}
           </div>
           <div>

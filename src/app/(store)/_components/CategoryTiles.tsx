@@ -19,7 +19,7 @@ export default function CategoryTiles() {
             <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent" />
             <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-6 text-background">
               <div>
-                <h2 className="font-display text-[clamp(4rem,9vw,8rem)] transition-transform duration-500 group-hover:translate-x-3">{c.title}</h2>
+                <h2 className="font-display text-[clamp(1.5rem,9vw,2.5rem)] transition-transform duration-500 group-hover:translate-x-3">{c.title}</h2>
                 <p className="label-mono text-background/70">{c.note}</p>
               </div>
               <span className="grid h-14 w-14 place-items-center rounded-full bg-background text-foreground transition duration-500 group-hover:rotate-45 group-hover:bg-accent group-hover:text-accent-foreground"><ArrowUpRight /></span>

@@ -25,7 +25,7 @@ export default function ProfileSettings() {
   return (
     <div className="grid max-w-5xl gap-10 lg:grid-cols-2">
       <section className="space-y-5">
-        <h2 className="font-display text-4xl">Your details</h2>
+        <h2 className="font-display sm:text-lg">Your details</h2>
         <Field label="Full name"><input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} /></Field>
         <Field label="Mobile number"><input className={inputCls} value={phone} inputMode="tel" onChange={(e) => setPhone(e.target.value)} /></Field>
         <div className="flex items-center justify-between rounded-[3px] border border-border p-4 text-sm"><span>SMS order updates</span><Toggle checked={sms} onChange={setSms} label="SMS updates" /></div>

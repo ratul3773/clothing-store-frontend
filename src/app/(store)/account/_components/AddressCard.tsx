@@ -20,7 +20,7 @@ export default function AddressCard({ a, onEdit, onMakeDefault, onDelete }: Prop
         <MapPin className="text-accent" />
         {a.isDefault && <span className="label-mono rounded-full bg-accent px-2.5 py-1 text-accent-foreground">Default</span>}
       </div>
-      <p className="font-display text-3xl">{a.label}</p>
+      <p className="font-display text-lg sm:text-xl">{a.label}</p>
       <p className="text-sm">{a.name} · {a.phone}</p>
       <p className="text-sm text-muted-foreground">{a.line}, {a.city}</p>
       <div className="mt-4 flex flex-wrap gap-2 border-t border-border pt-3">
