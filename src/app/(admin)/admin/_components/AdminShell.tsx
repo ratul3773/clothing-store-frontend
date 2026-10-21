@@ -82,7 +82,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
               <Btn onClick={() => { sessionStorage.removeItem(KEY); setAuthed(false) }}><LogOut className="size-3.5" />Sign out</Btn>
             </div>
           </header>
-          <main className="min-w-0 flex-1 p-4 sm:p-6">{children}</main>
+          <main className="w-full flex-1 p-4 sm:p-6 sm:max-w-[1500] sm:mx-auto">{children}</main>
         </div>
       </div>
     </>
