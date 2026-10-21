@@ -8,9 +8,9 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
+  DialogTrigger,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { CmsButton } from '../ui/button'
 
 type Props = {
   open: boolean
@@ -21,12 +21,14 @@ type Props = {
   size?: 'sm' | 'md' | 'lg'
   footer?: React.ReactNode
   children?: React.ReactNode
+  trigger?: React.ReactNode
 }
 
 /** Flat, non-animated dialog / right-hand drawer for the CMS. */
-export default function Modal({ open, onOpenChange, title, description, variant = 'modal', size = 'md', footer, children }: Props) {
+export default function Modal({ open, onOpenChange, title, description, variant = 'modal', size = 'md', footer, children, trigger }: Props) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
+      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent
         showCloseButton={false}
         className={cn(
@@ -52,44 +54,3 @@ export default function Modal({ open, onOpenChange, title, description, variant 
     </Dialog>
   )
 }
-
-// export function ConfirmDialog({
-//   open,
-//   onOpenChange,
-//   title,
-//   description,
-//   confirmLabel = 'Delete',
-//   onConfirm,
-// }: {
-//   open: boolean
-//   onOpenChange: (open: boolean) => void
-//   title: string
-//   description: string
-//   confirmLabel?: string
-//   onConfirm: () => void
-// }) {
-//   return (
-//     <Modal
-//       open={open}
-//       onOpenChange={onOpenChange}
-//       title={title}
-//       size="sm"
-//       footer={
-//         <>
-//           <CmsButton onClick={() => onOpenChange(false)}>Cancel</CmsButton>
-//           <CmsButton
-//             variant="destructive"
-//             onClick={() => {
-//               onConfirm()
-//               onOpenChange(false)
-//             }}
-//           >
-//             {confirmLabel}
-//           </CmsButton>
-//         </>
-//       }
-//     >
-//       <p className="text-[13px] text-muted-foreground">{description}</p>
-//     </Modal>
-//   )
-// }

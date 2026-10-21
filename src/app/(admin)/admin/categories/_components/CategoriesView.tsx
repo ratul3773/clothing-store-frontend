@@ -22,13 +22,21 @@ export default function CategoriesView() {
         title="Categories"
         description="Manage categories, subcategories and size charts."
         crumbs={['Catalog', 'Categories']}
-        actions={<Btn variant="primary" onClick={() => setModal({})}><Plus className="size-4" />Add category</Btn>}
+        actions={
+          <CategoryModal
+            open={!!modal}
+            prev={modal?.prev}
+            onOpen={() => setModal({})}
+            onClose={() => setModal(null)}
+            onSaved={(cat) => setSel(cat)}
+            trigger={<Btn variant="primary"><Plus className="size-4" />Add category</Btn>}
+          />
+        }
       />
       <div className="grid gap-4 xl:grid-cols-[1.2fr_1fr]">
         <CategoriesTable selected={active?.cat} onSelect={setSel} onEdit={(c) => setModal({ prev: c })} onDeleted={(c) => c === sel && setSel(null)} />
         {active && <CategoryDetail key={active.cat} cat={active.cat} />}
       </div>
-      <CategoryModal open={!!modal} prev={modal?.prev} onClose={() => setModal(null)} onSaved={(k) => setSel(k)} />
     </div>
   )
 }

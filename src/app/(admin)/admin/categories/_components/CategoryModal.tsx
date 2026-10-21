@@ -11,18 +11,30 @@ import { createCategory, updateCategory } from '../_services/categories.api'
 import { validateCategory } from '../_schemas/category.schema'
 import type { CategoryDraft } from '../_types/categories.types'
 
-type Props = { open: boolean; prev?: string; onClose: () => void; onSaved: (cat: string) => void }
+type Props = {
+  open: boolean
+  prev?: string
+  onOpen: () => void
+  onClose: () => void
+  onSaved: (cat: string) => void
+  trigger?: React.ReactNode
+}
 
-export default function CategoryModal({ open, prev, onClose, onSaved }: Props) {
+export default function CategoryModal({ open, prev, onOpen, onClose, onSaved, trigger }: Props) {
   // remount the form each time the modal opens so state resets
   return (
-    <Modal open={open} onOpenChange={(o) => !o && onClose()} title={prev ? 'Edit category' : 'New category'}>
+    <Modal
+      open={open}
+      onOpenChange={(isOpen) => (isOpen ? onOpen() : onClose())}
+      title={prev ? 'Edit category' : 'New category'}
+      trigger={trigger}
+    >
       {open && <CategoryForm key={prev ?? 'new'} prev={prev} onClose={onClose} onSaved={onSaved} />}
     </Modal>
   )
 }
 
-function CategoryForm({ prev, onClose, onSaved }: Omit<Props, 'open'>) {
+function CategoryForm({ prev, onClose, onSaved }: Omit<Props, 'open' | 'onOpen' | 'trigger'>) {
   const { toast } = useStore()
   const existing = taxonomy.find((t) => t.cat === prev)
   const [d, setD] = useState<CategoryDraft>({ cat: existing?.cat ?? '', label: existing?.label ?? '', blurb: existing?.blurb ?? '', image: existing?.image ?? '', keyTouched: !!existing })
