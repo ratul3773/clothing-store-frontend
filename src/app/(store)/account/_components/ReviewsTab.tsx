@@ -21,7 +21,7 @@ export default function ReviewsTab({ delivered, form }: { delivered: Order[]; fo
   return (
     <div>
       <p className="label-mono mb-4 text-muted-foreground">{rows.filter((r) => !r.review).length} waiting for your review</p>
-      <div className="space-y-4">
+      <div className="space-y-4 grid grid-cols-2">
         {pg.pageItems.map(({ order, item, review }) =>
           review ? (
             <ReviewCard key={review.id} r={review} showProduct />

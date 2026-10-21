@@ -19,7 +19,7 @@ export default function OrderView() {
   const dead = idx === -1
 
   return (
-    <div className="mx-auto max-w-5xl px-5 py-12 lg:px-10">
+    <div>
       <OrderHeader o={o} dead={dead} />
       {!dead && <OrderTimeline idx={idx} />}
       <div className="mt-12 grid gap-6 md:grid-cols-[1.4fr_1fr]">

@@ -15,7 +15,7 @@ export default function HeroClassic() {
   const rot = useTransform(scrollYProgress, [0, 1], [0, 160])
 
   return (
-    <section ref={ref} className="relative mx-auto grid max-w-[88rem] items-center gap-8 px-5 pb-16 pt-10 lg:grid-cols-[1.25fr_1fr] lg:px-10 lg:pt-16">
+    <section ref={ref} className="relative grid items-center gap-8 pb-16 pt-10 lg:grid-cols-[1.25fr_1fr] lg:pt-16">
       <div className="relative z-10">
         <p className="label-mono mb-6 flex items-center gap-3"><span className="h-px w-10 bg-accent" /> Men's shirts &amp; pants · Dhaka</p>
         <h1 className="font-display text-5xl sm:text-8xl">
