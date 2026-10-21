@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Check, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { Btn, Input } from '@/components/cms/ui'
-import { ConfirmDialog } from '@/components/cms/Modal'
+import AlertDialogText from '@/components/common/Alert-Dialogue'
 import { useStore } from '@/components/providers/StoreProvider'
 import type { Taxon } from '@/data/catalog'
 import { addSub, countProducts, removeSub, renameSubcategory } from '../_services/categories.api'
@@ -72,11 +72,13 @@ export default function SubcategoriesPanel({ t }: { t: Taxon }) {
         ))}
         {t.subs.length === 0 && <li className="px-3 py-6 text-center text-xs text-muted-foreground">No subcategories yet.</li>}
       </ul>
-      <ConfirmDialog
+      <AlertDialogText
+        mode="normal"
         open={!!del}
         onOpenChange={(o) => !o && setDel(null)}
         title="Delete subcategory?"
         description={`"${del}" will be removed from ${t.label}.`}
+        actionType="delete"
         onConfirm={() => {
           if (!del) return
           const e = removeSub(t, del)

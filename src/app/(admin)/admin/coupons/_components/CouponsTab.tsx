@@ -7,7 +7,7 @@ import { deleteCoupon } from '@/data/cms'
 import { useStore } from '@/components/providers/StoreProvider'
 import { bdt } from '@/lib/utils'
 import DataTable from '@/components/cms/DataTable'
-import { ConfirmDialog } from '@/components/cms/Modal'
+import AlertDialogText from '@/components/common/Alert-Dialogue'
 import { Badge, Btn, Card, Empty } from '@/components/cms/ui'
 import type { Coupon } from '../_utils/coupon.utils'
 import CouponForm from './CouponForm'
@@ -50,7 +50,7 @@ export default function CouponsTab() {
         />
       </Card>
       <CouponForm open={formOpen} onOpenChange={setFormOpen} coupon={editing} />
-      <ConfirmDialog open={!!del} onOpenChange={(o) => !o && setDel(null)} title="Delete coupon" description={`Delete code ${del?.code}? Customers will no longer be able to use it.`} onConfirm={() => { if (del) { deleteCoupon(del.code); toast('Coupon deleted') } }} />
+      <AlertDialogText mode="normal" open={!!del} onOpenChange={(o) => !o && setDel(null)} title="Delete coupon" description={`Delete code ${del?.code}? Customers will no longer be able to use it.`} actionType="delete" onConfirm={() => { if (del) { deleteCoupon(del.code); toast('Coupon deleted') } }} />
     </>
   )
 }

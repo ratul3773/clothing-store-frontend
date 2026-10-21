@@ -7,7 +7,7 @@ import { deleteCombo } from '@/data/cms'
 import { useStore } from '@/components/providers/StoreProvider'
 import { bdt } from '@/lib/utils'
 import DataTable from '@/components/cms/DataTable'
-import { ConfirmDialog } from '@/components/cms/Modal'
+import AlertDialogText from '@/components/common/Alert-Dialogue'
 import { Badge, Btn, Card, Empty } from '@/components/cms/ui'
 import { partsTotal } from '../_utils/coupon.utils'
 import ComboForm from './ComboForm'
@@ -55,7 +55,7 @@ export default function CombosTab() {
         />
       </Card>
       <ComboForm open={formOpen} onOpenChange={setFormOpen} combo={editing} />
-      <ConfirmDialog open={!!del} onOpenChange={(o) => !o && setDel(null)} title="Delete combo" description={`Delete "${del?.name}"?`} onConfirm={() => { if (del) { deleteCombo(del.id); toast('Combo deleted') } }} />
+      <AlertDialogText mode="normal" open={!!del} onOpenChange={(o) => !o && setDel(null)} title="Delete combo" description={`Delete "${del?.name}"?`} actionType="delete" onConfirm={() => { if (del) { deleteCombo(del.id); toast('Combo deleted') } }} />
     </>
   )
 }

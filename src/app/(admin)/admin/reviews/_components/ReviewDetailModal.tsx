@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { Eye, EyeOff, Trash2 } from 'lucide-react'
 import { useStore } from '@/components/providers/StoreProvider'
-import Modal, { ConfirmDialog } from '@/components/cms/Modal'
+import Modal from '@/components/cms/Modal'
+import AlertDialogText from '@/components/common/Alert-Dialogue'
 import { Badge, Btn, Field, Textarea } from '@/components/cms/ui'
 import { fmtDate, productOf, stars, statusOf } from '@/app/(admin)/admin/reviews/_utils/reviews.utils'
 
@@ -72,7 +73,7 @@ function Inner({ id, onClose, replyToReview, patchReview, removeReview, toast }:
           </div>
         </div>
       </Modal>
-      <ConfirmDialog open={confirm} onOpenChange={setConfirm} title="Delete review?" description="This permanently removes the review from the store." onConfirm={() => { removeReview(r.id); toast('Review deleted'); onClose() }} />
+      <AlertDialogText mode="normal" open={confirm} onOpenChange={setConfirm} title="Delete review?" description="This permanently removes the review from the store." actionType="delete" onConfirm={() => { removeReview(r.id); toast('Review deleted'); onClose() }} />
     </>
   )
 }

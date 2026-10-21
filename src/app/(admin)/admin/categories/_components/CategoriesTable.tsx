@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Pencil, Trash2 } from 'lucide-react'
 import DataTable from '@/components/cms/DataTable'
-import { ConfirmDialog } from '@/components/cms/Modal'
+import AlertDialogText from '@/components/common/Alert-Dialogue'
 import { Btn, Card, CardHeader } from '@/components/cms/ui'
 import { useStore } from '@/components/providers/StoreProvider'
 import { cn } from '@/lib/utils'
@@ -65,11 +65,13 @@ export default function CategoriesTable({ selected, onSelect, onEdit, onDeleted 
           },
         ]}
       />
-      <ConfirmDialog
+      <AlertDialogText
+        mode="normal"
         open={!!del}
         onOpenChange={(o) => !o && setDel(null)}
         title="Delete category?"
         description={`"${del?.label}" and its size chart will be removed. This cannot be undone.`}
+        actionType="delete"
         onConfirm={() => {
           if (!del) return
           const err = removeCategory(del.cat)

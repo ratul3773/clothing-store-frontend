@@ -7,10 +7,10 @@ import { deleteBanner, saveBanner, uid } from '@/data/cms'
 import { useCms } from '@/lib/useCms'
 import { useStore } from '@/components/providers/StoreProvider'
 import DataTable from '@/components/cms/DataTable'
-import { ConfirmDialog } from '@/components/cms/Modal'
 import { Badge, Btn, Card, Empty, PageHeader, Switch } from '@/components/cms/ui'
 import { sampleBanners, scheduleLabel } from '../_utils/banner.utils'
 import BannerForm from './BannerForm'
+import AlertDialogText from '@/components/common/Alert-Dialogue'
 
 export default function BannersView() {
   useCms()
@@ -79,7 +79,15 @@ export default function BannersView() {
         />
       </Card>
       <BannerForm open={formOpen} onOpenChange={setFormOpen} banner={editing} />
-      <ConfirmDialog open={!!del} onOpenChange={(o) => !o && setDel(null)} title="Delete banner" description={`Delete "${del?.title}"?`} onConfirm={() => { if (del) { deleteBanner(del.id); toast('Banner deleted') } }} />
+      <AlertDialogText
+        mode="normal"
+        open={!!del}
+        onOpenChange={(open) => !open && setDel(null)}
+        title="Delete banner"
+        description={`Delete "${del?.title}"?`}
+        actionType="delete"
+        onConfirm={() => { if (del) { deleteBanner(del.id); toast('Banner deleted') } }}
+      />
     </>
   )
 }

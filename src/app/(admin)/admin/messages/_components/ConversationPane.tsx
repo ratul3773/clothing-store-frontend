@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { CheckCircle2, Mail, Phone, RotateCcw, Trash2 } from 'lucide-react'
 import { deleteMessage, patchMessage, type Message } from '@/data/cms'
 import { useStore } from '@/components/providers/StoreProvider'
-import { ConfirmDialog } from '@/components/cms/Modal'
+import AlertDialogText from '@/components/common/Alert-Dialogue'
 import { Badge, Btn, Empty, Field, Textarea } from '@/components/cms/ui'
 import { fmtDateTime, statusTone } from '@/app/(admin)/admin/messages/_utils/messages.utils'
 
@@ -63,7 +63,7 @@ export default function ConversationPane({ message: m, onDeleted }: { message: M
         </Field>
         <Btn variant="primary" onClick={send}>Send reply</Btn>
       </div>
-      <ConfirmDialog open={confirm} onOpenChange={setConfirm} title="Delete message?" description="This conversation and its replies will be permanently removed." onConfirm={() => { deleteMessage(m.id); toast('Message deleted'); onDeleted() }} />
+      <AlertDialogText mode="normal" open={confirm} onOpenChange={setConfirm} title="Delete message?" description="This conversation and its replies will be permanently removed." actionType="delete" onConfirm={() => { deleteMessage(m.id); toast('Message deleted'); onDeleted() }} />
     </div>
   )
 }

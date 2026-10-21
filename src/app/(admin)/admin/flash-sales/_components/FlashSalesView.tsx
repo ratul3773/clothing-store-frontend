@@ -8,10 +8,10 @@ import { useCms } from '@/lib/useCms'
 import useNow from '@/lib/useNow'
 import { useStore } from '@/components/providers/StoreProvider'
 import DataTable from '@/components/cms/DataTable'
-import { ConfirmDialog } from '@/components/cms/Modal'
 import { Badge, Btn, Card, Empty, PageHeader, StatCard, Switch } from '@/components/cms/ui'
 import { countdown, flashStatus, fmtDate, statusTone } from '../_utils/flash.utils'
 import FlashForm from './FlashForm'
+import AlertDialogText from '@/components/common/Alert-Dialogue'
 
 export default function FlashSalesView() {
   useCms()
@@ -78,7 +78,26 @@ export default function FlashSalesView() {
         />
       </Card>
       <FlashForm open={formOpen} onOpenChange={setFormOpen} sale={editing} now={formNow ?? now} />
-      <ConfirmDialog open={!!del} onOpenChange={(o) => !o && setDel(null)} title="Delete flash sale" description={`Delete "${del?.title}"? Product prices return to normal immediately.`} onConfirm={() => { if (del) { deleteFlash(del.id); toast('Campaign deleted') } }} />
+      <AlertDialogText
+      mode="normal"
+  open={!!del}
+  onOpenChange={(open) => !open && setDel(null)}
+  title="Delete flash sale"
+  description={`Delete "${del?.title}"?`}
+  warningMessage={
+    <p className="text-sm text-destructive">
+      Product prices will return to normal immediately. This cannot be undone.
+    </p>
+  }
+  actionType="delete"
+  onConfirm={() => {
+    if (del) {
+      deleteFlash(del.id)
+      toast("Campaign deleted")
+      setDel(null)
+    }
+  }}
+/>
     </>
   )
 }

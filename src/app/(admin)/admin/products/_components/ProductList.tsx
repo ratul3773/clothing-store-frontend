@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import { Plus } from 'lucide-react'
 import { Btn, Card, PageHeader } from '@/components/cms/ui'
-import { ConfirmDialog } from '@/components/cms/Modal'
+import AlertDialogText from '@/components/common/Alert-Dialogue'
 import { settings } from '@/data/site'
 import { useCms } from '@/lib/useCms'
 import { useNavigate } from '@/lib/nav'
@@ -88,11 +88,13 @@ export default function ProductList() {
           <InventoryTable rows={rows} resetKey={resetKey} lowStock={low} />
         )}
       </Card>
-      <ConfirmDialog
+      <AlertDialogText
+        mode="normal"
         open={!!confirm}
         onOpenChange={(o) => !o && setConfirm(null)}
         title={`Delete ${confirm?.length ?? 0} product${confirm?.length === 1 ? '' : 's'}?`}
         description="This permanently removes the product(s) from the catalog, flash sales and complete-the-look lists."
+        actionType="delete"
         onConfirm={() => confirm && del(confirm)}
       />
     </div>

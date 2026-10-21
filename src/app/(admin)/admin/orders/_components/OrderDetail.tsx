@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Printer, Trash2 } from 'lucide-react'
 import { Btn, Empty, PageHeader } from '@/components/cms/ui'
-import { ConfirmDialog } from '@/components/cms/Modal'
+import AlertDialogText from '@/components/common/Alert-Dialogue'
 import StatusBadge from '@/components/cms/StatusBadge'
 import { useStore } from '@/components/providers/StoreProvider'
 import { useNavigate } from '@/lib/nav'
@@ -67,11 +67,13 @@ export default function OrderDetail({ id }: { id: string }) {
         </div>
       </div>
       <OrderInvoice order={order} />
-      <ConfirmDialog
+      <AlertDialogText
+        mode="normal"
         open={confirmDelete}
         onOpenChange={setConfirmDelete}
         title="Delete order?"
         description={`Order ${order.id} will be permanently removed.${holdsStock(order.status) ? ' Reserved stock will be returned to inventory.' : ''}`}
+        actionType="delete"
         onConfirm={del}
       />
     </div>
