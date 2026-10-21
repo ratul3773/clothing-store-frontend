@@ -44,6 +44,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     dToast(toasts.actions.pushed({ id, msg }))
     setTimeout(() => dToast(toasts.actions.dismissed(id)), 2600)
   }, [])
+  const pushRecent = useCallback((id: string) => {
+    dWish(wishlist.actions.pushRecent(id))
+  }, [])
 
   const { lines, coupon } = cartState
   const subtotal = selectSubtotal(lines, now ?? undefined)
@@ -79,11 +82,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       deliveryFee: selectDeliveryFee,
       wishlist: wish.ids,
       recent: wish.recent,
+      pushRecent,
       toggleWish: (id) => {
         dWish(wishlist.actions.toggle(id))
         toast(wish.ids.includes(id) ? 'Removed from wishlist' : 'Saved to wishlist')
       },
-      pushRecent: (id) => dWish(wishlist.actions.pushRecent(id)),
       user: sess.user,
       authOpen: sess.authOpen,
       setUser: (u) => dSess(session.actions.setUser(u)),
@@ -101,7 +104,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       removeReview: (id) => dRev(reviews.actions.removed(id)),
       toast,
     }
-  }, [cartState, lines, coupon, subtotal, wish, sess, ord, rev, toast, now])
+  }, [cartState, lines, coupon, subtotal, wish, sess, ord, rev, toast, pushRecent, now])
 
   return (
     <C.Provider value={value}>

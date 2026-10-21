@@ -73,45 +73,80 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  'group/btn relative inline-flex items-center justify-center gap-2 overflow-hidden whitespace-nowrap font-semibold uppercase tracking-[0.08em] transition-[color,transform,box-shadow] duration-300 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40 before:absolute before:inset-0 before:-z-0 before:translate-y-[101%] before:transition-transform before:duration-500 before:ease-[cubic-bezier(.7,0,.2,1)] hover:before:translate-y-0',
+  [
+    'group/btn relative inline-flex max-w-full shrink-0 cursor-pointer',
+    'items-center justify-center gap-1.5 sm:gap-2',
+    'overflow-hidden whitespace-nowrap',
+    'font-semibold tracking-[0.04em] sm:tracking-[0.08em]',
+    'transition-[color,transform,box-shadow] duration-300',
+    'active:scale-[0.97]',
+    'disabled:pointer-events-none disabled:opacity-40',
+    'before:absolute before:inset-0 before:-z-0 before:translate-y-[101%]',
+    'before:transition-transform before:duration-500',
+    'before:ease-[cubic-bezier(.7,0,.2,1)]',
+    'hover:before:translate-y-0',
+  ].join(' '),
   {
     variants: {
       variant: {
-        solid: 'bg-primary text-primary-foreground before:bg-accent hover:text-accent-foreground',
-        accent: 'bg-accent text-accent-foreground before:bg-primary hover:text-primary-foreground',
+        solid:
+          'bg-primary text-primary-foreground before:bg-accent hover:text-accent-foreground',
+        accent:
+          'bg-accent text-accent-foreground before:bg-primary hover:text-primary-foreground',
         outline:
           'border border-foreground/70 text-foreground before:bg-foreground hover:text-background',
         ghost: 'text-foreground before:bg-foreground/10',
-        light: 'bg-card text-foreground before:bg-accent hover:text-accent-foreground',
+        light:
+          'bg-card text-foreground before:bg-accent hover:text-accent-foreground',
       },
       size: {
-        sm: 'h-9 px-4 text-[0.7rem]',
-        md: 'h-11 px-6 text-xs',
-        lg: 'h-14 px-8 text-sm',
-        icon: 'h-10 w-10 text-xs',
+        sm: 'h-8 px-3 text-[0.65rem] sm:h-9 sm:px-4 sm:text-xs',
+        md: 'h-10 px-4 text-[0.7rem] sm:h-11 sm:px-6 sm:text-xs',
+        lg: 'h-12 px-5 text-xs sm:h-14 sm:px-8 sm:text-sm',
+        icon: 'size-9 text-xs sm:size-10',
       },
-      shape: { square: 'rounded-[3px]', pill: 'rounded-full' },
+      shape: {
+        square: 'rounded-[3px]',
+        pill: 'rounded-full',
+      },
     },
-    defaultVariants: { variant: 'solid', size: 'md', shape: 'square' },
+    defaultVariants: {
+      variant: 'solid',
+      size: 'md',
+      shape: 'square',
+    },
   },
 )
 
 type Props = React.ButtonHTMLAttributes<HTMLButtonElement> &
-  VariantProps<typeof buttonVariants> & { to?: string }
+  VariantProps<typeof buttonVariants> & {
+    to?: string
+  }
 
 export const Button = React.forwardRef<HTMLButtonElement, Props>(
   ({ className, variant, size, shape, to, children, ...props }, ref) => {
     const cls = cn(buttonVariants({ variant, size, shape }), className)
+
     const inner = (
-      <span className="relative z-10 inline-flex items-center justify-center gap-2">{children}</span>
+      <span className="relative z-10 inline-flex items-center justify-center gap-1.5 sm:gap-2">
+        {children}
+      </span>
     )
+
     if (to) {
       return (
-        <Link href={to} className={cls}>
+        <Link
+          href={to}
+          className={cls}
+          aria-disabled={props.disabled}
+          tabIndex={props.disabled ? -1 : undefined}
+          onClick={props.disabled ? (event) => event.preventDefault() : undefined}
+        >
           {inner}
         </Link>
       )
     }
+
     return (
       <button ref={ref} className={cls} {...props}>
         {inner}
@@ -119,5 +154,5 @@ export const Button = React.forwardRef<HTMLButtonElement, Props>(
     )
   },
 )
-Button.displayName = 'Button'
 
+Button.displayName = 'Button'

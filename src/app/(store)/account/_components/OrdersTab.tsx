@@ -4,6 +4,7 @@ import { Link2 } from 'lucide-react'
 import { Pagination } from '@/components/ui/pagination'
 import usePagination from '@/lib/usePagination'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { useStore } from '@/components/providers/StoreProvider'
 import { products } from '@/data/catalog'
 import { statusLabel, type Order } from '@/data/orders'
@@ -34,7 +35,11 @@ export default function OrdersTab({ linked, unlinked, onExchange }: Props) {
             <div className="min-w-40 flex-1">
               <p className="label-mono text-muted-foreground">{o.id} · {new Date(o.createdAt).toLocaleDateString('en-GB')} · {o.source}</p>
               <p className="font-semibold">{o.items.map((i) => i.name).join(', ')}</p>
-              <p className="text-sm">{bdt(o.total)} · <span className="text-accent">{statusLabel(o.status)}</span>{o.exchange && <> · Exchange {o.exchange.state.toLowerCase()}</>}</p>
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                <span>{bdt(o.total)}</span>
+                <Badge>{statusLabel(o.status)}</Badge>
+                {o.exchange && <><span>Exchange</span><Badge>{o.exchange.state[0] + o.exchange.state.slice(1).toLowerCase()}</Badge></>}
+              </div>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button to={`/order?id=${o.id}`} size="sm" variant="outline">View</Button>

@@ -17,7 +17,7 @@ export default function AddressesTab() {
         <Button size="sm" variant="accent" onClick={b.startNew}><Plus size={14} /> Add address</Button>
       </div>
       {b.list.length === 0 && <p className="py-10 text-muted-foreground">No saved addresses. Add one to speed up checkout.</p>}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
         <AnimatePresence mode="popLayout">
           {b.list.map((a) => (
             <AddressCard key={a.id} a={a} onEdit={() => b.setForm(a)} onMakeDefault={() => b.makeDefault(a)} onDelete={() => b.setDel(a)} />

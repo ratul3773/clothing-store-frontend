@@ -36,7 +36,7 @@ export default function AccountView() {
   const unlinked = mine.filter((o) => o.guest)
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-12 lg:px-10">
+    <div className="">
       <AccountHeader name={user.name} />
       <T.Root value={tab} onValueChange={setTab} className="mt-10">
         <TabsList value={tab} layoutId="acc-tab" items={[{ value: 'orders', label: 'Orders', count: linked.length }, { value: 'wishlist', label: 'Wishlist', count: wishlist.length }, { value: 'reviews', label: 'Reviews' }, { value: 'addresses', label: 'Addresses' }, { value: 'coupons', label: 'Coupons' }, { value: 'settings', label: 'Settings' }, { value: 'security', label: 'Security' }]} />
@@ -44,7 +44,7 @@ export default function AccountView() {
         <TabsContent value="wishlist" className={NO_ANIM}><WishlistTab /></TabsContent>
         <TabsContent value="reviews" className={NO_ANIM}><ReviewsTab delivered={delivered} form={rf} /></TabsContent>
         <TabsContent value="addresses" className={NO_ANIM}><AddressesTab /></TabsContent>
-        <TabsContent value="coupons" className={`grid gap-4 md:grid-cols-2 ${NO_ANIM}`}><CouponsTab /></TabsContent>
+        <TabsContent value="coupons" className={`grid gap-4 md:grid-cols-3 ${NO_ANIM}`}><CouponsTab /></TabsContent>
         <TabsContent value="settings" className={NO_ANIM}><ProfileSettings /></TabsContent>
         <TabsContent value="security" className={NO_ANIM}><SecuritySettings /></TabsContent>
       </T.Root>

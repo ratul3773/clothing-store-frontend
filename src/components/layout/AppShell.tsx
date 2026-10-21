@@ -16,7 +16,7 @@ export default function Shell({ children }: { children: ReactNode }) {
     <>
       <Background />
       <Header />
-      <main className="min-h-[70vh]">
+      <main className="min-h-[70vh] max-w-330 mx-auto px-5 py-8 lg:px-10">
         <AnimatePresence mode="wait" initial>
           <PageTransition key={pathname}>{children}</PageTransition>
         </AnimatePresence>

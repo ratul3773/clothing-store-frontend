@@ -12,10 +12,17 @@ export default function Footer() {
   useCms()
   const { store, delivery, social, orders } = settings
   const wa = store.whatsapp.replace(/\D/g, '')
-  const shopLinks = [...taxonomy.map((t) => [t.label, `/shop?cat=${t.cat}`]), ['Offers', '/shop?offers=1'], ['Combos', '/#combos'], ['Contact', '/contact']]
+  const shopLinks = [...taxonomy.map((t) => [t.label, `/shop?cat=${t.cat}`]), ['Offers', '/shop?offers=1'], ['Combos', '/#combos'], ['About us', '/about'], ['Contact', '/contact']]
+  const helpLinks = [
+    ['FAQ', '/faq'],
+    ['Shipping & delivery', '/shipping'],
+    ['Returns & exchanges', '/returns'],
+    ['Privacy policy', '/privacy-policy'],
+    ['Terms & conditions', '/terms'],
+  ]
   return (
     <footer className="mt-32 bg-foreground text-background">
-      <div className="mx-auto max-w-[88rem] px-5 pb-10 pt-20 lg:px-10">
+      <div className="mx-auto max-w-340 px-5 pb-10 pt-20 lg:px-10">
         <p className="font-display leading-[0.8] text-background/95">
           <BrandName name={store.name} />
         </p>
@@ -32,10 +39,12 @@ export default function Footer() {
           <div>
             <p className="label-mono mb-4 text-background/50">Help</p>
             <ul className="space-y-2 text-sm text-background/80">
-              <li>Delivery: {bdt(delivery.dhaka)} Dhaka · {bdt(delivery.outside)} outside</li>
-              <li>Free delivery above {bdt(delivery.freeAbove)}</li>
-              <li>Return to rider at the door</li>
-              <li>Exchange within {orders.exchangeDays} days</li>
+              {helpLinks.map(([label, href]) => (
+                <li key={href}><Link className="transition hover:text-accent" href={href}>{label}</Link></li>
+              ))}
+              <li className="pt-2 text-background/60">Delivery: {bdt(delivery.dhaka)} Dhaka · {bdt(delivery.outside)} outside</li>
+              <li className="text-background/60">Free delivery above {bdt(delivery.freeAbove)}</li>
+              <li className="text-background/60">Exchange within {orders.exchangeDays} days</li>
             </ul>
           </div>
           <div>
