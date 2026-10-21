@@ -5,8 +5,8 @@ export const blankAddress = (name: string, phone: string): Address => ({ id: '',
 
 export const stripSpaces = (v: string) => v.replace(/\s/g, '')
 
-export const isExchangeEligible = (o: Order) =>
-  o.status === 'DELIVERED' && !o.exchange && o.deliveredAt && Date.now() - +new Date(o.deliveredAt) < 7 * 864e5
+export const isExchangeEligible = (o: Order, now: number) =>
+  o.status === 'DELIVERED' && !o.exchange && o.deliveredAt && now - +new Date(o.deliveredAt) < 7 * 864e5
 
 export const demoAddresses = (u: User): Address[] => [
   { id: 'a1', label: 'Home', name: u.name, phone: u.phone, line: 'House 14, Road 7, Dhanmondi', city: 'Dhaka', isDefault: true },

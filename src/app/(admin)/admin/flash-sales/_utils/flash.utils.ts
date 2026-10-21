@@ -2,7 +2,7 @@ import { isFlashLive, type FlashSale } from '@/data/site'
 
 export type FlashStatus = 'Live' | 'Scheduled' | 'Ended' | 'Disabled'
 
-export function flashStatus(f: FlashSale, now = Date.now()): FlashStatus {
+export function flashStatus(f: FlashSale, now: number): FlashStatus {
   if (!f.enabled) return 'Disabled'
   if (isFlashLive(f, now)) return 'Live'
   return +new Date(f.startsAt) > now ? 'Scheduled' : 'Ended'
@@ -10,7 +10,7 @@ export function flashStatus(f: FlashSale, now = Date.now()): FlashStatus {
 
 export const statusTone = { Live: 'green', Scheduled: 'blue', Ended: 'gray', Disabled: 'amber' } as const
 
-export function countdown(f: FlashSale, now = Date.now()): string {
+export function countdown(f: FlashSale, now: number): string {
   const s = flashStatus(f, now)
   if (s === 'Disabled') return '-'
   if (s === 'Ended') return 'Ended'

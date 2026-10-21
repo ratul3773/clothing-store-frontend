@@ -8,15 +8,15 @@ export const dayKey = (d: Date | string) => {
   const x = new Date(d)
   return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`
 }
-const startOfToday = () => {
-  const d = new Date()
+const startOfToday = (now: number) => {
+  const d = new Date(now)
   d.setHours(0, 0, 0, 0)
   return +d
 }
 export const phoneKey = (p: string) => p.replace(/\D/g, '')
 
-export function computeStats(orders: Order[], chartDays = 14): DashboardStats {
-  const t0 = startOfToday()
+export function computeStats(orders: Order[], now: number, chartDays = 14): DashboardStats {
+  const t0 = startOfToday(now)
   const sum = (from: number) => orders.filter((o) => counted(o) && +new Date(o.createdAt) >= from).reduce((a, o) => a + o.total, 0)
   const valid = orders.filter(counted)
   const days = Array.from({ length: chartDays }, (_, i) => {

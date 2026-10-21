@@ -5,6 +5,7 @@ import { Download } from 'lucide-react'
 import { Btn, PageHeader } from '@/components/cms/ui'
 import { useStore } from '@/components/providers/StoreProvider'
 import { useCms } from '@/lib/useCms'
+import useNow from '@/lib/useNow'
 import { RANGES } from '@/app/(admin)/admin/reports/_constants/reports.constants'
 import type { RangeKey } from '@/app/(admin)/admin/reports/_types/reports.types'
 import { categoryOf, downloadCsv, filterByRange, groupItems, groupOrders, ordersToCsv, subOf, summarize } from '@/app/(admin)/admin/reports/_utils/reports.utils'
@@ -14,8 +15,9 @@ import ReportsTable from '@/app/(admin)/admin/reports/_components/ReportsTable'
 export default function ReportsView() {
   const { orders, toast } = useStore()
   const v = useCms()
+  const now = useNow(30_000)
   const [range, setRange] = useState<RangeKey>('30d')
-  const list = useMemo(() => filterByRange(orders, range), [orders, range])
+  const list = useMemo(() => now === null ? [] : filterByRange(orders, range, now), [orders, range, now])
   const d = useMemo(
     () => ({
       summary: summarize(list),
@@ -32,6 +34,14 @@ export default function ReportsView() {
   const exportCsv = () => {
     downloadCsv(`orders-${range}-${new Date().toISOString().slice(0, 10)}.csv`, ordersToCsv(list))
     toast(`Exported ${list.length} orders`)
+  }
+  if (now === null) {
+    return (
+      <div className="space-y-4">
+        <PageHeader title="Reports" description="Sales performance and breakdowns." />
+        <p className="text-sm text-muted-foreground" role="status">Loading reports...</p>
+      </div>
+    )
   }
   return (
     <div className="space-y-4">

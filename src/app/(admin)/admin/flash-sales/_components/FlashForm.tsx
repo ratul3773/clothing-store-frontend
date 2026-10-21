@@ -12,22 +12,22 @@ import { Btn, Field, Input, Switch, Textarea } from '@/components/cms/ui'
 import { findConflicts, fromLocalInput, toLocalInput, validateFlash, type FlashDraft } from '../_utils/flash.utils'
 import ProductPicker from './ProductPicker'
 
-type Props = { open: boolean; onOpenChange: (o: boolean) => void; sale: FlashSale | null }
+type Props = { open: boolean; onOpenChange: (o: boolean) => void; sale: FlashSale | null; now: number }
 
-const toDraft = (f: FlashSale | null): FlashDraft => {
-  const start = f ? toLocalInput(f.startsAt) : toLocalInput(new Date().toISOString())
-  const end = f ? toLocalInput(f.endsAt) : toLocalInput(new Date(Date.now() + 3 * 864e5).toISOString())
+const toDraft = (f: FlashSale | null, now: number): FlashDraft => {
+  const start = f ? toLocalInput(f.startsAt) : toLocalInput(new Date(now).toISOString())
+  const end = f ? toLocalInput(f.endsAt) : toLocalInput(new Date(now + 3 * 864e5).toISOString())
   return { title: f?.title ?? '', subtitle: f?.subtitle ?? '', discountPct: String(f?.discountPct ?? 10), enabled: f?.enabled ?? true, startsAt: start, endsAt: end, productIds: f?.productIds ?? [] }
 }
 
-export default function FlashForm({ open, onOpenChange, sale }: Props) {
+export default function FlashForm({ open, onOpenChange, sale, now }: Props) {
   // key forces a fresh draft each time the dialog opens for another record
-  return open ? <Inner key={sale?.id ?? 'new'} open onOpenChange={onOpenChange} sale={sale} /> : null
+  return open ? <Inner key={sale?.id ?? 'new'} open onOpenChange={onOpenChange} sale={sale} now={now} /> : null
 }
 
-function Inner({ onOpenChange, sale }: Props) {
+function Inner({ onOpenChange, sale, now }: Props) {
   const { toast } = useStore()
-  const [d, setD] = useState<FlashDraft>(() => toDraft(sale))
+  const [d, setD] = useState<FlashDraft>(() => toDraft(sale, now))
   const [submitted, setSubmitted] = useState(false)
   const set = <K extends keyof FlashDraft>(k: K, v: FlashDraft[K]) => setD((x) => ({ ...x, [k]: v }))
   const errors = validateFlash(d)

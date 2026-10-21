@@ -5,10 +5,10 @@ import type { RangeKey, Row, Summary } from '@/app/(admin)/admin/reports/_types/
 
 export const isSale = (o: Order) => o.status !== 'CANCELLED' && o.status !== 'RETURNED'
 
-export function filterByRange(orders: Order[], range: RangeKey): Order[] {
+export function filterByRange(orders: Order[], range: RangeKey, now: number): Order[] {
   const days = RANGES.find((r) => r.key === range)?.days
   if (!days) return orders
-  const d = new Date()
+  const d = new Date(now)
   d.setHours(0, 0, 0, 0)
   const from = +d - (days - 1) * 864e5
   return orders.filter((o) => +new Date(o.createdAt) >= from)

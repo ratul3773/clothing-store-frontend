@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Copy, Pencil, Plus, Trash2 } from 'lucide-react'
 import { flashSales, type FlashSale } from '@/data/site'
 import { deleteFlash, saveFlash, uid } from '@/data/cms'
 import { useCms } from '@/lib/useCms'
+import useNow from '@/lib/useNow'
 import { useStore } from '@/components/providers/StoreProvider'
 import DataTable from '@/components/cms/DataTable'
 import { ConfirmDialog } from '@/components/cms/Modal'
@@ -15,21 +16,26 @@ import FlashForm from './FlashForm'
 export default function FlashSalesView() {
   useCms()
   const { toast } = useStore()
-  const [now, setNow] = useState(() => Date.now())
+  const now = useNow(30_000)
   const [editing, setEditing] = useState<FlashSale | null>(null)
   const [formOpen, setFormOpen] = useState(false)
+  const [formNow, setFormNow] = useState<number | null>(null)
   const [del, setDel] = useState<FlashSale | null>(null)
 
-  useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 30000)
-    return () => clearInterval(t)
-  }, [])
+  if (now === null) {
+    return (
+      <div className="space-y-4">
+        <PageHeader title="Flash sales" description="Time-limited discounts applied to selected products." crumbs={['Admin', 'Flash sales']} />
+        <p className="text-sm text-muted-foreground" role="status">Loading flash sales...</p>
+      </div>
+    )
+  }
 
   const live = flashSales.filter((f) => flashStatus(f, now) === 'Live')
   const scheduled = flashSales.filter((f) => flashStatus(f, now) === 'Scheduled').length
   const onSale = new Set(live.flatMap((f) => f.productIds)).size
 
-  const open = (f: FlashSale | null) => { setEditing(f); setFormOpen(true) }
+  const open = (f: FlashSale | null) => { setEditing(f); setFormNow(Date.now()); setFormOpen(true) }
   const duplicate = (f: FlashSale) => {
     saveFlash({ ...f, id: uid('f'), title: `${f.title} (copy)`, enabled: false, productIds: [...f.productIds] })
     toast('Campaign duplicated (disabled)')
@@ -71,7 +77,7 @@ export default function FlashSalesView() {
           ]}
         />
       </Card>
-      <FlashForm open={formOpen} onOpenChange={setFormOpen} sale={editing} />
+      <FlashForm open={formOpen} onOpenChange={setFormOpen} sale={editing} now={formNow ?? now} />
       <ConfirmDialog open={!!del} onOpenChange={(o) => !o && setDel(null)} title="Delete flash sale" description={`Delete "${del?.title}"? Product prices return to normal immediately.`} onConfirm={() => { if (del) { deleteFlash(del.id); toast('Campaign deleted') } }} />
     </>
   )

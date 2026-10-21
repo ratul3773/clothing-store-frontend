@@ -7,9 +7,9 @@ import { messages } from '@/data/cms'
 import { flashSales, isFlashLive } from '@/data/site'
 import { products } from '@/data/catalog'
 
-export default function DashboardSidePanels() {
+export default function DashboardSidePanels({ now }: { now: number }) {
   const unread = messages.filter((m) => m.status === 'new').length
-  const flash = flashSales.find((f) => isFlashLive(f))
+  const flash = flashSales.find((f) => isFlashLive(f, now))
   return (
     <div className="space-y-3">
       <Link href="/admin/messages" className="block">
