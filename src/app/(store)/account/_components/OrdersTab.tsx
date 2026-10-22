@@ -6,6 +6,7 @@ import usePagination from '@/lib/usePagination'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useStore } from '@/components/providers/StoreProvider'
+import useNow from '@/lib/useNow'
 import { products } from '@/data/catalog'
 import { statusLabel, type Order } from '@/data/orders'
 import { isExchangeEligible } from '@/app/(store)/account/_utils/account.utils'
@@ -19,6 +20,7 @@ interface Props {
 
 export default function OrdersTab({ linked, unlinked, onExchange }: Props) {
   const { patchOrder, addItem, toast } = useStore()
+  const now = useNow(30_000)
   const pg = usePagination(linked, 3)
   return (
     <>
@@ -44,7 +46,7 @@ export default function OrdersTab({ linked, unlinked, onExchange }: Props) {
             <div className="flex flex-wrap gap-2">
               <Button to={`/order?id=${o.id}`} size="sm" variant="outline">View</Button>
               <Button size="sm" variant="ghost" onClick={() => { o.items.forEach((i) => { const p = products.find((x) => x.id === i.productId && x.status === 'active'); if (p) addItem(p, i.color, i.size, i.qty, false) }); toast('Added to bag') }}>Reorder</Button>
-              {isExchangeEligible(o) && <Button size="sm" variant="accent" onClick={() => onExchange(o)}>Request exchange</Button>}
+              {now !== null && isExchangeEligible(o, now) && <Button size="sm" variant="accent" onClick={() => onExchange(o)}>Request exchange</Button>}
             </div>
           </div>
         </div>
