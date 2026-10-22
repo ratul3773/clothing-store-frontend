@@ -1,10 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import * as T from '@radix-ui/react-tabs'
 import { Sheet } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
-import { TabsList } from '@/components/ui/tabs'
+import { 
+  TabsList,
+  Tabs,
+  TabsContent
+} from '@/components/ui/tabs'
 import { Field, inputCls } from '@/components/common/FormField'
 import { useStore } from '@/components/providers/StoreProvider'
 
@@ -24,14 +27,14 @@ export default function AuthSheet() {
 
   return (
     <Sheet open={authOpen} onOpenChange={setAuthOpen} title="Member access" description="Sign in to see orders, wishlist and saved addresses." side="center">
-      <T.Root value={tab} onValueChange={(v) => { setTab(v); setStep('form') }} className="p-5">
+      <Tabs value={tab} onValueChange={(v) => { setTab(v); setStep('form') }} className="p-5">
         <TabsList value={tab} layoutId="auth-tab" items={[{ value: 'in', label: 'Sign in' }, { value: 'up', label: 'Create account' }]} />
-        <T.Content value="in" className="mt-5 space-y-4 outline-none">
+        <TabsContent value="in" className="mt-5 space-y-4 outline-none">
           <Field label="Email"><input className={inputCls} type="email" value={f.email} onChange={set('email')} placeholder="you@example.com" /></Field>
           <Field label="Password"><input className={inputCls} type="password" value={f.password} onChange={set('password')} placeholder="••••••••" /></Field>
           <Button className="w-full" size="lg" onClick={() => finish('Tanvir Ahmed', '01712 345678')}>Sign in</Button>
-        </T.Content>
-        <T.Content value="up" className="mt-5 space-y-4 outline-none">
+        </TabsContent>
+        <TabsContent value="up" className="mt-5 space-y-4 outline-none">
           {step === 'form' ? (
             <>
               <Field label="Full name"><input className={inputCls} value={f.name} onChange={set('name')} placeholder="Tanvir Ahmed" /></Field>
@@ -47,10 +50,10 @@ export default function AuthSheet() {
               <Button className="w-full" size="lg" variant="accent" disabled={f.otp !== '1234'} onClick={() => finish(f.name, f.phone)}>Verify &amp; continue</Button>
             </>
           )}
-        </T.Content>
+        </TabsContent>
         <div className="my-5 flex items-center gap-3 text-muted-foreground"><span className="h-px flex-1 bg-border" /><span className="label-mono">or</span><span className="h-px flex-1 bg-border" /></div>
         <Button variant="outline" className="w-full" size="lg" onClick={() => finish('Tanvir Ahmed', '01712 345678')}>Continue with Google</Button>
-      </T.Root>
+      </Tabs>
     </Sheet>
   )
 }
