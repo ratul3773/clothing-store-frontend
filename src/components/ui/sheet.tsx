@@ -9,14 +9,14 @@ import { cn } from '@/lib/utils'
 type Props = {
   open: boolean
   onOpenChange: (o: boolean) => void
-  title: string
+  title?: string
   description?: string
   side?: 'right' | 'center'
   children: React.ReactNode
   className?: string
 }
 
-export function Sheet({ open, onOpenChange, title, description, side = 'right', children, className }: Props) {
+export function Sheet({ open, onOpenChange, title, description, side = 'center', children, className }: Props) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <AnimatePresence>
@@ -24,7 +24,7 @@ export function Sheet({ open, onOpenChange, title, description, side = 'right', 
           <Dialog.Portal forceMount>
             <Dialog.Overlay asChild forceMount>
               <motion.div
-                className="fixed inset-0 z-[80] bg-foreground/60 backdrop-blur-[3px]"
+                className="fixed inset-0 z-90 bg-foreground/60 backdrop-blur-[3px]"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -33,7 +33,7 @@ export function Sheet({ open, onOpenChange, title, description, side = 'right', 
             <Dialog.Content asChild forceMount>
               <motion.div
                 className={cn(
-                  'fixed z-[90] flex flex-col bg-card text-card-foreground shadow-2xl outline-none',
+                  'fixed z-90 flex flex-col bg-card text-card-foreground shadow-2xl outline-none',
                   side === 'right'
                     ? 'right-0 top-0 h-dvh w-full max-w-md'
                     : 'left-1/2 top-1/2 max-h-[90dvh] w-[min(92vw,34rem)] overflow-y-auto rounded-md',
