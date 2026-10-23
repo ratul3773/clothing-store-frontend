@@ -13,10 +13,11 @@ import { settings } from '@/data/site'
 import { useCms } from '@/lib/useCms'
 import BrandName from '@/components/common/BrandName'
 import { Tip } from '@/components/ui/controls'
+import { Button } from '../ui/button'
 
-export default function Header() {
+export default function Header({profileButton}: {profileButton: React.ReactNode}) {
   useCms()
-  const { count, setCartOpen, wishlist, user, setAuthOpen } = useStore()
+  const { count, setCartOpen, wishlist } = useStore()
   const navigate = useNavigate()
   const [q, setQ] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
@@ -68,25 +69,30 @@ export default function Header() {
               </button>
             </form>
             <ThemeToggle className="border-transparent" />
-            <Tip label="Wishlist">
-              <Link href="/account?tab=wishlist" aria-label="Wishlist" className="relative hidden h-10 w-10 place-items-center rounded-full transition hover:bg-foreground hover:text-background sm:grid">
+              <Tip label="Wishlist">
+              <Link href="/account?tab=wishlist" aria-label="Wishlist">
+              <Button
+                aria-label="Wishlist"
+                size="icon"
+                variant="ghost"
+                className="h-10 w-10 place-items-center rounded-full"
+              >
                 <Heart size={19} />
-                {wishlist.length > 0 && <span className="absolute right-0.5 top-0.5 h-2 w-2 rounded-full bg-accent" />}
+                 {wishlist.length > 0 && (
+                  <span className="absolute -right-2 -top-1.5 grid size-4 place-items-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
+                    {wishlist.length}
+                  </span>
+                )}
+              </Button>
               </Link>
             </Tip>
-            <Tip label={user ? 'My account' : 'Sign in'}>
-              <button
-                aria-label="Account"
-                onClick={() => (user ? navigate('/account') : setAuthOpen(true))}
-                className="grid h-10 w-10 place-items-center rounded-full transition hover:bg-foreground hover:text-background"
-              >
-                <User size={19} />
-              </button>
-            </Tip>
-            <button
+            
+            <Button
               onClick={() => setCartOpen(true)}
               aria-label={`Cart, ${count} items`}
-              className="relative ml-1 grid h-10 w-10 place-items-center rounded-full bg-foreground text-background transition hover:bg-accent"
+              size="icon"
+              variant="ghost"
+              className="h-10 w-10 place-items-center rounded-full"
             >
               <ShoppingBag size={18} />
               <AnimatePresence mode="popLayout">
@@ -101,7 +107,8 @@ export default function Header() {
                   </motion.span>
                 )}
               </AnimatePresence>
-            </button>
+            </Button>
+            {profileButton}
           </div>
         </div>
         <AnimatePresence>
