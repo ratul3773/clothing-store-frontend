@@ -1,10 +1,11 @@
 import { Suspense } from 'react'
 import AccountPage from './_components/AccountPage';
+import Loading from '../../../components/common/Loading';
 
 
 export default function Page() {
   return (
-      <Suspense fallback={<div className="flex items-center justify-center h-full">Loading...</div>}>
+      <Suspense fallback={<Loading />}>
         <AccountPage/>
       </Suspense>
   )

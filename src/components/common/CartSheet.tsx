@@ -3,7 +3,7 @@
 import { useNavigate } from '@/lib/nav'
 import { AnimatePresence, motion } from 'motion/react'
 import { Minus, Plus, Trash2, Truck } from 'lucide-react'
-import { Sheet } from '@/components/ui/sheet'
+import { Sheet } from '@/components/ui/sheeet'
 import { Button } from '@/components/ui/button'
 import { useStore } from '@/components/providers/StoreProvider'
 import { bdt } from '@/lib/utils'

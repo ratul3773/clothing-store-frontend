@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import {
     ArrowRight,
     Eye,
@@ -23,6 +23,9 @@ import {
 import { OtpModal } from "./otp-form";
 import AlertText from "../Alert";
 import { useSignUp } from "@/hooks/useSignUp";
+import PasswordStrength from "@/app/(store)/account/_components/PasswordStrength";
+import { passwordRules } from "@/app/(store)/account/_schemas/account.schema";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 
 export default function SignUpForm() {
@@ -34,7 +37,7 @@ export default function SignUpForm() {
         setShowOtp
     } = useSignUp();
     const [showPassword, setShowPassword] = useState(false);
-
+    
     const signUpForm = useForm<SignUpValues>({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
@@ -46,6 +49,13 @@ export default function SignUpForm() {
         },
         mode: 'onChange',
     })
+    const password = useWatch({
+    control: signUpForm.control,
+    name: "password",
+    defaultValue: "",
+});
+    const rules = passwordRules(password)
+    const score = rules.filter(([, ok]) => ok).length
 
     return (
         <>
@@ -154,12 +164,16 @@ export default function SignUpForm() {
                             }
                             required
                         />
-
+                        <PasswordStrength score={score} rules={rules} />
                         <Button
                             type="submit"
                             size="md"
+                            className="mx-2"
                             disabled={signUpForm.formState.isSubmitting}
                         >
+                            {signUpForm.formState.isSubmitting && (
+                                <FadeArc />
+                            )}
                             {signUpForm.formState.isSubmitting
                                 ? 'Sending code...'
                                 : 'Send email verification code'}

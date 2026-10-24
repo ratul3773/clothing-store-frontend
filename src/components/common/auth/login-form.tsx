@@ -13,6 +13,7 @@ import AlertText from "@/components/common/Alert";
 import { signInSchema, SignInValues } from "./auth.schemas";
 import { OtpModal } from "./otp-form";
 import { useLogin } from "@/hooks/useLogin";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 
 export default function LoginForm() {
@@ -114,6 +115,9 @@ export default function LoginForm() {
                             className="mx-2"
                             disabled={signInForm.formState.isSubmitting}
                         >
+                            {signInForm.formState.isSubmitting && (
+                                <FadeArc/>
+                            )}
                             {signInForm.formState.isSubmitting
                                 ? 'Signing in...'
                                 : 'Sign in'}

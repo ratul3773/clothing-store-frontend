@@ -5,7 +5,6 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import CartSheet from '@/components/common/CartSheet'
 import AuthSheet from '@/components/common/auth/AuthSheet'
-import { getServerSession } from '@/lib/auth-session'
 import AnimatedTransit from './AnimatedTransit'
 import ProfileButton from './Profile-button'
 

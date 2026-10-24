@@ -1,6 +1,6 @@
 'use client'
 
-import { Sheet } from '@/components/ui/sheet'
+import { Sheet } from '@/components/ui/sheeet'
 import { useStore } from '@/components/providers/StoreProvider'
 import AuthForm from './auth-form'
 

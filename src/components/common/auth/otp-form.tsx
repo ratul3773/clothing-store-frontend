@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/utils";
 import AlertText from "../Alert";
 import { useOtp } from "@/hooks/useOtp";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 export const RESEND_COOLDOWN = 3 * 60;
 export const RESEND_STORAGE_KEY = "email-otp-resend-expiry";
@@ -174,6 +175,9 @@ export function OtpModal({
                 variant="accent"
                 disabled={otpForm.formState.isSubmitting}
             >
+                {otpForm.formState.isSubmitting && (
+                    <FadeArc />
+                )}
                 {otpForm.formState.isSubmitting
                     ? 'Verifying...'
                     : 'Verify email'}

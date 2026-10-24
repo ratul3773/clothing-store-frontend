@@ -4,6 +4,7 @@ import { ThemeProvider, themeInitScript } from '@/components/providers/ThemeProv
 import { StoreProvider } from '@/components/providers/StoreProvider'
 import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 const display = Big_Shoulders({ subsets: ['latin'], weight: ['500', '700', '800', '900'], variable: '--f-display', display: 'swap' })
 const sans = Hanken_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--f-sans', display: 'swap' })
@@ -24,7 +25,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeProvider>
           <StoreProvider>
+            <TooltipProvider>
             {children}
+            </TooltipProvider>
           </StoreProvider>
         </ThemeProvider>
         <Toaster />
