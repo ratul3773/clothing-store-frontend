@@ -1,10 +1,12 @@
 import { Suspense } from 'react'
-import AccountView from '@/app/(store)/account/_components/AccountView'
+import AccountPage from './_components/AccountPage';
+import Loading from '../../../components/common/Loading';
+
 
 export default function Page() {
   return (
-    <Suspense fallback={null}>
-      <AccountView />
-    </Suspense>
+      <Suspense fallback={<Loading />}>
+        <AccountPage/>
+      </Suspense>
   )
 }

@@ -1,25 +1,27 @@
-'use client'
 
-import type { ReactNode } from 'react'
-import { AnimatePresence } from 'motion/react'
-import { usePathname } from 'next/navigation'
+import { Suspense, type ReactNode } from 'react'
 import Background from '@/components/layout/Background'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import CartSheet from '@/components/common/CartSheet'
-import AuthSheet from '@/components/common/AuthSheet'
-import PageTransition from '@/components/layout/PageTransition'
+import AuthSheet from '@/components/common/auth/AuthSheet'
+import AnimatedTransit from './AnimatedTransit'
+import ProfileButton from './Profile-button'
 
-export default function Shell({ children }: { children: ReactNode }) {
-  const pathname = usePathname()
+export default function Shell({ children }: { children: ReactNode; }) {
   return (
     <>
       <Background />
-      <Header />
+      <Header profileButton={
+        <Suspense 
+          fallback={<div className="hidden h-9 w-20 animate-pulse rounded bg-muted sm:block" />}
+        >
+          <ProfileButton/>
+        </Suspense>
+      } 
+      />
       <main className="min-h-[70vh] max-w-330 mx-auto px-5 py-8 lg:px-10">
-        <AnimatePresence mode="wait" initial>
-          <PageTransition key={pathname}>{children}</PageTransition>
-        </AnimatePresence>
+        <AnimatedTransit>{children}</AnimatedTransit>
       </main>
       <Footer />
       <CartSheet />

@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Sheet } from '@/components/ui/sheet'
+import { Sheet } from '@/components/ui/sheeet'
 import type { Address } from '@/components/providers/StoreProvider'
 
 interface Props {

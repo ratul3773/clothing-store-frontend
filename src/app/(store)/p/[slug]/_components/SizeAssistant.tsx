@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
 import { Button } from '@/components/ui/button'
-import { Sheet } from '@/components/ui/sheet'
+import { Sheet } from '@/components/ui/sheeet'
 import { Field, inputCls } from '@/components/common/FormField'
 import { sizeChart, type Product } from '@/data/catalog'
 import { cn } from '@/lib/utils'
