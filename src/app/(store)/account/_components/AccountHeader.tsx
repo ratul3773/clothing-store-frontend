@@ -25,7 +25,7 @@ export default function AccountHeader({ name }: { name: string }) {
       onClick={handleSignOut} 
       disabled={isSigningOut}>
         <LogOut size={14} /> 
-        Sign out
+        {isSigningOut ? 'Signing out...' : 'Sign out'}
         </Button>
     </div>
     </>

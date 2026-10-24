@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Sheet } from '@/components/ui/sheet'
+import { Sheet } from '@/components/ui/sheeet'
 import { Choice } from '@/components/ui/controls'
 import { Field, inputCls } from '@/components/common/FormField'
 import StarRating from '@/components/common/StarRating'

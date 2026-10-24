@@ -8,6 +8,9 @@ export default async function AccountPage() {
   if(!session.isAuthenticated){
     redirect('/login')
   }
+  if(session.role !== "customer"){
+    redirect('/admin')
+  }
   return (
         <AccountView user={session} />
   )

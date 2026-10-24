@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Sheet } from '@/components/ui/sheet'
+import { Sheet } from '@/components/ui/sheeet'
 import { Field, inputCls } from '@/components/common/FormField'
 import { useStore } from '@/components/providers/StoreProvider'
 import { byId } from '@/data/catalog'
