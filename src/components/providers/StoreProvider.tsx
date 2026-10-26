@@ -130,3 +130,57 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 }
 
 export type { OrderItem, Source }
+
+// "use client";
+
+// import {
+//   createContext,
+//   useCallback,
+//   useContext,
+//   useMemo,
+//   useState,
+//   type ReactNode,
+// } from "react";
+
+// type StoreContextType = {
+//   authOpen: boolean;
+//   setAuthOpen: (open: boolean) => void;
+// };
+
+// const StoreContext = createContext<StoreContextType | null>(null);
+
+// export function useStore() {
+//   const context = useContext(StoreContext);
+
+//   if (!context) {
+//     throw new Error("useStore must be used within StoreProvider");
+//   }
+
+//   return context;
+// }
+
+// export function StoreProvider({
+//   children,
+// }: {
+//   children: ReactNode;
+// }) {
+//   const [authOpen, setAuthOpenState] = useState(false);
+
+//   const setAuthOpen = useCallback((open: boolean) => {
+//     setAuthOpenState(open);
+//   }, []);
+
+//   const value = useMemo(
+//     () => ({
+//       authOpen,
+//       setAuthOpen,
+//     }),
+//     [authOpen, setAuthOpen],
+//   );
+
+//   return (
+//     <StoreContext.Provider value={value}>
+//       {children}
+//     </StoreContext.Provider>
+//   );
+// }
