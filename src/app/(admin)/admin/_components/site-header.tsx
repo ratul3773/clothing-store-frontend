@@ -32,7 +32,7 @@ export default function SiteHeader() {
             </div>
 
             <div className="flex shrink-0 items-center gap-2">
-              <ThemeToggle className="size-8" />
+              <ThemeToggle />
 
               <a
                 href="/"

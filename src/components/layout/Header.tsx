@@ -64,18 +64,24 @@ export default function Header({profileButton}: {profileButton: React.ReactNode}
                 animate={{ width: searchOpen ? 190 : 0, opacity: searchOpen ? 1 : 0, paddingInline: searchOpen ? 12 : 0 }}
                 className="h-9 border-b border-foreground bg-transparent text-sm outline-none"
               />
-              <button type={searchOpen && q ? 'submit' : 'button'} onClick={() => !q && setSearchOpen((s) => !s)} aria-label="Search" className="grid h-10 w-10 place-items-center rounded-full transition hover:bg-foreground hover:text-background">
+              <Button 
+              type={searchOpen && q ? 'submit' : 'button'} 
+              size="icon" 
+              variant="outline"
+              onClick={() => !q && setSearchOpen((s) => !s)} 
+              aria-label="Search" 
+              className="grid h-10 border-none w-10 place-items-center rounded-full">
                 <Search size={19} />
-              </button>
+              </Button>
             </form>
-            <ThemeToggle className="border-transparent" />
+            <ThemeToggle />
               <Tip label="Wishlist">
               <Link href="/account?tab=wishlist" aria-label="Wishlist">
               <Button
                 aria-label="Wishlist"
                 size="icon"
-                variant="ghost"
-                className="h-10 w-10 place-items-center rounded-full"
+                variant="outline"
+                className="h-10 w-10 border-none place-items-center rounded-full"
               >
                 <Heart size={19} />
                  {wishlist.length > 0 && (
@@ -91,8 +97,8 @@ export default function Header({profileButton}: {profileButton: React.ReactNode}
               onClick={() => setCartOpen(true)}
               aria-label={`Cart, ${count} items`}
               size="icon"
-              variant="ghost"
-              className="h-10 w-10 place-items-center rounded-full"
+              variant="outline"
+              className="h-10 w-10 border-none place-items-center rounded-full"
             >
               <ShoppingBag size={18} />
               <AnimatePresence mode="popLayout">

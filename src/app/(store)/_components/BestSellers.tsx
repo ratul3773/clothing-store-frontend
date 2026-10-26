@@ -14,7 +14,7 @@ export default function BestSellers() {
   const list = getBestSellers()
   if (list.length === 0) return null
   return (
-    <section className="mx-auto mt-28 max-w-[88rem] px-5 lg:px-10">
+    <section className="mt-28">
       <Reveal className="mb-10 flex items-end justify-between">
         <h2 className="font-display text-4xl">Best <span className="text-accent">sellers</span></h2>
         <Link href="/shop" className="label-mono group hidden items-center gap-2 sm:flex">View all <ArrowUpRight size={14} className="transition group-hover:translate-x-1 group-hover:-translate-y-1" /></Link>

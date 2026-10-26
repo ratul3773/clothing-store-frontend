@@ -11,7 +11,7 @@ export default function CategoryTiles() {
   const tiles = getCategoryTiles()
   if (tiles.length === 0) return null
   return (
-    <section className="mx-auto grid max-w-[88rem] gap-4 px-5 lg:grid-cols-2 lg:px-10">
+    <section className="grid gap-4 lg:grid-cols-3">
       {tiles.map((c, k) => (
         <Reveal key={c.cat} delay={k * 0.1}>
           <Link href={`/shop?cat=${encodeURIComponent(c.cat)}`} className="group relative block aspect-[16/10] overflow-hidden rounded-[3px] bg-foreground">
