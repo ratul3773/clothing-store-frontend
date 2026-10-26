@@ -1,3 +1,4 @@
+export const instant = false
 import type { Metadata } from 'next'
 import { Big_Shoulders, DM_Mono, Hanken_Grotesk } from 'next/font/google'
 import { ThemeProvider, themeInitScript } from '@/components/providers/ThemeProvider'
@@ -6,7 +7,8 @@ import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import ReduxProvider from '@/components/providers/redux-provider'
-
+import { Suspense } from 'react'
+import Loading from '@/components/common/Loading'
 const display = Big_Shoulders({ subsets: ['latin'], weight: ['500', '700', '800', '900'], variable: '--f-display', display: 'swap' })
 const sans = Hanken_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--f-sans', display: 'swap' })
 const mono = DM_Mono({ subsets: ['latin'], weight: ['400', '500'], variable: '--f-mono', display: 'swap' })
@@ -25,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ThemeProvider>
+          {/* <Suspense fallback={<Loading text="Loading..." />}> */}
           <ReduxProvider>
             <StoreProvider>
               <TooltipProvider>
@@ -32,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </TooltipProvider>
             </StoreProvider>
           </ReduxProvider>
+          {/* </Suspense> */}
         </ThemeProvider>
         <Toaster />
       </body>

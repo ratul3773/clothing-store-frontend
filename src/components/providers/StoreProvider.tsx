@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useId, useMemo, useReducer, useRef, type ReactNode } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { Check } from 'lucide-react'
 import { coupons, products, type Product } from '@/data/catalog'
@@ -27,6 +27,7 @@ export const useStore = () => useContext(C)
  * useSelector/useDispatch, and keep the facade below (or inline it into hooks). Components need no change.
  */
 export function StoreProvider({ children }: { children: ReactNode }) {
+  const toastSeq = useRef(0)
   const [cartState, dCart] = useReducer(cart.reducer, cart.initialState)
   const [wish, dWish] = useReducer(wishlist.reducer, wishlist.initialState)
   const [sess, dSess] = useReducer(session.reducer, session.initialState)
@@ -39,11 +40,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (now !== null) initializeDemoFlashSale(now)
   }, [now])
 
-  const toast = useCallback((msg: string) => {
-    const id = Date.now() + Math.random()
-    dToast(toasts.actions.pushed({ id, msg }))
-    setTimeout(() => dToast(toasts.actions.dismissed(id)), 2600)
-  }, [])
+const toast = useCallback((msg: string) => {
+  const id = `t${++toastSeq.current}`
+  dToast(toasts.actions.pushed({ id, msg }))
+  setTimeout(() => dToast(toasts.actions.dismissed(id)), 2600)
+}, [])
   const pushRecent = useCallback((id: string) => {
     dWish(wishlist.actions.pushRecent(id))
   }, [])
