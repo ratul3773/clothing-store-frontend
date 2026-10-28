@@ -26,6 +26,8 @@ import {
 } from "../_schemas/product.schema";
 import { formatDate, variantName } from "../_utils/products.utils";
 import { SelectField, TextareaField, TextField } from "../../_components/form-controls";
+import { TextShimmerWave } from "@/components/animation/text-shimmer";
+import { Swirling } from "@/components/animation/swirling";
 
 type Props = {
   productId: string;
@@ -189,9 +191,12 @@ export default function StockAdjustDialog({
       ) : (
         <div>
           {historyLoading && !history ? (
-            <p className="py-8 text-center text-sm text-muted-foreground">
-              Loading movement history…
-            </p>
+              <div className="py-5 text-center">
+                <Swirling className="size-12 text-accent mx-auto mb-1" />
+                <TextShimmerWave className="text-primary label-mono">
+                  Loading stock movements...
+                </TextShimmerWave>
+              </div>
           ) : !history || history.items.length === 0 ? (
             <Empty
               title="No stock movements"

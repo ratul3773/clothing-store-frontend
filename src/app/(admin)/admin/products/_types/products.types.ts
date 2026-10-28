@@ -30,3 +30,9 @@ export type CreateColorDraft = {
 
 export const stockMatrixKey = (colorKey: string, size: string) =>
   `${colorKey}|${size}`;
+
+export type DraftErrors = {
+  colors?: string;
+  sizes?: string;
+  variants?: string;
+};

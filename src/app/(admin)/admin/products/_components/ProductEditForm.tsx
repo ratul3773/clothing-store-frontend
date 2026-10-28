@@ -31,6 +31,8 @@ import PricingSection from "./PricingSection";
 import ProductPreview from "./ProductPreview";
 import ProductStatusActions from "./ProductStatusActions";
 import VariantsManager from "./VariantsManager";
+import { useEditProduct } from "../_hooks/useEditProduct";
+import AlertText from "@/components/common/Alert";
 
 type Props = {
   product: AdminProduct;
@@ -38,56 +40,20 @@ type Props = {
 };
 
 export default function ProductEditForm({ product, reload }: Props) {
-  const { toast, toastError } = useStore();
-  const go = useNavigate();
-  const [updateProduct, updateState] = useUpdateProductMutation();
-  const [conflict, setConflict] = useState<string | null>(null);
-
-  const form = useForm<ProductCoreFormValues>({
-    resolver: zodResolver(productCoreSchema),
-    defaultValues: toCoreFormValues(product),
-  });
-
-  useEffect(() => {
-    form.reset(toCoreFormValues(product));
-    // Only re-seed when switching products; mutations intentionally keep edits.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [product.id]);
-
-  const values = form.watch();
-  const images = [...product.images]
-    .sort(
-      (a, b) =>
-        Number(b.isPrimary) - Number(a.isPrimary) || a.sortOrder - b.sortOrder,
-    )
-    .map((image) => image.url);
-
-  const onSubmit = form.handleSubmit(async (core) => {
-    try {
-      const updated = await updateProduct({
-        id: product.id,
-        data: { ...toCorePayload(core), version: product.version },
-      }).unwrap();
-      form.reset(toCoreFormValues(updated));
-      setConflict(null);
-      toast("Product saved.");
-    } catch (error) {
-      if (isConflictError(error)) {
-        const message =
-          "This product was changed elsewhere. The latest values have been loaded — review them and save again.";
-        setConflict(message);
-        toast(message);
-        try {
-          const fresh = await reload();
-          form.reset(toCoreFormValues(fresh));
-        } catch {
-          toast("Could not reload the latest product values.");
-        }
-        return;
-      }
-      toastError(apiErrorMessage(error, "The product could not be saved."));
-    }
-  });
+ 
+  const {
+    form,
+    values,
+    onSubmit,
+    isSubmitting,
+    conflict,
+    setConflict,
+    go,
+    toast,
+    images,
+    errorMsg,
+    setErrorMsg,
+  } = useEditProduct(product, reload);
 
   return (
     <div>
@@ -102,10 +68,10 @@ export default function ProductEditForm({ product, reload }: Props) {
               type="submit"
               form="product-edit-form"
               variant="primary"
-              disabled={updateState.isLoading || !form.formState.isDirty}
+              disabled={isSubmitting || !form.formState.isDirty}
             >
               <Save className="size-4" />
-              {updateState.isLoading ? "Saving…" : "Save changes"}
+              {isSubmitting ? "Saving…" : "Save changes"}
             </Btn>
             <ProductStatusActions
               product={product}
@@ -150,12 +116,20 @@ export default function ProductEditForm({ product, reload }: Props) {
         </div>
       )}
 
-      <form id="product-edit-form" onSubmit={onSubmit}>
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="space-y-4">
+          {errorMsg && (
+              <AlertText
+                title="Error"
+                description={errorMsg}
+                setSubmitError={setErrorMsg}
+              />
+          )}
+           <form id="product-edit-form" onSubmit={onSubmit}>
             <BasicSection form={form} />
             <PricingSection form={form} editing />
             <DetailsSection form={form} />
+            </form>
             <ImagesManager product={product} />
             <VariantsManager product={product} />
             <OffersManager product={product} />
@@ -204,7 +178,6 @@ export default function ProductEditForm({ product, reload }: Props) {
             </Card>
           </div>
         </div>
-      </form>
     </div>
   );
 }

@@ -11,12 +11,15 @@ import {
   DialogTrigger,
   DialogTitle,
 } from '@/components/ui/dialog'
+import AlertText from '../common/Alert'
 
 type Props = {
   open: boolean
   onOpenChange: (o: boolean) => void
   title: string
   description?: string
+  errorMsg?: string
+  setErrorMsg?: (msg: string) => void
   size?: 'sm' | 'md' | 'lg' | 'xl'
   variant?: 'dialog' | 'drawer'
   footer?: React.ReactNode
@@ -25,7 +28,18 @@ type Props = {
 }
 
 /** Flat, non-animated dialog / right-hand drawer for the CMS. */
-export default function Modal({ open, onOpenChange, title, description, size = 'md', variant = 'dialog', footer, children, trigger }: Props) {
+export default function Modal({ 
+  open, 
+  onOpenChange, 
+  title, 
+  description, 
+  errorMsg,
+  setErrorMsg,
+  size = 'md', 
+  variant = 'dialog', 
+  footer, 
+  children, 
+  trigger }: Props) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
@@ -42,12 +56,21 @@ export default function Modal({ open, onOpenChange, title, description, size = '
         )}
       >
         <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-3">
-          <div>
+          <div className="flex flex-col gap-1">
             <DialogTitle className="text-sm font-semibold">{title}</DialogTitle>
             <DialogDescription className={cn('text-xs text-muted-foreground', !description && 'sr-only')}>{description ?? title}</DialogDescription>
           </div>
           <DialogClose className="rounded p-1 text-muted-foreground hover:bg-muted" aria-label="Close"><X className="size-4" /></DialogClose>
         </div>
+        {errorMsg && (
+          <div className="px-5 pt-2">
+            <AlertText
+              title="Error"
+              description={errorMsg}
+              setSubmitError={setErrorMsg}
+            />
+          </div>
+        )}
         <div className="flex-1 overflow-y-auto px-5 py-4">{children}</div>
         {footer && <div className="flex justify-end gap-2 border-t border-border px-5 py-3">{footer}</div>}
       </DialogContent>
