@@ -12,8 +12,8 @@ import {
 } from "@/redux/apis/types/category.types";
 
 import CategoriesTable from "./CategoriesTable";
-import CategoryDetail from "./CategoryDetail";
 import CategoryModal from "./CategoryModal";
+import Loading from "@/components/common/Loading";
 
 export default function CategoriesView() {
   const { data, isLoading, isError, error, refetch } = useGetAdminCategoriesQuery();
@@ -83,9 +83,7 @@ export default function CategoriesView() {
         </Toolbar>
 
         {isLoading ? (
-          <p className="px-4 py-12 text-center text-sm text-muted-foreground">
-            Loading categories…
-          </p>
+          <Loading text="Loading categories..." />
         ) : isError ? (
           <Empty
             title="Categories could not be loaded"
@@ -108,7 +106,6 @@ export default function CategoriesView() {
               onCreate={openCreate}
               onEdit={openEdit}
             />
-            {selectedCategory && <CategoryDetail category={selectedCategory} />}
           </div>
         )}
       </Card>

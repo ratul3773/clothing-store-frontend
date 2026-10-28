@@ -138,7 +138,6 @@ export default function CategoriesTable({ rows, selected, onSelect, onCreate, on
         rows={rows}
         columns={columns}
         rowKey={(category) => category.id}
-        onRowClick={(category) => onSelect?.(category.id)}
         pageSize={20}
         empty={
           <Empty

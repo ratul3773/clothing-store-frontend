@@ -151,23 +151,6 @@ useEffect(() => {
   }
 });
 
-  const handleImage = async (file: File | undefined) => {
-    if (!file || !editing) return;
-    const problem = validateImageFile(file);
-    if (problem) {
-    toastError(problem);
-      return;
-    }
-    try {
-      await uploadImage({ categoryId: editing.id, file }).unwrap();
-      toast("Category image updated.");
-    } catch (error) {
-    toastError(apiErrorMessage(error, "The image could not be uploaded."));
-    } finally {
-      if (inputRef.current) inputRef.current.value = "";
-    }
-  };
-
   return (
     <Modal
       open
