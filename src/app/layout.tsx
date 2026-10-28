@@ -28,13 +28,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeProvider>
           {/* <Suspense fallback={<Loading text="Loading..." />}> */}
-          <ReduxProvider>
-            <StoreProvider>
-              <TooltipProvider>
-                {children}
-              </TooltipProvider>
-            </StoreProvider>
-          </ReduxProvider>
+            <ReduxProvider>
+              <StoreProvider>
+                <TooltipProvider>
+                  {children}
+                </TooltipProvider>
+              </StoreProvider>
+            </ReduxProvider>
           {/* </Suspense> */}
         </ThemeProvider>
         <Toaster />

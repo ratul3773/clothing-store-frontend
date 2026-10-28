@@ -1,3 +1,4 @@
+export const instant = false;
 import type { Metadata } from "next";
 import AdminShell from "./_components/AdminShell";
 import { getServerSession } from "@/lib/auth-session";
@@ -21,10 +22,10 @@ export default function AdminLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <Suspense fallback={<Loading/>}>
+    // <Suspense fallback={<Loading/>}>
     <Gate>
       <AdminShell>{children}</AdminShell>
     </Gate>
-    </Suspense>
+    // </Suspense>
   );
 }
