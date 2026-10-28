@@ -1,8 +1,15 @@
-import { Badge } from '@/components/cms/ui'
-import type { StockState } from '../_utils/products.utils'
+import { Badge } from "@/components/cms/ui";
 
-export default function StockBadge({ state }: { state: StockState }) {
-  if (state === 'out') return <Badge tone="red">Out</Badge>
-  if (state === 'low') return <Badge tone="amber">Low</Badge>
-  return null
+import type { StockState } from "../_utils/products.utils";
+
+export default function StockBadge({
+  state,
+  showOk = false,
+}: {
+  state: StockState;
+  showOk?: boolean;
+}) {
+  if (state === "out") return <Badge tone="red">Out</Badge>;
+  if (state === "low") return <Badge tone="amber">Low</Badge>;
+  return showOk ? <Badge tone="green">In stock</Badge> : null;
 }

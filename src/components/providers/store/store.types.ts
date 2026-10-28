@@ -40,4 +40,5 @@ export type StoreContext = {
   patchReview: (id: string, patch: Partial<Review>) => void
   removeReview: (id: string) => void
   toast: (msg: string) => void
+  toastError: (msg: string) => void
 }

@@ -1,32 +1,96 @@
-'use client'
+"use client";
 
-import { Badge, Card, CardHeader } from '@/components/cms/ui'
-import { bdt } from '@/lib/utils'
-import type { ProductDraft } from '../_types/products.types'
-import { toNum } from '../_utils/products.utils'
+import { Badge, Card, CardHeader } from "@/components/cms/ui";
+import { bdt } from "@/lib/utils";
+import type { Badge as BadgeValue, ProductStatus } from "@/redux/apis/types/product.types";
 
-export default function ProductPreview({ d }: { d: ProductDraft }) {
-  const price = toNum(d.price)
-  const offer = toNum(d.offer)
-  const hasOffer = !Number.isNaN(offer) && !Number.isNaN(price) && offer < price
+import { BADGE_TONES, STATUS_TONES } from "../_constants/products.constants";
+import { statusLabel, toNumber } from "../_utils/products.utils";
+
+type Props = {
+  name: string;
+  price: string;
+  images: string[];
+  badges: BadgeValue[];
+  colors: Array<{ name: string; hex: string | null }>;
+  status?: ProductStatus;
+};
+
+export default function ProductPreview({
+  name,
+  price,
+  images,
+  badges,
+  colors,
+  status,
+}: Props) {
+  const value = toNumber(price);
+  const [primary] = images;
+
   return (
     <Card>
-      <CardHeader title="Preview" />
-      <div className="p-4">
+      <CardHeader
+        title="Preview"
+        description="How the product card can look in the store."
+      />
+      <div className="space-y-3 p-4">
         <div className="relative aspect-[4/5] overflow-hidden rounded border border-border bg-muted">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          {d.images[0] && <img src={d.images[0]} alt="" className="size-full object-cover" />}
-          <div className="absolute left-2 top-2 flex flex-wrap gap-1">{d.badges.map((b) => <Badge key={b} tone="blue">{b}</Badge>)}</div>
+          {primary ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={primary} alt="" className="size-full object-cover" />
+          ) : (
+            <div className="flex size-full items-center justify-center text-xs text-muted-foreground">
+              No image yet
+            </div>
+          )}
+          <div className="absolute left-2 top-2 flex flex-wrap gap-1">
+            {badges.map((badge) => (
+              <Badge key={badge} tone={BADGE_TONES[badge]}>
+                {badge.replaceAll("_", " ")}
+              </Badge>
+            ))}
+          </div>
+          {status && (
+            <div className="absolute right-2 top-2">
+              <Badge tone={STATUS_TONES[status]}>{statusLabel(status)}</Badge>
+            </div>
+          )}
         </div>
-        <p className="mt-2 truncate text-sm font-medium">{d.name || 'Product name'}</p>
-        <p className="text-xs text-muted-foreground">{d.sub || 'Subcategory'} · {d.sku || 'SKU'}</p>
-        <p className="mt-1 text-sm">
-          {hasOffer ? <><span className="font-semibold">{bdt(offer)}</span> <span className="text-xs text-muted-foreground line-through">{bdt(price)}</span></> : <span className="font-semibold">{Number.isNaN(price) ? bdt(0) : bdt(price)}</span>}
-        </p>
-        <div className="mt-2 flex gap-1">{d.colors.map((c, i) => <span key={i} className="size-4 rounded-full border border-border" style={{ background: c.hex }} title={c.name} />)}</div>
-        <p className="mt-2 text-xs text-muted-foreground">{d.sizes.join(' · ')}</p>
-        <Badge tone={d.status === 'active' ? 'green' : 'gray'} className="mt-2">{d.status === 'active' ? 'Active' : 'Draft'}</Badge>
+
+        {images.length > 1 && (
+          <div className="flex gap-1.5 overflow-x-auto">
+            {images.slice(0, 6).map((image, index) => (
+              <div
+                key={`${image}-${index}`}
+                className="size-10 shrink-0 overflow-hidden rounded border border-border bg-muted"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={image} alt="" className="size-full object-cover" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div>
+          <p className="truncate text-sm font-medium">{name || "Product name"}</p>
+          <p className="text-sm font-semibold tabular-nums">
+            {Number.isFinite(value) && value > 0 ? bdt(value) : "৳—"}
+          </p>
+        </div>
+
+        {colors.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {colors.map((color, index) => (
+              <span
+                key={`${color.name}-${index}`}
+                title={color.name || `Colour ${index + 1}`}
+                className="size-4 rounded-full border border-border"
+                style={{ background: color.hex || "transparent" }}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </Card>
-  )
+  );
 }

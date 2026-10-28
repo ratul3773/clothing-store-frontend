@@ -17,14 +17,15 @@ type Props = {
   onOpenChange: (o: boolean) => void
   title: string
   description?: string
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl'
+  variant?: 'dialog' | 'drawer'
   footer?: React.ReactNode
   children?: React.ReactNode
   trigger?: React.ReactNode
 }
 
 /** Flat, non-animated dialog / right-hand drawer for the CMS. */
-export default function Modal({ open, onOpenChange, title, description, size = 'md', footer, children, trigger }: Props) {
+export default function Modal({ open, onOpenChange, title, description, size = 'md', variant = 'dialog', footer, children, trigger }: Props) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
@@ -32,12 +33,12 @@ export default function Modal({ open, onOpenChange, title, description, size = '
         showCloseButton={false}
         className={cn(
           'cms flex flex-col gap-0 rounded-lg border border-border bg-card p-0 text-foreground shadow-xl outline-none',
-          // variant === 'drawer'
-          //   ? 'left-auto top-0 h-dvh max-h-dvh w-full max-w-xl translate-x-0 translate-y-0 rounded-none border-y-0 border-r-0 sm:max-w-xl'
-          //   :
-            'max-h-[88dvh] w-[92vw] max-w-sm sm:max-w-3xl',
-           size === 'md' && 'sm:max-w-lg',
-           size === 'lg' && 'sm:max-w-3xl',
+          variant === 'drawer'
+            ? 'left-auto top-0 h-dvh max-h-dvh w-full max-w-xl translate-x-0 translate-y-0 rounded-none border-y-0 border-r-0 sm:max-w-xl'
+            : 'max-h-[88dvh] w-[92vw] max-w-sm sm:max-w-lg',
+           size === 'md' && variant !== 'drawer' && 'sm:max-w-lg',
+           size === 'lg' && variant !== 'drawer' && 'sm:max-w-xl',
+           size === 'xl' && variant !== 'drawer' && 'sm:max-w-3xl',
         )}
       >
         <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-3">

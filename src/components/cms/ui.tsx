@@ -25,11 +25,15 @@ export const cmsInput =
 export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(({ className, ...p }, ref) => <input ref={ref} className={cn(cmsInput, className)} {...p} />)
 Input.displayName = 'Input'
 
-export const Textarea = ({ className, ...p }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => (
-  <textarea className={cn(cmsInput, 'h-auto min-h-20 py-2 leading-relaxed', className)} {...p} />
+export const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttributes<HTMLTextAreaElement>>(
+  ({ className, ...p }, ref) => <textarea ref={ref} className={cn(cmsInput, 'h-auto min-h-20 py-2 leading-relaxed', className)} {...p} />,
 )
+Textarea.displayName = 'Textarea'
 
-export const Select = ({ className, ...p }: React.SelectHTMLAttributes<HTMLSelectElement>) => <select className={cn(cmsInput, 'pr-6', className)} {...p} />
+export const Select = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<HTMLSelectElement>>(
+  ({ className, ...p }, ref) => <select ref={ref} className={cn(cmsInput, 'pr-6', className)} {...p} />,
+)
+Select.displayName = 'Select'
 
 export function Field({ label, hint, error, children, className }: { label: string; hint?: string; error?: string; children: React.ReactNode; className?: string }) {
   return (
