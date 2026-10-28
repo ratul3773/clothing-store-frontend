@@ -1,7 +1,6 @@
 import { combos, coupons, products, taxonomy, type Product, type Taxon } from '@/data/catalog'
 import { banners, emit, flashSales, settings, type Banner, type FlashSale, type Settings } from '@/data/site'
 import { DEMO_REFERENCE_TIME } from '@/data/demoTime'
-import { useId } from 'react'
 
 export { emit }
 
@@ -30,7 +29,7 @@ export const messages: Message[] = [
 export const customerMeta: Record<string, CustomerMeta> = {}
 
 export const slugify = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-export const uid = (p: string) => `${p}${Date.now().toString(36)}${useId()}`
+export const uid = (p: string) => `${p}${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`
 
 const change = <T,>(fn: () => T): T => {
   const r = fn()
