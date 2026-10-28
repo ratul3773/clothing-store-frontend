@@ -1,75 +1,353 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Modal from '@/components/cms/Modal'
-import ImageField from '@/components/cms/ImageField'
-import { Btn, Field, Input, Textarea } from '@/components/cms/ui'
-import { useStore } from '@/components/providers/StoreProvider'
-import { taxonomy } from '@/data/catalog'
-import { slugify } from '@/data/cms'
-import { createCategory, updateCategory } from '../_services/categories.api'
-import { validateCategory } from '../_schemas/category.schema'
-import type { CategoryDraft } from '../_types/categories.types'
+import { useEffect, useMemo, useRef, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ImagePlus, Trash2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+
+import Modal from "@/components/cms/Modal";
+import { Btn } from "@/components/cms/ui";
+import { useStore } from "@/components/providers/StoreProvider";
+import { IMAGE_ACCEPT, validateImageFile } from "@/lib/image";
+import { apiErrorMessage } from "@/redux/api.utils";
+import {
+  useCreateCategoryMutation,
+  useRemoveCategoryImageMutation,
+  useUpdateCategoryMutation,
+  useUploadCategoryImageMutation,
+} from "@/redux/apis/category.api";
+import {
+  categoryDescendantIds,
+  toCategoryRows,
+  type Category,
+} from "@/redux/apis/types/category.types";
+
+import {
+  categoryFormSchema,
+  type CategoryFormValues,
+} from "../_schemas/category.schema";
+import {
+  SelectField,
+  SwitchField,
+  TextareaField,
+  TextField,
+} from "../../_components/form-controls";
+import Image from "next/image";
 
 type Props = {
-  open: boolean
-  prev?: string
-  onOpen: () => void
-  onClose: () => void
-  onSaved: (cat: string) => void
-  trigger?: React.ReactNode
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  categories: Category[];
+  editing?: Category;
+};
+
+const nullable = (value: string) =>
+  value.trim() === "" ? null : value.trim();
+
+export default function CategoryModal(props: Props) {
+  if (!props.open) return null;
+  return <CategoryModalContent key={props.editing?.id ?? "new"} {...props} />;
 }
 
-export default function CategoryModal({ open, prev, onOpen, onClose, onSaved, trigger }: Props) {
-  // remount the form each time the modal opens so state resets
-  return (
-    <Modal
-      open={open}
-      onOpenChange={(isOpen) => (isOpen ? onOpen() : onClose())}
-      title={prev ? 'Edit category' : 'New category'}
-      trigger={trigger}
-    >
-      {open && <CategoryForm key={prev ?? 'new'} prev={prev} onClose={onClose} onSaved={onSaved} />}
-    </Modal>
-  )
-}
+function CategoryModalContent({
+  onOpenChange,
+  categories,
+  editing,
+}: Props) {
+  const { toast, toastError } = useStore();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [createCategory, createState] = useCreateCategoryMutation();
+  const [updateCategory, updateState] = useUpdateCategoryMutation();
+  const [uploadImage, uploadState] = useUploadCategoryImageMutation();
+  const [removeImage, removeState] = useRemoveCategoryImageMutation();
 
-function CategoryForm({ prev, onClose, onSaved }: Omit<Props, 'open' | 'onOpen' | 'trigger'>) {
-  const { toast } = useStore()
-  const existing = taxonomy.find((t) => t.cat === prev)
-  const [d, setD] = useState<CategoryDraft>({ cat: existing?.cat ?? '', label: existing?.label ?? '', blurb: existing?.blurb ?? '', image: existing?.image ?? '', keyTouched: !!existing })
-  const [tried, setTried] = useState(false)
-  const errors = tried ? validateCategory(d, taxonomy, prev) : {}
-  const patch = (p: Partial<CategoryDraft>) => setD((x) => ({ ...x, ...p }))
+const [selectedImage, setSelectedImage] = useState<File | null>(null);
+const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const save = () => {
-    setTried(true)
-    if (Object.keys(validateCategory(d, taxonomy, prev)).length) return
-    const t = { cat: d.cat, label: d.label.trim(), blurb: d.blurb.trim(), image: d.image, subs: existing?.subs ?? [] }
-    if (existing && prev) updateCategory(t, prev)
-    else createCategory(t)
-    toast(existing ? 'Category saved' : 'Category created')
-    onSaved(t.cat)
-    onClose()
+useEffect(() => {
+  if (!selectedImage) {
+    setImagePreview(null);
+    return;
   }
 
+  const url = URL.createObjectURL(selectedImage);
+  setImagePreview(url);
+
+  return () => URL.revokeObjectURL(url);
+}, [selectedImage]);
+  const forbiddenParentIds = useMemo(() => {
+    if (!editing) return new Set<string>();
+    const ids = categoryDescendantIds(categories, editing.id);
+    ids.add(editing.id);
+    return ids;
+  }, [categories, editing]);
+
+  const schema = useMemo(
+    () => categoryFormSchema(forbiddenParentIds),
+    [forbiddenParentIds],
+  );
+
+  const rows = useMemo(() => toCategoryRows(categories), [categories]);
+
+  const form = useForm<CategoryFormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: editing?.name ?? "",
+      parentId: editing?.parentId ?? "",
+      description: editing?.description ?? "",
+      sortOrder: editing ? String(editing.sortOrder) : "",
+      isActive: editing?.isActive ?? true,
+      seoTitle: editing?.seoTitle ?? "",
+      seoDescription: editing?.seoDescription ?? "",
+    },
+  });
+
+  const saving = createState.isLoading || updateState.isLoading;
+
+  const onSubmit = form.handleSubmit(async (values) => {
+  const sortOrder =
+    values.sortOrder.trim() === "" ? undefined : Number(values.sortOrder);
+
+  const payload = {
+    name: values.name.trim(),
+    parentId: values.parentId === "" ? null : values.parentId,
+    description: nullable(values.description),
+    isActive: values.isActive,
+    seoTitle: nullable(values.seoTitle),
+    seoDescription: nullable(values.seoDescription),
+    ...(sortOrder !== undefined ? { sortOrder } : {}),
+  };
+
+  try {
+    if (editing) {
+      await updateCategory({ id: editing.id, data: payload }).unwrap();
+
+      if (selectedImage) {
+        await uploadImage({
+          categoryId: editing.id,
+          file: selectedImage,
+        }).unwrap();
+      }
+
+      toast("Category updated.");
+    } else {
+      const created = await createCategory(payload).unwrap();
+
+      if (selectedImage) {
+        await uploadImage({
+          categoryId: created.id,
+          file: selectedImage,
+        }).unwrap();
+
+        toast("Category created with image.");
+      } else {
+        toast("Category created.");
+      }
+    }
+
+    onOpenChange(false);
+  } catch (error) {
+    toastError(apiErrorMessage(error, "The category could not be saved."));
+  }
+});
+
+  const handleImage = async (file: File | undefined) => {
+    if (!file || !editing) return;
+    const problem = validateImageFile(file);
+    if (problem) {
+    toastError(problem);
+      return;
+    }
+    try {
+      await uploadImage({ categoryId: editing.id, file }).unwrap();
+      toast("Category image updated.");
+    } catch (error) {
+    toastError(apiErrorMessage(error, "The image could not be uploaded."));
+    } finally {
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  };
+
   return (
-    <div className="space-y-4">
-      <Field label="Label *" error={errors.label}>
-        <Input value={d.label} onChange={(e) => patch({ label: e.target.value, ...(d.keyTouched ? {} : { cat: slugify(e.target.value) }) })} />
-      </Field>
-      <Field label="Key (slug) *" error={errors.cat} hint={existing && d.cat !== prev ? "Renaming the key moves all of this category's products to the new key." : 'Used in URLs and to link products.'}>
-        <Input value={d.cat} onChange={(e) => patch({ cat: slugify(e.target.value), keyTouched: true })} className="font-mono" />
-      </Field>
-      <Field label="Blurb"><Textarea rows={3} value={d.blurb} onChange={(e) => patch({ blurb: e.target.value })} /></Field>
-      <div>
-        <span className="mb-1 block text-xs font-medium text-foreground/80">Image</span>
-        <ImageField value={d.image} onChange={(image) => patch({ image })} />
-      </div>
-      <div className="flex justify-end gap-2 pt-2">
-        <Btn onClick={onClose}>Cancel</Btn>
-        <Btn variant="primary" onClick={save}>Save category</Btn>
-      </div>
-    </div>
-  )
+    <Modal
+      open
+      onOpenChange={onOpenChange}
+      title={editing ? "Edit category" : "New category"}
+      description="Categories can be nested. Slugs are generated by the server."
+      size="lg"
+      footer={
+        <>
+          <Btn onClick={() => onOpenChange(false)} disabled={saving}>
+            Cancel
+          </Btn>
+          <Btn
+            type="submit"
+            form="category-form"
+            variant="primary"
+            disabled={saving || (!editing && !selectedImage)}
+          >
+            {saving
+              ? "Saving…"
+              : editing
+                ? "Save category"
+                : "Create category"}
+          </Btn>
+        </>
+      }
+    >
+      <form id="category-form" onSubmit={onSubmit} className="space-y-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <TextField
+            form={form}
+            name="name"
+            label="Name"
+            placeholder="e.g. Shirts"
+          />
+          <SelectField
+            form={form}
+            name="parentId"
+            label="Parent category"
+            placeholder="No parent (top level)"
+            options={rows.map((category) => ({
+              value: category.id,
+              label: `${"— ".repeat(category.depth)}${category.name}`,
+              disabled: forbiddenParentIds.has(category.id),
+            }))}
+            hint="A category cannot be its own parent or a descendant."
+          />
+          <TextField
+            form={form}
+            name="sortOrder"
+            label="Sort order"
+            inputMode="numeric"
+            placeholder="0"
+            hint="Lower numbers appear first."
+          />
+          <SwitchField
+            form={form}
+            name="isActive"
+            label="Active"
+            description="Inactive categories cannot be used for publishing products."
+          />
+        </div>
+
+        <TextareaField
+          form={form}
+          name="description"
+          label="Description"
+          rows={3}
+          placeholder="Optional category description"
+        />
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <TextField
+            form={form}
+            name="seoTitle"
+            label="SEO title"
+            placeholder="Optional search title"
+          />
+          <TextField
+            form={form}
+            name="seoDescription"
+            label="SEO description"
+            placeholder="Optional search description"
+          />
+        </div>
+
+        <div className="rounded border border-border p-3">
+          <p className="mb-2 text-xs font-medium text-foreground/80">
+            Category image {!editing && <span className="text-destructive">*</span>}
+          </p>
+
+          <div className="flex items-center gap-3">
+            <div className="size-20 shrink-0 overflow-hidden rounded border border-border bg-muted">
+              {imagePreview || editing?.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <Image
+                  src={imagePreview ?? editing?.imageUrl ?? ""}
+                  width={80}
+                  height={80}
+                  alt="Category preview"
+                  className="size-full object-cover"
+                />
+              ) : null}
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <Btn
+                size="sm"
+                onClick={() => inputRef.current?.click()}
+                disabled={uploadState.isLoading || saving}
+              >
+                <ImagePlus className="size-3.5" />
+                {(selectedImage || editing?.imageUrl) ? "Change image" : "Choose image"}
+              </Btn>
+
+              {selectedImage && (
+                <Btn
+                  size="sm"
+                  variant="dangerOutline"
+                  onClick={() => setSelectedImage(null)}
+                  disabled={saving || uploadState.isLoading}
+                >
+                  <Trash2 className="size-3.5" />
+                </Btn>
+              )}
+
+              {editing?.imageUrl && !selectedImage && (
+                <Btn
+                  size="sm"
+                  variant="dangerOutline"
+                  disabled={uploadState.isLoading || removeState.isLoading}
+                  onClick={async () => {
+                    try {
+                      await removeImage(editing.id).unwrap();
+                      toast("Category image removed.");
+                    } catch (error) {
+                      toast(
+                        apiErrorMessage(
+                          error,
+                          "The category image could not be removed.",
+                        ),
+                      );
+                    }
+                  }}
+                >
+                  <Trash2 className="size-3.5" />
+                </Btn>
+              )}
+
+              {!editing && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  An image is required to create a category. JPEG, PNG, WebP, or AVIF · max 5 MB.
+                </p>
+              )}
+            </div>
+          </div>
+
+          <input
+            ref={inputRef}
+            type="file"
+            accept={IMAGE_ACCEPT}
+            className="hidden"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+
+              if (file) {
+                const problem = validateImageFile(file);
+
+                if (problem) {
+                  toastError(problem);
+                } else {
+                  setSelectedImage(file);
+                }
+              }
+
+              event.target.value = "";
+            }}
+          />
+        </div>
+      </form>
+    </Modal>
+  );
 }
