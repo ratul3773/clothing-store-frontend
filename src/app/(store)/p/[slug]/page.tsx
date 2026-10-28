@@ -1,11 +1,10 @@
+"use client"
 import ProductDetail from '@/app/(store)/p/[slug]/_components/ProductDetail'
-import { getProducts } from '@/app/(store)/p/[slug]/_services/product.api'
+import { useParams, } from 'next/navigation';
 
-
-export function generateStaticParams() {
-  return getProducts().map((p) => ({ slug: p.slug }))
-}
 
 export default function Page() {
-  return <ProductDetail />
+  const params = useParams()
+  const slug = params?.slug as string;
+  return <ProductDetail slug={slug} />
 }

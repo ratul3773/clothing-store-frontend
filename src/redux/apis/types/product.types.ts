@@ -75,6 +75,7 @@ export type PublicVariant = {
   colorHex: string | null;
   size: string;
   sizeOrder: number;
+  available: number;
   inStock: boolean;
   lowStock: boolean;
 };

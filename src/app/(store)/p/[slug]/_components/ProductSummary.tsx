@@ -21,7 +21,7 @@ export default function ProductSummary({ p }: { p: Product }) {
       <div className="mt-4 flex items-center gap-4">
         <span className="text-lg font-semibold">{bdt(priceOf(p))}</span>
         {was > 0 && <span className="text-lg text-muted-foreground line-through">{bdt(was)}</span>}
-        {flash ? <Badge className="bg-accent text-accent-foreground">{`FLASH −${flash.discountPct}%`}</Badge> : p.offer ? <Badge>SALE</Badge> : null}
+        {flash ? <Badge className="bg-accent text-accent-foreground">{`FLASH −${flash.discountPct}%`}</Badge> : p.offer ? (p.badges.map((badge) => <Badge key={badge}>{badge}</Badge>)) : null}
         <span className="ml-auto flex items-center gap-1 text-sm"><Star size={15} className="fill-accent text-accent" /> {p.rating} <span className="text-muted-foreground">({reviewCount(p, reviews)})</span></span>
       </div>
       {flash && (

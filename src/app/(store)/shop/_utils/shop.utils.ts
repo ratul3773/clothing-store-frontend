@@ -1,5 +1,4 @@
 import { priceOf, totalStock, type Product } from '@/data/catalog'
-import { categoryLabel } from '@/lib/storefront'
 import type { ShopFilterState, SortKey } from '@/app/(store)/shop/_types/shop.types'
 
 const comparators: Record<SortKey, (a: Product, b: Product) => number> = {
@@ -19,6 +18,6 @@ export function filterAndSort(all: Product[], f: ShopFilterState): Product[] {
 }
 
 export function shopTitle(cat: string, sub: string | null) {
-  const label = cat === 'all' ? '' : categoryLabel(cat)
+  const label = cat === 'all' ? '' : cat.split('-').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ')
   return sub ? `${sub} ${label}`.trim() : cat === 'all' ? 'The shop' : label
 }

@@ -34,7 +34,7 @@ export default function SizePicker({ sizes, selected, avail, shake, stockFor, on
         })}
       </div>
       <p className="mt-3 h-5 text-sm">
-        {selected && avail !== null && (avail <= LOW_STOCK_THRESHOLD ? <span className="font-medium text-accent">Only {avail} left in {selected}</span> : <span className="text-moss">In stock</span>)}
+        {selected && avail !== null && (avail <= LOW_STOCK_THRESHOLD ? <span className="font-medium text-warning">Only {avail} left in {selected}</span> : <span className="text-success">In stock ({avail} left)</span>)}
       </p>
     </motion.div>
   )

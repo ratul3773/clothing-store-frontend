@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Check1, Range } from '@/components/ui/controls'
 import { bdt, cn } from '@/lib/utils'
 import { useCms } from '@/lib/useCms'
-import { getCategories, getSizes, getSubcategories } from '@/app/(store)/shop/_services/product.api'
 import type useProductFilters from '@/app/(store)/shop/_hooks/useProductFilters'
 
 type Filters = ReturnType<typeof useProductFilters>
@@ -13,7 +12,7 @@ type Filters = ReturnType<typeof useProductFilters>
 export default function ProductFilters({ f }: { f: Filters }) {
   useCms()
   const { cat, sub, sizes, price, bounds } = f
-  const categories = [{ cat: 'all', label: 'All' }, ...getCategories()]
+  const categories = [{ cat: 'all', label: 'All' }, ...f.categories]
   return (
     <div className="space-y-8">
       <div>
@@ -30,8 +29,8 @@ export default function ProductFilters({ f }: { f: Filters }) {
         <div>
           <p className="label-mono mb-3 text-muted-foreground">Type</p>
           <div className="flex flex-wrap gap-2">
-            {getSubcategories(cat).map((s) => (
-              <button key={s} onClick={() => f.toggleSub(s)} className={cn('label-mono rounded-full border px-3.5 py-2 transition', sub === s ? 'border-accent bg-accent text-accent-foreground' : 'border-foreground/30 hover:border-foreground')}>{s}</button>
+            {f.subcategories.map((s) => (
+              <button key={s.id} onClick={() => f.toggleSub(s.slug)} className={cn('label-mono rounded-full border px-3.5 py-2 transition', sub === s.slug ? 'border-accent bg-accent text-accent-foreground' : 'border-foreground/30 hover:border-foreground')}>{s.name}</button>
             ))}
           </div>
         </div>
@@ -39,7 +38,7 @@ export default function ProductFilters({ f }: { f: Filters }) {
       <div>
         <p className="label-mono mb-3 text-muted-foreground">Size</p>
         <div className="flex flex-wrap gap-2">
-          {getSizes().map((s) => (
+          {f.sizeOptions.map((s) => (
             <button key={s} onClick={() => f.toggleSize(s)} className={cn('grid h-10 min-w-10 place-items-center rounded-[3px] border px-2 text-sm transition hover:-translate-y-0.5', sizes.includes(s) ? 'border-accent bg-accent text-accent-foreground' : 'border-foreground/30 hover:border-foreground')}>{s}</button>
           ))}
         </div>
