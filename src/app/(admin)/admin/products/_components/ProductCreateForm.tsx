@@ -1,34 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
-import { useForm } from "react-hook-form";
+
 
 import { Btn, Card, CardHeader, PageHeader, Switch } from "@/components/cms/ui";
-import { useStore } from "@/components/providers/StoreProvider";
-import { useNavigate } from "@/lib/nav";
-import { apiErrorMessage } from "@/redux/api.utils";
-import {
-  useCreateProductMutation,
-  usePublishProductMutation,
-  useUploadImageMutation,
-} from "@/redux/apis/product.api";
-import type {
-  CreateProductPayload,
-  CreateProductVariantPayload,
-} from "@/redux/apis/types/product.types";
-
-import {
-  createColorsSchema,
-  productCoreSchema,
-  type ProductCoreFormValues,
-} from "../_schemas/product.schema";
-import {
-  stockMatrixKey,
-  type CreateColorDraft,
-} from "../_types/products.types";
-import { parseOptionalInt, toCorePayload } from "../_utils/products.utils";
 import BasicSection from "./BasicSection";
 import DetailsSection from "./DetailsSection";
 import ImagesCreateSection from "./ImagesCreateSection";
@@ -37,20 +12,6 @@ import ProductPreview from "./ProductPreview";
 import VariantsCreateSection from "./VariantsCreateSection";
 import { useProduct } from "../_hooks/useCreateProduct";
 
-const defaultValues: ProductCoreFormValues = {
-  name: "",
-  code: "",
-  categoryId: "",
-  regularPrice: "",
-  description: "",
-  material: "",
-  fit: "",
-  careInstructions: "",
-  badges: [],
-  isExchangeEligible: true,
-  seoTitle: "",
-  seoDescription: "",
-};
 
 export default function ProductCreateForm() {
   const {

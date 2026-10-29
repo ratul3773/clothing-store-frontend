@@ -63,6 +63,7 @@ function CategoryModalContent({
 
 const [selectedImage, setSelectedImage] = useState<File | null>(null);
 const [imagePreview, setImagePreview] = useState<string | null>(null);
+const [imageRemoved, setImageRemoved] = useState(false);
 
 useEffect(() => {
   if (!selectedImage) {
@@ -103,6 +104,10 @@ useEffect(() => {
   });
 
   const saving = createState.isLoading || updateState.isLoading;
+  const parentId = form.watch("parentId");
+  const existingImageUrl = imageRemoved ? null : editing?.imageUrl;
+  const imageRequired = !parentId;
+  const hasImage = Boolean(selectedImage || existingImageUrl);
 
   const onSubmit = form.handleSubmit(async (values) => {
   const sortOrder =
@@ -123,24 +128,34 @@ useEffect(() => {
       await updateCategory({ id: editing.id, data: payload }).unwrap();
 
       if (selectedImage) {
+        if(values.parentId) {
+          setSelectedImage(null);
+        }
+      else{
         await uploadImage({
           categoryId: editing.id,
           file: selectedImage,
         }).unwrap();
       }
+    }
 
       toast("Category updated.");
     } else {
       const created = await createCategory(payload).unwrap();
 
       if (selectedImage) {
+        if(values.parentId) {
+          setSelectedImage(null);
+        }
+        else {
         await uploadImage({
           categoryId: created.id,
           file: selectedImage,
         }).unwrap();
 
         toast("Category created with image.");
-      } else {
+      }
+     } else {
         toast("Category created.");
       }
     }
@@ -167,7 +182,7 @@ useEffect(() => {
             type="submit"
             form="category-form"
             variant="primary"
-            disabled={saving || (!editing && !selectedImage)}
+            disabled={saving || (imageRequired && !hasImage)}
           >
             {saving
               ? "Saving…"
@@ -237,17 +252,17 @@ useEffect(() => {
           />
         </div>
 
-        <div className="rounded border border-border p-3">
+        {!parentId && (<div className="rounded border border-border p-3">
           <p className="mb-2 text-xs font-medium text-foreground/80">
-            Category image {!editing && <span className="text-destructive">*</span>}
+             Category image {imageRequired && <span className="text-destructive">*</span>}
           </p>
 
           <div className="flex items-center gap-3">
             <div className="size-20 shrink-0 overflow-hidden rounded border border-border bg-muted">
-              {imagePreview || editing?.imageUrl ? (
+              {imagePreview || existingImageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <Image
-                  src={imagePreview ?? editing?.imageUrl ?? ""}
+                   src={imagePreview ?? existingImageUrl ?? ""}
                   width={80}
                   height={80}
                   alt="Category preview"
@@ -263,7 +278,7 @@ useEffect(() => {
                 disabled={uploadState.isLoading || saving}
               >
                 <ImagePlus className="size-3.5" />
-                {(selectedImage || editing?.imageUrl) ? "Change image" : "Choose image"}
+                 {(selectedImage || existingImageUrl) ? "Change image" : "Choose image"}
               </Btn>
 
               {selectedImage && (
@@ -277,15 +292,16 @@ useEffect(() => {
                 </Btn>
               )}
 
-              {editing?.imageUrl && !selectedImage && (
+              {editing && existingImageUrl && !selectedImage && (
                 <Btn
                   size="sm"
                   variant="dangerOutline"
                   disabled={uploadState.isLoading || removeState.isLoading}
                   onClick={async () => {
                     try {
-                      await removeImage(editing.id).unwrap();
-                      toast("Category image removed.");
+                       await removeImage(editing.id).unwrap();
+                       setImageRemoved(true);
+                       toast("Category image removed.");
                     } catch (error) {
                       toast(
                         apiErrorMessage(
@@ -300,11 +316,15 @@ useEffect(() => {
                 </Btn>
               )}
 
-              {!editing && (
-                <p className="mt-2 text-xs text-muted-foreground">
-                  An image is required to create a category. JPEG, PNG, WebP, or AVIF · max 5 MB.
-                </p>
-              )}
+              {imageRequired ? (
+                 <p className="mt-2 text-xs text-muted-foreground">
+                   An image is required for top-level categories. JPEG, PNG, WebP, or AVIF · max 5 MB.
+                 </p>
+               ) : (
+                 <p className="mt-2 text-xs text-muted-foreground">
+                   Optional for subcategories. JPEG, PNG, WebP, or AVIF · max 5 MB.
+                 </p>
+               )}
             </div>
           </div>
 
@@ -325,11 +345,10 @@ useEffect(() => {
                   setSelectedImage(file);
                 }
               }
-
               event.target.value = "";
             }}
           />
-        </div>
+        </div>)}
       </form>
     </Modal>
   );

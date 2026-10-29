@@ -82,6 +82,7 @@ export function toCoreFormValues(product: AdminProduct): ProductCoreFormValues {
   return {
     name: product.name,
     code: product.code ?? "",
+    parentCategoryId: product.category.parentId ?? "",
     categoryId: product.category.id,
     regularPrice: String(product.regularPrice),
     description: product.description ?? "",

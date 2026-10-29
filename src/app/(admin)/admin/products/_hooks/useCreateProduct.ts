@@ -18,6 +18,7 @@ import { apiErrorMessage } from "@/redux/api.utils";
 const defaultValues: ProductCoreFormValues = {
   name: "",
   code: "",
+  parentCategoryId: "",
   categoryId: "",
   regularPrice: "",
   description: "",

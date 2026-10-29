@@ -52,7 +52,8 @@ export const productCoreSchema = z.object({
       productCode,
       "Code may contain letters, numbers, underscores, and hyphens",
     ),
-  categoryId: z.string().uuid("Select a category"),
+  parentCategoryId: z.string().uuid("Select a category"),
+  categoryId: z.string().uuid("Select a subcategory"),
   regularPrice: positivePrice("Regular price"),
   description: z
     .string()

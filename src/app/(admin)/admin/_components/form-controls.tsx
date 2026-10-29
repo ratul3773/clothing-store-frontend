@@ -97,11 +97,13 @@ export function SelectField<T extends FieldValues>({
   className,
   options,
   placeholder,
+  onValueChange,
   ...select
 }: BaseProps<T> &
   Omit<SelectHTMLAttributes<HTMLSelectElement>, "name" | "form" | "value" | "defaultValue"> & {
     options: SelectOption[];
     placeholder?: string;
+    onValueChange?: (value: string) => void;
   }) {
   const error = useFieldError(form, name);
   return (
@@ -116,7 +118,10 @@ export function SelectField<T extends FieldValues>({
             ref={field.ref}
             value={String(field.value ?? "")}
             onBlur={field.onBlur}
-            onChange={(event) => field.onChange(event.target.value)}
+            onChange={(event) => {
+              field.onChange(event.target.value);
+              onValueChange?.(event.target.value);
+            }}
           >
             {placeholder && <option value="">{placeholder}</option>}
             {options.map((option) => (

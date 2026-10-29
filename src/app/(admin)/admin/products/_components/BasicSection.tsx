@@ -19,12 +19,35 @@ export default function BasicSection({
   const { data: categories, isLoading } = useGetAdminCategoriesQuery();
   const rows = categories ? toCategoryRows(categories) : [];
   const name = form.watch("name");
+  const parentCategoryId = form.watch("parentCategoryId");
 
-  const categoryOptions = rows.map((category) => ({
-    value: category.id,
-    label: `${"— ".repeat(category.depth)}${category.name}`,
-    disabled: !category.isActive,
-  }));
+  const parentOptions = rows
+    .filter((category) => category.depth === 0)
+    .map((category) => ({
+      value: category.id,
+      label: category.name,
+      disabled: !category.isActive,
+    }));
+  const subcategoryOptions = rows
+    .filter((category) => category.parentId === parentCategoryId)
+    .map((category) => ({
+      value: category.id,
+      label: category.name,
+      disabled: !category.isActive,
+    }));
+
+  const categoryHint = parentCategoryId
+    ? "Choose the subcategory where this product belongs."
+    : "Choose a category first.";
+
+  const parentChange = (value: string) => {
+    form.setValue("parentCategoryId", value, { shouldValidate: true });
+    form.setValue("categoryId", "", { shouldValidate: true });
+  };
+
+  const subcategoryOptionsWithPlaceholder = subcategoryOptions.length
+    ? subcategoryOptions
+    : [{ value: "__empty__", label: "No subcategories available", disabled: true }];
 
   return (
     <Card>
@@ -49,15 +72,25 @@ export default function BasicSection({
         />
         <SelectField
           form={form}
-          name="categoryId"
+          name="parentCategoryId"
           label="Category"
           placeholder={isLoading ? "Loading categories…" : "Select a category"}
           disabled={isLoading}
-          options={categoryOptions}
+          options={parentOptions}
+          onValueChange={parentChange}
+          hint={categoryHint}
+        />
+        <SelectField
+          form={form}
+          name="categoryId"
+          label="Subcategory"
+          placeholder={!parentCategoryId ? "Select a category first" : "Select a subcategory"}
+          disabled={isLoading || !parentCategoryId || subcategoryOptions.length === 0}
+          options={subcategoryOptionsWithPlaceholder}
           hint={
             name.trim()
               ? `Slug preview: ${slugPreview(name) || "—"}`
-              : "Only active categories can be published."
+              : "Products must be assigned to an active subcategory."
           }
         />
         <BadgesField

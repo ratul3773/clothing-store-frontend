@@ -34,6 +34,7 @@ export type PublicProductQuery = PaginationQuery & {
   maxPrice?: number;
   badge?: Badge;
   inStock?: "true" | "false";
+  offers?: "true" | "false";
   sort?: ProductSort;
 };
 
@@ -123,6 +124,7 @@ export type PublicProduct = {
     id: string;
     name: string;
     slug: string;
+    parentId: string | null;
   };
   regularPrice: number;
   effectivePrice: number;
