@@ -8,7 +8,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import ReduxProvider from '@/components/providers/redux-provider'
 import { Suspense } from 'react'
-import Loading from '@/components/common/Loading'
+import UniversalSkeleton from '@/components/common/UniversalSkeleton'
 const display = Big_Shoulders({ subsets: ['latin'], weight: ['500', '700', '800', '900'], variable: '--f-display', display: 'swap' })
 const sans = Hanken_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--f-sans', display: 'swap' })
 const mono = DM_Mono({ subsets: ['latin'], weight: ['400', '500'], variable: '--f-mono', display: 'swap' })
@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ThemeProvider>
-          <Suspense fallback={<Loading text="Loading..." />}>
+          <Suspense fallback={<UniversalSkeleton />}>
             <ReduxProvider>
               <StoreProvider>
                 <TooltipProvider>

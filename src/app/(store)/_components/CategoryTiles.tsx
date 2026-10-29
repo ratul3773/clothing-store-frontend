@@ -5,17 +5,31 @@ import { ArrowUpRight } from 'lucide-react'
 import Reveal from '@/components/common/Reveal'
 import { useCms } from '@/lib/useCms'
 import { getCategoryTiles } from '@/app/(store)/_services/home.api'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default function CategoryTiles() {
   useCms()
-  const tiles = getCategoryTiles()
-  if (tiles.length === 0) return null
+  const { tiles, isLoading, isError } = getCategoryTiles()
+
   return (
     <section className="grid gap-4 lg:grid-cols-3">
+      {isLoading && (
+        <>
+        <Skeleton className="h-50 w-full rounded-[3px]" />
+        <Skeleton className="h-50 w-full rounded-[3px]" />
+        <Skeleton className="h-50 w-full rounded-[3px]" />
+        </>
+      )}
+      {isError && (
+        <div className="col-span-full text-center text-sm text-destructive">Failed to load categories</div>
+      )}
+      {tiles.length === 0 && !isLoading && !isError && (
+        <div className="col-span-full text-center text-sm text-muted-foreground">No categories available</div>
+      )}
       {tiles.map((c, k) => (
         <Reveal key={c.cat} delay={k * 0.1}>
           <Link href={`/shop?cat=${encodeURIComponent(c.cat)}`} className="group relative block aspect-[16/10] overflow-hidden rounded-[3px] bg-foreground">
-            <img src={c.image} alt={c.title} className="absolute inset-0 h-full w-full object-cover opacity-70 transition duration-[1200ms] group-hover:scale-110 group-hover:opacity-90" />
+            <img src={c.image!} alt={c.title} className="absolute inset-0 h-full w-full object-cover opacity-70 transition duration-[1200ms] group-hover:scale-110 group-hover:opacity-90" />
             <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent" />
             <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-6 text-background">
               <div>
