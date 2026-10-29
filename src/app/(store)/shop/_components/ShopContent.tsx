@@ -22,7 +22,9 @@ export default function ShopContent() {
       </AnimatePresence>
        <div className="mt-10 grid gap-10 lg:grid-cols-[15rem_1fr]">
         <aside className="hidden lg:block"><div className="sticky top-32">{filters}</div></aside>
-         <div><ProductGrid list={f.list} onClear={f.reset} loading={f.isLoading} error={f.isError ? f.error : undefined} /></div>
+         <div>{f.isLoading}
+          <ProductGrid list={f.list} onClear={f.reset} loading={f.isLoading} error={f.isError ? f.error : undefined} />
+          </div>
       </div>
     </>
   )

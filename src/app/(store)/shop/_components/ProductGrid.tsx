@@ -8,13 +8,14 @@ import ProductCard from '@/components/common/ProductCard'
 import EmptyState from '@/app/(store)/shop/_components/EmptyState'
 import type { Product } from '@/data/catalog'
 import Loading from '@/components/common/Loading'
+import ProductGridSkeleton from '@/components/common/ProductSkeleton/ProductGridSkeleton'
 
 const PAGE_SIZE = 6
 
 export default function ProductGrid({ list, onClear, loading, error }: { list: Product[]; onClear: () => void; loading?: boolean; error?: unknown }) {
   useCms()
   const pg = usePagination(list, PAGE_SIZE, list.map((p) => p.id).join())
-  if (loading && list.length === 0) return <div className="py-20"><Loading text="Loading products..." /></div>
+  if (loading && list.length === 0) return <ProductGridSkeleton count={12} />
   if (error && list.length === 0) return <EmptyState onClear={onClear} />
   if (list.length === 0) return <EmptyState onClear={onClear} />
   return (

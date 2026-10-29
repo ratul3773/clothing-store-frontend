@@ -7,20 +7,29 @@ import ProductCard from '@/components/common/ProductCard'
 import { useCms } from '@/lib/useCms'
 import useNow from '@/lib/useNow'
 import { getBestSellers } from '@/app/(store)/_services/home.api'
+import { useGetProductsQuery } from '@/redux/apis/product.api'
+import { toStorefrontProduct } from '@/lib/public-product'
+import ProductGridSkeleton from '@/components/common/ProductSkeleton/ProductGridSkeleton'
 
 export default function BestSellers() {
   useCms()
   const now = useNow(30_000)
-  const list = getBestSellers()
-  if (list.length === 0) return null
+  // const list = getBestSellers()
+  const { data: list, isLoading } = useGetProductsQuery({
+    limit:10,
+    badge: "BEST_SELLER",
+  })
+  
   return (
     <section className="mt-28">
       <Reveal className="mb-10 flex items-end justify-between">
-        <h2 className="font-display text-4xl">Best <span className="text-accent">sellers</span></h2>
-        <Link href="/shop" className="label-mono group hidden items-center gap-2 sm:flex">View all <ArrowUpRight size={14} className="transition group-hover:translate-x-1 group-hover:-translate-y-1" /></Link>
+        <h2 className="font-display text-2xl sm:text-4xl">Best <span className="text-accent">sellers</span></h2>
+        <Link href="/shop?badge=BEST_SELLER" className="label-mono group items-center gap-2 flex">View all <ArrowUpRight size={14} className="transition group-hover:translate-x-1 group-hover:-translate-y-1" /></Link>
       </Reveal>
+      {list?.items?.length === 0 && <p className="text-center text-muted-foreground">No best sellers found.</p>}
+      {isLoading && <ProductGridSkeleton count={4} />}
       <div className="grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4 lg:gap-x-6">
-        {list.map((p, i) => <ProductCard key={p.id} p={p} index={i} now={now ?? undefined} />)}
+        {list?.items?.map((p, i) => <ProductCard key={p.id} p={toStorefrontProduct(p)} index={i} now={now ?? undefined} />)}
       </div>
     </section>
   )
