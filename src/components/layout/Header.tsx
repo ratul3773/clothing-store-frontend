@@ -8,9 +8,9 @@ import ThemeToggle from '@/components/common/ThemeToggle'
 import { Heart, Menu, Search, ShoppingBag, User, X } from 'lucide-react'
 import { useStore } from '@/components/providers/StoreProvider'
 import NavMenu from '@/components/layout/NavMenu'
-import { taxonomy } from '@/data/catalog'
 import { settings } from '@/data/site'
 import { useCms } from '@/lib/useCms'
+import { useGetCategoriesQuery } from '@/redux/apis/category.api'
 import BrandName from '@/components/common/BrandName'
 import { Tip } from '@/components/ui/controls'
 import { Button } from '../ui/button'
@@ -22,6 +22,7 @@ export default function Header({profileButton}: {profileButton: React.ReactNode}
   const [q, setQ] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [menu, setMenu] = useState(false)
+  const { data: categories = [] } = useGetCategoriesQuery()
   const items = settings.announcements.filter((a) => a.trim())
 
   return (
@@ -126,13 +127,13 @@ export default function Header({profileButton}: {profileButton: React.ReactNode}
               className="overflow-hidden border-t border-border lg:hidden"
             >
               <div className="flex flex-col px-5 py-3">
-                {[{ to: '/shop', label: 'All', subs: [] as string[], cat: '' }, ...taxonomy.map((t) => ({ to: `/shop?cat=${t.cat}`, label: t.label, subs: t.subs, cat: t.cat })), { to: '/shop?offers=1', label: 'Offers', subs: [] as string[], cat: '' }, { to: '/contact', label: 'Contact', subs: [] as string[], cat: '' }, { to: '/account', label: 'Account', subs: [] as string[], cat: '' }].map((n, i) => (
+                {[{ to: '/shop', label: 'All', subs: [] as { slug: string; name: string }[], cat: '' }, ...categories.map((category) => ({ to: `/shop?cat=${category.slug}`, label: category.name, subs: (category.children ?? []).map((subcategory) => ({ slug: subcategory.slug, name: subcategory.name })), cat: category.slug })), { to: '/shop?offers=1', label: 'Offers', subs: [] as { slug: string; name: string }[], cat: '' }, { to: '/contact', label: 'Contact', subs: [] as { slug: string; name: string }[], cat: '' }, { to: '/account', label: 'Account', subs: [] as { slug: string; name: string }[], cat: '' }].map((n, i) => (
                   <motion.div key={n.label} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: i * 0.05 }} className="border-b border-border/60 py-2">
                     <Link href={n.to} onClick={() => setMenu(false)} className="block text-lg">{n.label}</Link>
                     {n.subs.length > 0 && (
                       <div className="mt-1 flex flex-wrap gap-2 pb-2">
-                        {n.subs.map((s) => (
-                          <Link key={s} href={`/shop?cat=${n.cat}&sub=${s}`} onClick={() => setMenu(false)} className="rounded-full border border-foreground/30 px-3 py-1.5 transition hover:bg-foreground hover:text-background">{s}</Link>
+                        {n.subs.map((subcategory) => (
+                          <Link key={subcategory.slug} href={`/shop?cat=${n.cat}&sub=${subcategory.slug}`} onClick={() => setMenu(false)} className="rounded-full border border-foreground/30 px-3 py-1.5 transition hover:bg-foreground hover:text-background">{subcategory.name}</Link>
                         ))}
                       </div>
                     )}
