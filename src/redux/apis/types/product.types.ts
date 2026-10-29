@@ -28,6 +28,7 @@ export type PaginationQuery = {
 };
 
 export type PublicProductQuery = PaginationQuery & {
+  ids?: string[];
   q?: string;
   category?: string;
   minPrice?: number;

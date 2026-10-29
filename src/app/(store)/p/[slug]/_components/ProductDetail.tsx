@@ -17,7 +17,7 @@ export default function ProductDetail({ slug }: { slug: string }) {
   if (isLoading) {
     return <ProductDetailSkeleton />
   }
-
+  
   if (isError || !data) {
     return (
       <div className="py-40 text-center">
