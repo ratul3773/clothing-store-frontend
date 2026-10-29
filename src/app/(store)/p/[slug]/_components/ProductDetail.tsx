@@ -5,7 +5,7 @@ import ProductView from '@/app/(store)/p/[slug]/_components/ProductView'
 import { useCms } from '@/lib/useCms'
 import { useGetProductQuery } from '@/redux/apis/product.api'
 import { toStorefrontProduct } from '@/lib/public-product'
-import Loading from '@/components/common/Loading'
+import ProductDetailSkeleton from '@/app/(store)/p/[slug]/_components/ProductDetailSkeleton'
 
 /** Resolves a product from an explicit slug (query-string route) or the dynamic route param. */
 export default function ProductDetail({ slug }: { slug: string }) {
@@ -15,7 +15,7 @@ export default function ProductDetail({ slug }: { slug: string }) {
     { skip: !slug },
   )
   if (isLoading) {
-    return <div className="py-40"><Loading text="Loading product..." /></div>
+    return <ProductDetailSkeleton />
   }
 
   if (isError || !data) {
