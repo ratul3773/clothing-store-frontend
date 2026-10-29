@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ThemeProvider>
-          <Suspense fallback={<UniversalSkeleton />}>
+          {/* <Suspense fallback={<UniversalSkeleton />}> */}
             <ReduxProvider>
               <StoreProvider>
                 <TooltipProvider>
@@ -35,7 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </TooltipProvider>
               </StoreProvider>
             </ReduxProvider>
-          </Suspense>
+          {/* </Suspense> */}
         </ThemeProvider>
         <Toaster />
       </body>

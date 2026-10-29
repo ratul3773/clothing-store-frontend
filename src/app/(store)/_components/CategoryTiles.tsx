@@ -12,7 +12,11 @@ export default function CategoryTiles() {
   const { tiles, isLoading, isError } = getCategoryTiles()
 
   return (
-    <section className="grid gap-4 lg:grid-cols-3">
+    <section className="mt-24">
+      <Reveal className="mb-10 flex items-end justify-between">
+        <h2 className="font-display text-2xl sm:text-4xl">Popular <span className="text-accent">Categories</span></h2>
+      </Reveal>
+    <div className="grid gap-4 lg:grid-cols-3">
       {isLoading && (
         <>
         <Skeleton className="h-50 w-full rounded-[3px]" />
@@ -41,6 +45,7 @@ export default function CategoryTiles() {
           </Link>
         </Reveal>
       ))}
+    </div>
     </section>
   )
 }

@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { useNavigate } from '@/lib/nav'
+import { useNavigate, useSearchParams } from '@/lib/nav'
+import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'motion/react'
 import ThemeToggle from '@/components/common/ThemeToggle'
 import { Heart, Menu, Search, ShoppingBag, User, X } from 'lucide-react'
@@ -15,7 +16,7 @@ import BrandName from '@/components/common/BrandName'
 import { Tip } from '@/components/ui/controls'
 import { Button } from '../ui/button'
 
-export default function Header({profileButton}: {profileButton: React.ReactNode}) {
+export default function Header({ profileButton }: { profileButton: React.ReactNode }) {
   useCms()
   const { count, setCartOpen, wishlist } = useStore()
   const navigate = useNavigate()
@@ -24,6 +25,43 @@ export default function Header({profileButton}: {profileButton: React.ReactNode}
   const [menu, setMenu] = useState(false)
   const { data: categories = [] } = useGetCategoriesQuery()
   const items = settings.announcements.filter((a) => a.trim())
+  const pathname = usePathname()
+  const [params] = useSearchParams()
+  const urlQ = params.get('q') ?? ''
+
+  useEffect(() => {
+    setQ(urlQ)
+    setSearchOpen(!!urlQ)
+  }, [urlQ])
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const next = q.trim()
+    if (!next) return
+    if (pathname === '/shop' && next === urlQ) return // same search: no navigation, no request
+    navigate(`/shop?q=${encodeURIComponent(next)}`)
+  }
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    if (!searchOpen) {
+      e.preventDefault() // just open, don't submit
+      setSearchOpen(true)
+      requestAnimationFrame(() => searchInputRef.current?.focus())
+      return
+    }
+    if (!q.trim()) {
+      e.preventDefault() // open + empty: close it
+      setSearchOpen(false)
+    }
+    // open + has text: fall through and let the form submit
+  }
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (searchOpen) {
+      searchInputRef.current?.focus();
+    }
+  }, [searchOpen]);
 
   return (
     <header className="sticky top-0 z-50">
@@ -48,15 +86,9 @@ export default function Header({profileButton}: {profileButton: React.ReactNode}
           </Link>
           <div className="ml-6"><NavMenu /></div>
           <div className="ml-auto flex items-center gap-1">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                navigate(`/shop?q=${encodeURIComponent(q)}`)
-                setSearchOpen(false)
-              }}
-              className="flex items-center"
-            >
+            <form onSubmit={handleSubmit} className="flex items-center">
               <motion.input
+                ref={searchInputRef}
                 aria-label="Search products or SKU"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
@@ -64,36 +96,38 @@ export default function Header({profileButton}: {profileButton: React.ReactNode}
                 initial={false}
                 animate={{ width: searchOpen ? 190 : 0, opacity: searchOpen ? 1 : 0, paddingInline: searchOpen ? 12 : 0 }}
                 className="h-9 border-b border-foreground bg-transparent text-sm outline-none"
+                tabIndex={searchOpen ? 0 : -1}
               />
-              <Button 
-              type={searchOpen && q ? 'submit' : 'button'} 
-              size="icon" 
-              variant="outline"
-              onClick={() => !q && setSearchOpen((s) => !s)} 
-              aria-label="Search" 
-              className="grid h-10 border-none w-10 place-items-center rounded-full">
+              <Button
+                type="submit"
+                size="icon"
+                variant="outline"
+                onClick={handleButtonClick}
+                aria-label="Search"
+                className="grid h-10 w-10 place-items-center rounded-full border-none"
+              >
                 <Search size={19} />
               </Button>
             </form>
             <ThemeToggle />
-              <Tip label="Wishlist">
+            <Tip label="Wishlist">
               <Link href="/account?tab=wishlist" aria-label="Wishlist">
-              <Button
-                aria-label="Wishlist"
-                size="icon"
-                variant="outline"
-                className="h-10 w-10 border-none place-items-center rounded-full"
-              >
-                <Heart size={19} />
-                 {wishlist.length > 0 && (
-                  <span className="absolute -right-2 -top-1.5 grid size-4 place-items-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
-                    {wishlist.length}
-                  </span>
-                )}
-              </Button>
+                <Button
+                  aria-label="Wishlist"
+                  size="icon"
+                  variant="outline"
+                  className="h-10 w-10 border-none place-items-center rounded-full"
+                >
+                  <Heart size={19} />
+                  {wishlist.length > 0 && (
+                    <span className="absolute -right-2 -top-1.5 grid size-4 place-items-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
+                      {wishlist.length}
+                    </span>
+                  )}
+                </Button>
               </Link>
             </Tip>
-            
+
             <Button
               onClick={() => setCartOpen(true)}
               aria-label={`Cart, ${count} items`}

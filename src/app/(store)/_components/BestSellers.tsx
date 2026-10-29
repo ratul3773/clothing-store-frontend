@@ -21,7 +21,7 @@ export default function BestSellers() {
   })
   
   return (
-    <section className="mt-28">
+    <section className="mt-24">
       <Reveal className="mb-10 flex items-end justify-between">
         <h2 className="font-display text-2xl sm:text-4xl">Best <span className="text-accent">sellers</span></h2>
         <Link href="/shop?badge=BEST_SELLER" className="label-mono group items-center gap-2 flex">View all <ArrowUpRight size={14} className="transition group-hover:translate-x-1 group-hover:-translate-y-1" /></Link>
