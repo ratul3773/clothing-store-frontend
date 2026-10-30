@@ -13,17 +13,15 @@ export interface AuthState {
 
 export const getServerSession = cache(async () => {
   const {data: session,error} = await authClient.getSession({
-    query:{
-      disableCookieCache: true
-    },
     fetchOptions: {
-      headers: await headers()
+      headers: await headers(),
+      signal: AbortSignal.timeout(5000),
     }
   });
   if(error) {
     console.error("Error fetching session:", error);
   }
-  if(!session || !session.user || !session.session.token || session.session.expiresAt < new Date()) {
+  if(!session || !session.user) {
     return {
       isAuthenticated: false,
       role: "",

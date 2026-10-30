@@ -3,8 +3,8 @@ import ProductsView from './_components/ProductsView'
 
 export default function ProductsPage() {
   return (
-    <Suspense fallback={null}>
+    // <Suspense fallback={null}>
       <ProductsView />
-    </Suspense>
+    // </Suspense>
   )
 }

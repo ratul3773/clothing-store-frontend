@@ -91,7 +91,7 @@ export function Pick({ value, onChange, options, className, label }: { value: st
           'flex h-11 items-center justify-between gap-3 rounded-[3px] border border-foreground/50 bg-card px-4 text-sm transition hover:border-accent',
           className,
         )}
-      >
+      >                                                          
         <Select.Value />
         <Select.Icon>
           <ChevronDown size={16} />

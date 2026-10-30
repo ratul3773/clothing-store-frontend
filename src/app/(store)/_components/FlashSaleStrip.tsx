@@ -8,6 +8,7 @@ import Countdown from '@/components/common/Countdown'
 import useNow from '@/lib/useNow'
 import { useCms } from '@/lib/useCms'
 import { liveFlash, visibleProducts } from '@/lib/storefront'
+import ProductCarousel from '@/components/common/ProductCarousel'
 
 /** Home page flash-sale strip, rendered only while a campaign is live. */
 export default function FlashSaleStrip() {
@@ -33,9 +34,7 @@ export default function FlashSaleStrip() {
             <Countdown endsAt={f.endsAt} />
           </div>
         </Reveal>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-10 text-background lg:grid-cols-4 lg:gap-x-6 [&_.text-muted-foreground]:text-background/60">
-          {list.map((p, i) => <ProductCard key={p.id} p={p} index={i} now={now ?? undefined} />)}
-        </div>
+        <ProductCarousel items={list} className="text-background [&_.text-muted-foreground]:text-background/60" />
         <Link href="/shop?offers=1" className="label-mono group mt-10 inline-flex items-center gap-2">Shop all offers <ArrowUpRight size={14} className="transition group-hover:-translate-y-1 group-hover:translate-x-1" /></Link>
       </div>
     </section>

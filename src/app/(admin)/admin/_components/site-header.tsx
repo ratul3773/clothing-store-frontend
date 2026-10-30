@@ -22,9 +22,7 @@ export default function SiteHeader() {
     return(
         <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-3 border-b border-border bg-card px-4">
             <div className="flex min-w-0 items-center gap-2">
-              <SidebarTrigger aria-label="Toggle sidebar">
-                <Menu className="size-4" />
-              </SidebarTrigger>
+              <SidebarTrigger />
 
               <span className="truncate text-sm font-medium">
                 {current?.label ?? "Admin"}
@@ -32,7 +30,7 @@ export default function SiteHeader() {
             </div>
 
             <div className="flex shrink-0 items-center gap-2">
-              <ThemeToggle className="size-8" />
+              <ThemeToggle />
 
               <a
                 href="/"

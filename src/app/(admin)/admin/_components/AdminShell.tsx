@@ -25,7 +25,7 @@ export default function AdminShell({
         <AdminSidebar />
         <SidebarInset className="min-w-0">
           <SiteHeader />
-          <main className="mx-auto w-full max-w-[1500] flex-1 p-4 sm:p-6">
+          <main className="mx-auto w-full max-w-[1500] flex-1 p-4 sm:p-6 mb-20">
             {children}
           </main>
         </SidebarInset>

@@ -1,4 +1,4 @@
-export type SortKey = 'featured' | 'low' | 'high' | 'rating'
+export type SortKey = 'newest' | 'name_asc' | 'name_desc' | 'low' | 'high'
 
 export interface SortOption {
   value: SortKey
@@ -11,7 +11,7 @@ export interface ShopFilterState {
   sub: string | null
   offersOnly: boolean
   inStock: boolean
-  sizes: string[]
+  badge: import('@/redux/apis/types/product.types').Badge | ''
   price: [number, number] | null
   sort: string
 }

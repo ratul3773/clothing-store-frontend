@@ -36,20 +36,10 @@ async function onSubmit(values: SignUpValues) {
                 );
                 return;
             }
-            toast.success("Account created successfully. Sending verification code.");
-            const { data, error } = await authClient.emailOtp.sendVerificationOtp({
-                email: values.email, // required, Email address to send the OTP.
-                type: "email-verification", // required, Type of the OTP.
-            });
-            if (data?.success) {
                 const expiry = Date.now() + RESEND_COOLDOWN * 1000;
                 localStorage.setItem(RESEND_STORAGE_KEY, String(expiry));
                 toast.success("Verification code sent to your email.Please check your inbox and spam folder.");
                 setShowOtp(true);
-            }
-            else {
-                setErrorMessage(error?.message || "An error occurred while sending the verification code.");
-            }
         } catch {
             setErrorMessage("Something went wrong. Please try again.");
         }

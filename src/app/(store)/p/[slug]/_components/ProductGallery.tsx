@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -11,12 +12,23 @@ interface Props { p: Product; color: Product['colors'][number]; onSelect: (i: nu
 export default function ProductGallery({ p, color, onSelect }: Props) {
   useCms()
   const flash = activeFlash(p)
-  const main = p.images[color.image] ?? p.images[0]
+  const [selection, setSelection] = useState({ colorImage: color.image, image: color.image >= 0 ? color.image : 0 })
+  const selectedImage = selection.colorImage === color.image
+    ? selection.image
+    : color.image >= 0
+      ? color.image
+      : 0
+
+  const main = p.images[selectedImage] ?? p.images[0]
   return (
     <div className="grid grid-cols-[4.5rem_1fr] gap-4">
       <div className="space-y-3">
         {p.images.map((im, i) => (
-          <button key={i} onClick={() => onSelect(i % p.colors.length)} className={cn('block aspect-[4/5] w-full overflow-hidden rounded-[2px] border-2 transition', color.image === i ? 'border-accent' : 'border-transparent opacity-60 hover:opacity-100')}>
+          <button key={i} onClick={() => {
+            setSelection({ colorImage: color.image, image: i })
+            const colorIndex = p.colors.findIndex((candidate) => candidate.image === i)
+            if (colorIndex >= 0) onSelect(colorIndex)
+          }} className={cn('block aspect-[4/5] w-full overflow-hidden rounded-[2px] border-2 transition', selectedImage === i ? 'border-accent' : 'border-transparent opacity-60 hover:opacity-100')}>
             <img src={im} alt="" className="h-full w-full object-cover" />
           </button>
         ))}

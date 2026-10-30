@@ -1,102 +1,144 @@
-'use client'
+"use client";
 
-import { useMemo, useState } from 'react'
-import { Plus } from 'lucide-react'
-import { Btn, Card, PageHeader } from '@/components/cms/ui'
-import AlertDialogText from '@/components/common/Alert-Dialogue'
-import { settings } from '@/data/site'
-import { useCms } from '@/lib/useCms'
-import { useNavigate } from '@/lib/nav'
-import { useStore } from '@/components/providers/StoreProvider'
-import { totalStock, type Product } from '@/data/catalog'
-import { listProducts, removeMany, setStatus, duplicateProduct } from '../_services/products.api'
-import { stockState } from '../_utils/products.utils'
-import ProductFilters, { defaultFilters, type Filters } from './ProductFilters'
-import ProductsTable from './ProductsTable'
-import InventoryTable from './InventoryTable'
+import { useState } from "react";
+import { Plus } from "lucide-react";
+
+import { Btn, Card, Empty, PageHeader } from "@/components/cms/ui";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useNavigate } from "@/lib/nav";
+import { apiErrorMessage } from "@/redux/api.utils";
+import { useGetAdminProductsQuery } from "@/redux/apis/product.api";
+import type { AdminProduct, AdminProductQuery } from "@/redux/apis/types/product.types";
+
+import { PAGE_SIZE } from "../_constants/products.constants";
+import {
+  defaultProductFilters,
+  type ProductFilters as Filters,
+  type ProductTab,
+} from "../_types/products.types";
+import InventoryTable from "./InventoryTable";
+import ProductFilters from "./ProductFilters";
+import ProductsTable from "./ProductsTable";
 
 export default function ProductList() {
-  const ver = useCms()
-  const { toast } = useStore()
-  const go = useNavigate()
-  const [tab, setTab] = useState<'products' | 'inventory'>('products')
-  const [f, setF] = useState<Filters>(defaultFilters)
-  const [selected, setSelected] = useState<string[]>([])
-  const [confirm, setConfirm] = useState<string[] | null>(null)
-  const low = settings.orders.lowStock
+  const go = useNavigate();
+  const [tab, setTab] = useState<ProductTab>("products");
+  const [page, setPage] = useState(1);
+  const [filters, setFilters] = useState<Filters>(defaultProductFilters);
+  const debouncedQuery = useDebouncedValue(filters.q, 350);
 
-  const rows = useMemo(() => {
-    const q = f.q.trim().toLowerCase()
-    const list = listProducts().filter((p) => {
-      if (q && !`${p.name} ${p.sku} ${p.slug}`.toLowerCase().includes(q)) return false
-      if (f.cat && p.category !== f.cat) return false
-      if (f.sub && p.sub !== f.sub) return false
-      if (f.status !== 'all' && p.status !== f.status) return false
-      const s = stockState(p, low)
-      if (f.stock === 'low' && s !== 'low') return false
-      if (f.stock === 'out' && s !== 'out') return false
-      return true
-    })
-    return tab === 'inventory' ? [...list].sort((a, b) => totalStock(a) - totalStock(b)) : list
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [f, low, tab, tab === 'inventory' ? 0 : ver])
+  const updateFilters = (next: Filters) => {
+    setFilters(next);
+    setPage(1);
+  };
 
-  const resetKey = JSON.stringify(f) + tab
-  const bulk = (fn: () => void, msg: string) => {
-    fn()
-    toast(msg)
-    setSelected([])
-  }
-  const del = (ids: string[]) => {
-    removeMany(ids)
-    setSelected((s) => s.filter((x) => !ids.includes(x)))
-    toast(ids.length === 1 ? 'Product deleted' : `${ids.length} products deleted`)
-  }
-  const dup = (p: Product) => {
-    const c = duplicateProduct(p)
-    toast('Product duplicated as draft')
-    go(`/admin/products?id=${c.id}`)
-  }
+  const params: AdminProductQuery = {
+    page,
+    limit: PAGE_SIZE,
+    sort: filters.sort,
+    ...(debouncedQuery.trim() ? { q: debouncedQuery.trim() } : {}),
+    ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
+    ...(filters.status ? { status: filters.status } : {}),
+    ...(filters.inStock ? { inStock: filters.inStock } : {}),
+  };
+
+  const { data, isLoading, isFetching, isError, error, refetch } =
+    useGetAdminProductsQuery(params);
+
+  const products = data?.items ?? [];
+  const meta = data?.meta;
+
+  const openProduct = (product: AdminProduct) =>
+    go(`/admin/products?id=${product.id}`);
+  const createProduct = () => go("/admin/products?new=1");
 
   return (
     <div>
       <PageHeader
         title="Products"
-        description={`${listProducts().length} products in your catalog`}
-        crumbs={['Catalog', 'Products']}
-        actions={<Btn variant="primary" onClick={() => go('/admin/products?new=1')}><Plus className="size-4" />Add product</Btn>}
+        description="Create products, manage variants, images, offers, and stock."
+        crumbs={["Catalog", "Products"]}
+        actions={
+          <Btn variant="primary" onClick={createProduct}>
+            <Plus className="size-4" /> New product
+          </Btn>
+        }
       />
-      <Card>
-        <div className="flex gap-1 border-b border-border px-3 pt-2">
-          {(['products', 'inventory'] as const).map((t) => (
-            <button key={t} onClick={() => setTab(t)} className={`-mb-px border-b-2 px-3 py-2 text-[13px] font-medium capitalize ${tab === t ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>{t}</button>
-          ))}
-        </div>
-        <ProductFilters value={f} onChange={setF} />
-        {tab === 'products' && selected.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2 border-b border-border bg-primary/5 px-3 py-2 text-[13px]">
-            <span className="font-medium">{selected.length} selected</span>
-            <Btn size="sm" onClick={() => bulk(() => setStatus(selected, 'active'), 'Published')}>Publish</Btn>
-            <Btn size="sm" onClick={() => bulk(() => setStatus(selected, 'draft'), 'Moved to draft')}>Set to draft</Btn>
-            <Btn size="sm" variant="dangerOutline" onClick={() => setConfirm(selected)}>Delete</Btn>
-            <Btn size="sm" variant="ghost" onClick={() => setSelected([])}>Clear</Btn>
-          </div>
+
+      <div className="mb-4 flex items-center gap-1 rounded-md border border-border bg-card p-1">
+        <TabButton active={tab === "products"} onClick={() => setTab("products")}>
+          Products
+        </TabButton>
+        <TabButton
+          active={tab === "inventory"}
+          onClick={() => setTab("inventory")}
+        >
+          Inventory
+        </TabButton>
+        {isFetching && (
+          <span className="ml-auto pr-2 text-xs text-muted-foreground">
+            Updating…
+          </span>
         )}
-        {tab === 'products' ? (
-          <ProductsTable rows={rows} resetKey={resetKey} selected={selected} onSelect={setSelected} lowStock={low} onEdit={(p) => go(`/admin/products?id=${p.id}`)} onDuplicate={dup} onDelete={(p) => setConfirm([p.id])} />
+      </div>
+
+      <Card>
+        <ProductFilters value={filters} onChange={updateFilters} />
+        {isError ? (
+          <Empty
+            title="Products could not be loaded"
+            description={apiErrorMessage(error, "Check the API connection and try again.")}
+            action={
+              <Btn variant="primary" onClick={() => void refetch()}>
+                Try again
+              </Btn>
+            }
+          />
+        ) : tab === "products" ? (
+          <ProductsTable
+            rows={products}
+            meta={meta}
+            page={page}
+            isLoading={isLoading}
+            loading={isFetching}
+            onPageChange={setPage}
+            onEdit={openProduct}
+            onCreate={createProduct}
+          />
         ) : (
-          <InventoryTable rows={rows} resetKey={resetKey} lowStock={low} />
+          <InventoryTable
+            products={products}
+            meta={meta}
+            page={page}
+            loading={isFetching}
+            onPageChange={setPage}
+          />
         )}
       </Card>
-      <AlertDialogText
-        mode="normal"
-        open={!!confirm}
-        onOpenChange={(o) => !o && setConfirm(null)}
-        title={`Delete ${confirm?.length ?? 0} product${confirm?.length === 1 ? '' : 's'}?`}
-        description="This permanently removes the product(s) from the catalog, flash sales and complete-the-look lists."
-        actionType="delete"
-        onConfirm={() => confirm && del(confirm)}
-      />
     </div>
-  )
+  );
+}
+
+function TabButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={
+        active
+          ? "inline-flex h-7 items-center rounded bg-primary px-3 text-xs font-medium text-primary-foreground"
+          : "inline-flex h-7 items-center rounded px-3 text-xs font-medium text-muted-foreground hover:bg-muted"
+      }
+    >
+      {children}
+    </button>
+  );
 }

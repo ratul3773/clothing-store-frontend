@@ -20,9 +20,11 @@ export default function ShopContent() {
       <AnimatePresence>
         {open && <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden lg:hidden"><div className="pt-8">{filters}</div></motion.div>}
       </AnimatePresence>
-      <div className="mt-10 grid gap-10 lg:grid-cols-[15rem_1fr]">
+       <div className="mt-10 grid gap-10 lg:grid-cols-[15rem_1fr]">
         <aside className="hidden lg:block"><div className="sticky top-32">{filters}</div></aside>
-        <div><ProductGrid list={f.list} onClear={f.reset} /></div>
+         <div>{f.isLoading}
+          <ProductGrid list={f.list} onClear={f.reset} loading={f.isLoading} error={f.isError ? f.error : undefined} />
+          </div>
       </div>
     </>
   )

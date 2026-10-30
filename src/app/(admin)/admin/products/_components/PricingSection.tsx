@@ -1,20 +1,47 @@
-'use client'
+"use client";
 
-import { Card, CardHeader, Field, Input } from '@/components/cms/ui'
-import type { SectionProps } from './sectionProps'
+import type { UseFormReturn } from "react-hook-form";
 
-export default function PricingSection({ d, errors = {}, patch }: SectionProps) {
+import { Card, CardHeader } from "@/components/cms/ui";
+import { bdt } from "@/lib/utils";
+
+import type { ProductCoreFormValues } from "../_schemas/product.schema";
+import { toNumber } from "../_utils/products.utils";
+import { TextField } from "../../_components/form-controls";
+
+export default function PricingSection({
+  form,
+  editing,
+}: {
+  form: UseFormReturn<ProductCoreFormValues>;
+  editing?: boolean;
+}) {
+  const price = toNumber(form.watch("regularPrice"));
+
   return (
     <Card>
-      <CardHeader title="Pricing" description="Offer price must be lower than the regular price." />
+      <CardHeader
+        title="Pricing"
+        description={
+          editing
+            ? "Offers are managed in the Offers section below."
+            : "Prices are stored as whole taka. Add an offer after the product exists."
+        }
+      />
       <div className="grid gap-4 p-4 sm:grid-cols-2">
-        <Field label="Price (BDT) *" error={errors.price}>
-          <Input type="number" min={0} value={d.price} onChange={(e) => patch({ price: e.target.value })} />
-        </Field>
-        <Field label="Offer price (BDT)" error={errors.offer} hint="Leave empty for no offer.">
-          <Input type="number" min={0} value={d.offer} onChange={(e) => patch({ offer: e.target.value })} />
-        </Field>
+        <TextField
+          form={form}
+          name="regularPrice"
+          label="Regular price (৳)"
+          inputMode="numeric"
+          placeholder="e.g. 2490"
+          hint={
+            Number.isFinite(price) && price > 0
+              ? `Customers see ${bdt(price)}`
+              : "Whole taka only — no decimals."
+          }
+        />
       </div>
     </Card>
-  )
+  );
 }

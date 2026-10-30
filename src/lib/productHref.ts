@@ -1,5 +1,5 @@
 import type { Product } from '@/data/catalog'
 
-/** Seeded products have a prerendered page; runtime-created (CMS) ones are resolved from the query string. */
+/** Public API products are resolved at runtime from the query-string route. */
 export const productHref = (p: Pick<Product, 'slug' | 'custom'>) =>
-  p.custom ? `/product/?slug=${encodeURIComponent(p.slug)}` : `/p/${p.slug}/`
+  `/p/${encodeURIComponent(p.slug)}`

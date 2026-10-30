@@ -1,12 +1,15 @@
 import { combos, hero, heroAlt, taxonomy } from '@/data/catalog'
 import { findVisible, liveProducts, visibleProducts } from '@/lib/storefront'
+import { useGetCategoriesQuery } from '@/redux/apis/category.api'
 
 export function getHeroImages() {
   return { hero, heroAlt }
 }
 
 export function getCategoryTiles() {
-  return taxonomy.map((t) => ({ title: t.label, note: t.subs.join(' · ') || t.blurb, cat: t.cat, image: t.image }))
+  const {data: categories = [], isLoading, isError} = useGetCategoriesQuery()
+  return {
+    tiles: categories.map((t) => ({ title: t.name, note: t.children?.map((c) => c.name).join(' · ') || t.description, cat: t.name, image: t.imageUrl })), isLoading, isError}
 }
 
 export function getBestSellers(count = 4) {

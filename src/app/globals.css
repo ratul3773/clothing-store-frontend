@@ -26,6 +26,8 @@
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
@@ -67,6 +69,8 @@
   --border: rgba(16, 23, 20, 0.16);
   --ring: #e4442b;
   --radius: 0.25rem;
+  --success: #008540;
+  --warning: 	#ff8f00;
   --destructive: oklch(0.577 0.245 27.325);
   /* --border: oklch(0.922 0 0); */
   --input: oklch(82.032% 0.00009 271.152);

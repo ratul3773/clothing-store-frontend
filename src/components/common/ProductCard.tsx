@@ -35,7 +35,7 @@ export default function ProductCard({ p, index = 0, now }: { p: Product; index?:
           <img src={p.images[0]} alt={p.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-all duration-[900ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-110 group-hover:opacity-0" />
           <img src={p.images[1] ?? p.images[0]} alt="" loading="lazy" className="absolute inset-0 h-full w-full scale-105 object-cover opacity-0 transition-all duration-[900ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-100 group-hover:opacity-100" />
           <div className="absolute left-3 top-3 flex flex-col items-start gap-1.5">
-            {badges.map((b) => <Badge key={b} className={b.startsWith('FLASH') ? 'bg-accent text-accent-foreground' : undefined}>{b}</Badge>)}
+            {badges.map((b) => <Badge key={b} className={b.startsWith('FLASH') ? 'bg-accent text-accent-foreground' : undefined}>{b.replace("_", " ")}</Badge>)}
           </div>
           <div className="absolute inset-x-0 bottom-0 translate-y-full bg-foreground/90 py-3 text-center backdrop-blur transition-transform duration-500 group-hover:translate-y-0">
             <span className="label-mono text-background">View · {p.sizes[0]}–{p.sizes[p.sizes.length - 1]}</span>

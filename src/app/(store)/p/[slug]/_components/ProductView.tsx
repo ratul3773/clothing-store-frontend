@@ -11,16 +11,17 @@ import RecentlyViewed from '@/app/(store)/p/[slug]/_components/RecentlyViewed'
 import { categoryLabel } from '@/lib/storefront'
 import { useCms } from '@/lib/useCms'
 import type { Product } from '@/data/catalog'
+import { useRecentlyViewed } from '../_hooks/useRecentlyViewed'
 
 export default function ProductView({ p }: { p: Product }) {
-  useCms()
-  const { pushRecent } = useStore()
+  const { push } = useRecentlyViewed()
+  useEffect(() => { 
+    if (p) push(p.id) 
+    }, [p?.id]) // eslint-disable-line react-hooks/exhaustive-deps
   const s = useProductPurchase(p)
-  useEffect(() => { pushRecent(p.id) }, [p.id, pushRecent])
-
   return (
     <div>
-      <p className="label-mono mb-6 text-muted-foreground"><Link href="/shop" className="hover:text-accent">Shop</Link> / <Link href={`/shop?cat=${encodeURIComponent(p.category)}`} className="hover:text-accent">{categoryLabel(p.category)}</Link> / {p.sku}</p>
+       <p className="label-mono mb-6 text-muted-foreground"><Link href="/shop" className="hover:text-accent">Shop</Link> / <Link href={`/shop?cat=${encodeURIComponent(p.category)}`} className="hover:text-accent">{p.custom ? p.sub : categoryLabel(p.category)}</Link> / {p.sku}</p>
       <div className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
         <ProductGallery p={p} color={s.color} onSelect={s.setCi} />
         <ProductInfo p={p} s={s} />

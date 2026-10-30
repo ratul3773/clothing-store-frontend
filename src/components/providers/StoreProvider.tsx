@@ -1,8 +1,7 @@
 'use client'
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
-import { Check } from 'lucide-react'
+import { toast as sonnerToast } from 'sonner'
 import { coupons, products, type Product } from '@/data/catalog'
 import { initializeDemoFlashSale, settings } from '@/data/site'
 import type { Order, OrderItem, Source } from '@/data/orders'
@@ -11,7 +10,6 @@ import wishlist from '@/components/providers/store/wishlist.slice'
 import session from '@/components/providers/store/session.slice'
 import orders from '@/components/providers/store/orders.slice'
 import reviews from '@/components/providers/store/reviews.slice'
-import toasts from '@/components/providers/store/toasts.slice'
 import { selectCount, selectCouponDiscount, selectDeliveryFee, selectLineInfo, selectStock, selectSubtotal, stockKey } from '@/components/providers/store/selectors'
 import type { StoreContext } from '@/components/providers/store/store.types'
 import useNow from '@/lib/useNow'
@@ -32,7 +30,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [sess, dSess] = useReducer(session.reducer, session.initialState)
   const [ord, dOrd] = useReducer(orders.reducer, orders.initialState)
   const [rev, dRev] = useReducer(reviews.reducer, reviews.initialState)
-  const [toastList, dToast] = useReducer(toasts.reducer, toasts.initialState)
   const now = useNow(30_000)
 
   useEffect(() => {
@@ -40,9 +37,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [now])
 
   const toast = useCallback((msg: string) => {
-    const id = Date.now() + Math.random()
-    dToast(toasts.actions.pushed({ id, msg }))
-    setTimeout(() => dToast(toasts.actions.dismissed(id)), 2600)
+    sonnerToast.success(msg)
+  }, [])
+  const toastError = useCallback((msg: string) => {
+    sonnerToast.error(msg)
   }, [])
   const pushRecent = useCallback((id: string) => {
     dWish(wishlist.actions.pushRecent(id))
@@ -103,30 +101,69 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       patchReview: (id, patch) => dRev(reviews.actions.patched({ id, patch })),
       removeReview: (id) => dRev(reviews.actions.removed(id)),
       toast,
+      toastError,
     }
-  }, [cartState, lines, coupon, subtotal, wish, sess, ord, rev, toast, pushRecent, now])
+  }, [cartState, lines, coupon, subtotal, wish, sess, ord, rev, toast, toastError, pushRecent, now])
 
   return (
     <C.Provider value={value}>
       {children}
-      <div className="pointer-events-none fixed bottom-6 left-1/2 z-[200] flex -translate-x-1/2 flex-col items-center gap-2">
-        <AnimatePresence>
-          {toastList.map((t) => (
-            <motion.div
-              key={t.id}
-              layout
-              initial={{ opacity: 0, y: 20, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              className="label-mono flex items-center gap-2 rounded-full bg-foreground px-5 py-3 text-background shadow-xl"
-            >
-              <Check size={14} className="text-accent" /> {t.msg}
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
     </C.Provider>
   )
 }
 
 export type { OrderItem, Source }
+
+// "use client";
+
+// import {
+//   createContext,
+//   useCallback,
+//   useContext,
+//   useMemo,
+//   useState,
+//   type ReactNode,
+// } from "react";
+
+// type StoreContextType = {
+//   authOpen: boolean;
+//   setAuthOpen: (open: boolean) => void;
+// };
+
+// const StoreContext = createContext<StoreContextType | null>(null);
+
+// export function useStore() {
+//   const context = useContext(StoreContext);
+
+//   if (!context) {
+//     throw new Error("useStore must be used within StoreProvider");
+//   }
+
+//   return context;
+// }
+
+// export function StoreProvider({
+//   children,
+// }: {
+//   children: ReactNode;
+// }) {
+//   const [authOpen, setAuthOpenState] = useState(false);
+
+//   const setAuthOpen = useCallback((open: boolean) => {
+//     setAuthOpenState(open);
+//   }, []);
+
+//   const value = useMemo(
+//     () => ({
+//       authOpen,
+//       setAuthOpen,
+//     }),
+//     [authOpen, setAuthOpen],
+//   );
+
+//   return (
+//     <StoreContext.Provider value={value}>
+//       {children}
+//     </StoreContext.Provider>
+//   );
+// }
