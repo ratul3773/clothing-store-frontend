@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import usePagination from '@/lib/usePagination'
 import { Btn, Empty } from '@/components/cms/ui'
-import Loading from '../common/Loading'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export type Column<T> = { key: string; header: string; cell: (row: T) => React.ReactNode; className?: string; align?: 'right' }
 
@@ -49,11 +49,16 @@ export default function DataTable<T>({ rows, columns, rowKey, pageSize = 10, res
           </thead>
           <tbody>
             {isLoading ? (
-              <tr>
-                <td colSpan={columns.length + (onSelect ? 1 : 0)} className="px-3 py-2 text-center">
-                  <Loading text="Loading products..." />
-                </td>
-              </tr>
+              Array.from({ length: Math.min(pageSize, 6) }, (_, index) => (
+                <tr key={`skeleton-${index}`} className="border-b border-border last:border-0">
+                  {onSelect && <td className="px-3 py-4"><Skeleton className="size-4 rounded" /></td>}
+                  {columns.map((column) => (
+                    <td key={column.key} className="px-3 py-4">
+                      <Skeleton className={column === columns[0] ? "h-9 w-4/5 rounded-sm" : "h-4 w-3/5 rounded-sm"} />
+                    </td>
+                  ))}
+                </tr>
+              ))
             ) : (
               pageItems.map((r) => {
                 const k = rowKey(r)

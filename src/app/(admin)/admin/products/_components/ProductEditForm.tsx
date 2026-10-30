@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertTriangle, Save } from "lucide-react";
+import { AlertTriangle, Pencil, Save } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 import { Badge, Btn, Card, CardHeader, PageHeader } from "@/components/cms/ui";
@@ -40,7 +40,7 @@ type Props = {
 };
 
 export default function ProductEditForm({ product, reload }: Props) {
- 
+  const [editable, setEditable] = useState(false);
   const {
     form,
     values,
@@ -64,15 +64,32 @@ export default function ProductEditForm({ product, reload }: Props) {
         actions={
           <>
             <Btn onClick={() => go("/admin/products")}>Back</Btn>
-            <Btn
-              type="submit"
-              form="product-edit-form"
-              variant="primary"
-              disabled={isSubmitting || !form.formState.isDirty}
-            >
-              <Save className="size-4" />
-              {isSubmitting ? "Saving…" : "Save changes"}
-            </Btn>
+            {!editable ? (
+              <Btn variant="primary" onClick={() => setEditable(true)}>
+                <Pencil className="size-4" /> Edit
+              </Btn>
+            ) : (
+              <>
+                <Btn
+                  onClick={() => {
+                    form.reset(toCoreFormValues(product));
+                    setEditable(false);
+                  }}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Btn>
+                <Btn
+                  type="submit"
+                  form="product-edit-form"
+                  variant="primary"
+                  disabled={isSubmitting || !form.formState.isDirty}
+                >
+                  <Save className="size-4" />
+                  {isSubmitting ? "Saving…" : "Save changes"}
+                </Btn>
+              </>
+            )}
             <ProductStatusActions
               product={product}
               onDeleted={() => go("/admin/products")}
@@ -117,7 +134,7 @@ export default function ProductEditForm({ product, reload }: Props) {
       )}
 
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div className="space-y-4">
+           <fieldset disabled={!editable} className="min-w-0 space-y-4 border-0 p-0">
           {errorMsg && (
               <AlertText
                 title="Error"
@@ -133,7 +150,7 @@ export default function ProductEditForm({ product, reload }: Props) {
             <ImagesManager product={product} />
             <VariantsManager product={product} />
             <OffersManager product={product} />
-          </div>
+           </fieldset>
 
           <div className="space-y-4 lg:sticky lg:top-4 lg:self-start">
             <ProductPreview

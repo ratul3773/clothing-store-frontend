@@ -7,7 +7,7 @@ import { useGetAdminProductQuery } from "@/redux/apis/product.api";
 
 import ProductCreateForm from "./ProductCreateForm";
 import ProductEditForm from "./ProductEditForm";
-import Loading from "@/components/common/Loading";
+import ProductDetailSkeleton from "./ProductDetailSkeleton";
 
 export default function ProductForm({ productId }: { productId?: string }) {
   if (!productId) return <ProductCreateForm />;
@@ -21,9 +21,7 @@ function ProductEditor({ productId }: { productId: string }) {
   });
 
   if (isLoading) {
-    return (
-      <Loading text="Loading product details..." />
-    );
+    return <ProductDetailSkeleton />;
   }
 
   if (isError || !data) {

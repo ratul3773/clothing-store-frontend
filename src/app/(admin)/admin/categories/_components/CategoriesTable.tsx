@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { apiErrorMessage } from "@/redux/api.utils";
 import { useDeleteCategoryMutation } from "@/redux/apis/category.api";
 import type { CategoryRow } from "@/redux/apis/types/category.types";
+import TableSkeleton from "@/components/cms/TableSkeleton";
 
 type Props = {
   rows: CategoryRow[];
@@ -18,9 +19,10 @@ type Props = {
   onSelect?: (catId: string) => void;
   onCreate: () => void;
   onEdit: (category: CategoryRow) => void;
+  isLoading?: boolean;
 };
 
-export default function CategoriesTable({ rows, selected, onSelect, onCreate, onEdit }: Props) {
+export default function CategoriesTable({ rows, selected, onSelect, onCreate, onEdit, isLoading }: Props) {
   const { toast, toastError } = useStore();
   const [deleteCategory, deleteState] = useDeleteCategoryMutation();
   const [target, setTarget] = useState<CategoryRow | null>(null);
@@ -131,6 +133,8 @@ export default function CategoriesTable({ rows, selected, onSelect, onCreate, on
       ),
     },
   ];
+
+  if (isLoading) return <TableSkeleton columns={6} />;
 
   return (
     <>

@@ -13,7 +13,6 @@ import {
 
 import CategoriesTable from "./CategoriesTable";
 import CategoryModal from "./CategoryModal";
-import Loading from "@/components/common/Loading";
 
 export default function CategoriesView() {
   const { data, isLoading, isError, error, refetch } = useGetAdminCategoriesQuery();
@@ -82,9 +81,7 @@ export default function CategoriesView() {
           </span>
         </Toolbar>
 
-        {isLoading ? (
-          <Loading text="Loading categories..." />
-        ) : isError ? (
+        {isError ? (
           <Empty
             title="Categories could not be loaded"
             description={apiErrorMessage(
@@ -105,6 +102,7 @@ export default function CategoriesView() {
               onSelect={setSelectedId}
               onCreate={openCreate}
               onEdit={openEdit}
+              isLoading={isLoading}
             />
           </div>
         )}

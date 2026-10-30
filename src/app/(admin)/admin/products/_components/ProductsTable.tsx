@@ -14,6 +14,7 @@ import ProductStatusActions from "./ProductStatusActions";
 import ServerPagination from "./ServerPagination";
 import StockBadge from "./StockBadge";
 import Image from "next/image";
+import TableSkeleton from "@/components/cms/TableSkeleton";
 
 type Props = {
   rows: AdminProduct[];
@@ -141,6 +142,8 @@ export default function ProductsTable({
       ),
     },
   ];
+
+  if (isLoading) return <TableSkeleton columns={7} />;
 
   return (
     <div>
