@@ -4,9 +4,10 @@ import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import { authClient } from "@/lib/auth-client";
 import useCartApi from "./useAccountCart";
 import { cartErrorMessage, cartErrorStatus, type CartLineView } from "@/lib/cart-view";
-import type { CartIntent, CartPageQuery } from "@/redux/apis/types/cart.types";
+import type { CartIntent } from "@/redux/apis/types/cart.types";
+import type { PaginationQuery } from "@/redux/api.utils";
 
-export default function useCart(pagination?: CartPageQuery) {
+export default function useCart(pagination?: PaginationQuery) {
   const clientReady = useSyncExternalStore(noSubscription, clientSnapshot, serverSnapshot);
   const session = authClient.useSession();
   const user = session.data?.user;
@@ -33,7 +34,7 @@ export default function useCart(pagination?: CartPageQuery) {
   const blocked = mode === "restricted" || mode === "session-error" || status === 401 || status === 403;
   const lines = useMemo<CartLineView[]>(() => {
     if (blocked || mode === "resolving") return [];
-    return (query.currentData?.items ?? []).map((item) => ({
+    return (query.currentData?.data.items ?? []).map((item) => ({
       ...item,
       selected: item.status === "AVAILABLE" && (selected[item.id] ?? true),
     }));
@@ -82,7 +83,7 @@ export default function useCart(pagination?: CartPageQuery) {
     await reload();
   };
 
-  const selectionItems = blocked || mode === "resolving" ? [] : query.currentData?.selectionItems ?? lines;
+  const selectionItems = blocked || mode === "resolving" ? [] : query.currentData?.data.selectionItems ?? lines;
   const eligible = selectionItems.filter((item) => item.status === "AVAILABLE");
   const selection = eligible.filter((item) => selected[item.id] ?? true);
   const cart = {
@@ -94,8 +95,8 @@ export default function useCart(pagination?: CartPageQuery) {
     ready: !blocked && mode !== "resolving" && !!query.currentData && !error,
     busy,
     error: error ? cartErrorMessage(error) : "",
-    count: blocked || mode === "resolving" ? 0 : query.currentData?.totalQuantity ?? 0,
-    pagination: query.currentData?.pagination,
+    count: blocked || mode === "resolving" ? 0 : query.currentData?.data.totalQuantity ?? 0,
+    meta: query.currentData?.meta,
     eligibleIds: eligible.map((item) => item.id),
     selectedCount: selection.length,
     allSelected: eligible.length > 0 && eligible.length === selection.length,

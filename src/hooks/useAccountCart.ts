@@ -13,7 +13,8 @@ import {
   useRemoveCartItemMutation,
   useUpdateCartItemMutation,
 } from "@/redux/apis/cart.api";
-import type { CartIntent, CartPageQuery } from "@/redux/apis/types/cart.types";
+import type { CartIntent } from "@/redux/apis/types/cart.types";
+import type { PaginationQuery } from "@/redux/api.utils";
 import { cartErrorStatus } from "@/lib/cart-view";
 
 let mutationQueue = Promise.resolve();
@@ -24,9 +25,9 @@ function enqueue<T>(task: () => Promise<T>) {
   return next;
 }
 
-const DEFAULT_PAGE: CartPageQuery = { page: 1, itemsPerPage: 5 };
+const DEFAULT_PAGE: PaginationQuery = { page: 1, limit: 5 };
 
-export default function useAccountCart(pagination: CartPageQuery = DEFAULT_PAGE) {
+export default function useAccountCart(pagination: PaginationQuery = DEFAULT_PAGE) {
   const store = useStore<RootState>();
   const query = useGetCartQuery(pagination, {
     pollingInterval: 0,
@@ -46,7 +47,7 @@ export default function useAccountCart(pagination: CartPageQuery = DEFAULT_PAGE)
     const cached = cartApi.endpoints.getCart.select(pagination)(state);
     if (hasPendingCartMutation(state) || cached.status === "pending") return false;
     if (!cached.data || cached.error) throw new Error("Reload your bag before making changes.");
-    const cart = cached.data;
+    const cart = cached.data.data;
 
     if (intent.type === "add") {
       if (!Number.isSafeInteger(intent.quantity) || intent.quantity < 1)

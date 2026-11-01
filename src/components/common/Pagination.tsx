@@ -1,4 +1,5 @@
 import { Pick } from "../ui/controls";
+import type { PageMeta } from "@/redux/api.utils";
 import {
   Pagination,
   PaginationContent,
@@ -9,17 +10,8 @@ import {
   PaginationPrevious,
 } from "../ui/pagination";
 
-export interface SharedPaginationInfo {
-  currentPage: number;
-  totalPages: number;
-  itemsPerPage: number;
-  totalItems: number;
-  showingStart?: number;
-  showingEnd?: number;
-}
-
 interface PaginationProps {
-  paginationInfo: SharedPaginationInfo;
+  paginationInfo: PageMeta;
   onPageChange: (page: number) => void;
   onItemsPerPageChange?: (itemsPerPage: number) => void;
   itemsPerPageOptions?: number[];
@@ -91,7 +83,9 @@ export default function PaginationComponent({
   firstLabel = "First",
   lastLabel = "Last",
 }: PaginationProps) {
-  const { currentPage, totalPages, itemsPerPage, totalItems, showingStart, showingEnd } = paginationInfo;
+  const { page: currentPage, totalPage: totalPages, limit: itemsPerPage, total: totalItems } = paginationInfo;
+  const showingStart = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
+  const showingEnd = Math.min(currentPage * itemsPerPage, totalItems);
 
    const handlePageChange = (page: number) => {
     window.scrollTo({ 

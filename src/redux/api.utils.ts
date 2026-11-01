@@ -7,6 +7,11 @@ export type PageMeta = {
   totalPage: number;
 };
 
+export type PaginationQuery = {
+  page?: number;
+  limit?: number;
+};
+
 export type Paged<T> = {
   items: T[];
   meta?: PageMeta;

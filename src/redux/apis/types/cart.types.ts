@@ -1,5 +1,4 @@
 export type CartItemStatus = "AVAILABLE" | "INSUFFICIENT_STOCK" | "OUT_OF_STOCK" | "UNAVAILABLE";
-export type CartPageQuery = { page: number; itemsPerPage: number };
 
 export type CartItem = {
   id: string;
@@ -25,7 +24,6 @@ export type Cart = {
   totalQuantity: number;
   validItemsSubtotal: number;
   allItemsAvailable: boolean;
-  pagination?: { currentPage: number; totalPages: number; itemsPerPage: number; totalItems: number };
   selectionItems?: Array<{ id: string; status: CartItemStatus; lineSubtotal: number | null }>;
 };
 

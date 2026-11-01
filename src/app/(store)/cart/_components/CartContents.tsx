@@ -15,7 +15,7 @@ import PaginationComponent from "@/components/common/Pagination";
 export default function CartContents({ drawer = false, onNavigate }: { drawer?: boolean; onNavigate?: () => void }) {
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const { cart, edit, setSelection, reload, retrySession } = useCart({ page, itemsPerPage });
+  const { cart, edit, setSelection, reload, retrySession } = useCart({ page, limit: itemsPerPage });
   const update = useCallback((id: string, quantity: number) => edit({ type: "quantity", id, quantity }), [edit]);
   const remove = useCallback((id: string) => edit({ type: "remove", id }), [edit]);
   const selectAll = useRef<HTMLInputElement>(null);
@@ -100,13 +100,9 @@ export default function CartContents({ drawer = false, onNavigate }: { drawer?: 
           </div>
           {cart.lines.map((item) =>
           <CartLine key={`${cart.identityKey}:${item.id}`} item={item} disabled={disabled} onUpdate={update} onRemove={remove} onSelect={setSelection} />)}
-          {!drawer && cart.pagination && <PaginationComponent
+          {!drawer && cart.meta && <PaginationComponent
             showPageNumbers={!drawer}
-            paginationInfo={{
-              ...cart.pagination,
-              showingStart: (cart.pagination.currentPage - 1) * itemsPerPage + 1,
-              showingEnd: Math.min(cart.pagination.currentPage * itemsPerPage, cart.pagination.totalItems),
-            }}
+            paginationInfo={cart.meta}
             onPageChange={setPage}
             onItemsPerPageChange={(value) => {
               setItemsPerPage(value);

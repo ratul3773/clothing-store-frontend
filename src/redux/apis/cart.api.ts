@@ -1,6 +1,6 @@
 import { baseApi } from "../baseApi";
-import { unwrapData } from "../api.utils";
-import type { Cart, CartPageQuery } from "./types/cart.types";
+import { unwrapData, type ApiEnvelope, type PaginationQuery } from "../api.utils";
+import type { Cart } from "./types/cart.types";
 import type { FetchBaseQueryError, FetchBaseQueryMeta } from "@reduxjs/toolkit/query";
 import type { RootState } from "../store";
 
@@ -21,9 +21,8 @@ function cartError(error: FetchBaseQueryError, meta: FetchBaseQueryMeta | undefi
 // boundaries, so a full mutation response must never replace one page's data.
 export const cartApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getCart: builder.query<Cart, CartPageQuery>({
+    getCart: builder.query<ApiEnvelope<Cart>, PaginationQuery>({
       query: (pagination) => ({ url: "/cart", params: pagination, cache: "no-store", timeout: 15_000 }),
-      transformResponse: unwrapData<Cart>,
       transformErrorResponse: cartError,
       keepUnusedDataFor: 60,
       providesTags: ["Cart"],
