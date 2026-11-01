@@ -3,7 +3,7 @@
 import { Suspense, useState, type ReactNode } from "react";
 import { Provider } from "react-redux";
 import { makeStore } from "@/redux/store";
-import CartSessionCleanup from "@/components/common/cart/CartSessionCleanup";
+import CartSessionCleanup from "@/app/(store)/cart/_components/CartSessionCleanup";
 
 export default function ReduxProvider({
   children,

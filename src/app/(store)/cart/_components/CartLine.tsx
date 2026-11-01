@@ -37,18 +37,20 @@ function CartLine({ item, disabled, onUpdate, onRemove, onSelect }: Props) {
             {item.product?.slug ? <Link href={`/p/${encodeURIComponent(item.product.slug)}`} className="font-semibold hover:underline">{name}</Link> : <p className="font-semibold">{name}</p>}
             {item.variant && <p className="mt-1 text-xs text-muted-foreground">{item.variant.color} / {item.variant.size}</p>}
           </div>
-          <button type="button" disabled={disabled} onClick={() => void onRemove(item.id)} className="rounded-full p-2 text-muted-foreground hover:text-accent disabled:opacity-40" aria-label={`Remove ${name}`}><Trash2 size={16} /></button>
+          <Button type="button" variant="destructive" disabled={disabled} onClick={() => void onRemove(item.id)} aria-label={`Remove ${name}`}><Trash2 className="text-destructive" size={16} /></Button>
         </div>
         {statusLabels[item.status] && <p className="text-xs text-destructive">{statusLabels[item.status]}</p>}
         <div className="mt-auto flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
           <div className="flex items-center rounded-full border border-foreground/30">
-            <button type="button" disabled={disabled || quantity <= 1} aria-label={`Decrease quantity of ${name}`} className="grid size-8 place-items-center rounded-full hover:bg-muted disabled:opacity-30" onClick={() => setQuantity(quantity - 1)}><Minus size={13} /></button>
+            <Button type="button" variant="ghost" size="icon-sm" disabled={disabled || quantity <= 1} aria-label={`Decrease quantity of ${name}`} className="rounded-full" onClick={() => setQuantity(quantity - 1)}><Minus size={13} /></Button>
             <span className="w-7 text-center text-sm" aria-label="Quantity">{quantity}</span>
-            <button type="button" disabled={disabled || quantity >= item.maxQuantity} aria-label={`Increase quantity of ${name}`} className="grid size-8 place-items-center rounded-full hover:bg-muted disabled:opacity-30" onClick={() => setQuantity(quantity + 1)}><Plus size={13} /></button>
+            <Button type="button" variant="ghost" size="icon-sm" disabled={disabled} aria-label={`Increase quantity of ${name}`} className="rounded-full" onClick={() => setQuantity(quantity + 1)}><Plus size={13} /></Button>
+          </div>
+          {changed && <div className="flex flex-wrap items-center gap-2"><Button size="sm" variant="accent" disabled={disabled} aria-label={`Update quantity of ${name}`} onClick={() => void onUpdate(item.id, quantity)}>Update</Button><span className="text-xs text-muted-foreground" role="status">Quantity not saved</span></div>}
           </div>
           {item.unitPrice !== null && <span className="text-sm font-semibold">{bdt(item.unitPrice * item.quantity)}</span>}
         </div>
-        {changed && <div className="flex flex-wrap items-center gap-2"><Button size="sm" variant="accent" disabled={disabled} aria-label={`Update quantity of ${name}`} onClick={() => void onUpdate(item.id, quantity)}>Update</Button><span className="text-xs text-muted-foreground" role="status">Quantity not saved</span></div>}
       </div>
     </article>
   );

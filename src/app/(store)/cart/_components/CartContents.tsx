@@ -8,7 +8,7 @@ import useCart from "@/hooks/useCart";
 import { useCallback } from "react";
 import { bdt } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import AlertDialogText from "../Alert-Dialogue";
+import AlertDialogText from "@/components/common/Alert-Dialogue";
 
 export default function CartContents({ drawer = false, onNavigate }: { drawer?: boolean; onNavigate?: () => void }) {
   const { cart, edit, setSelection, reload, retrySession } = useCart();

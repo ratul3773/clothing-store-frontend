@@ -9,7 +9,7 @@ export default function useQuantityDraft(key: string, saved: number) {
   if (!matches) setDraft({ key, saved, quantity: saved });
   const quantity = matches ? draft.quantity : saved;
   const setQuantity = useCallback((value: number) => {
-    if (Number.isInteger(value) && value >= 1 && value <= 5) setDraft({ key, saved, quantity: value });
+    if (Number.isInteger(value) && value >= 1 && value <= 10) setDraft({ key, saved, quantity: value });
   }, [key, saved]);
   return { quantity, setQuantity, changed: quantity !== saved };
 }

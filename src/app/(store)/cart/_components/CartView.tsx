@@ -1,4 +1,4 @@
-import CartContents from "@/components/common/cart/CartContents";
+import CartContents from "@/app/(store)/cart/_components/CartContents";
 
 export default function CartView() {
   return <>
