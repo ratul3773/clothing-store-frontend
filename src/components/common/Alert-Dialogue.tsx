@@ -83,11 +83,6 @@ export default function AlertDialogText({
 
   const buttonText = confirmButtonText || defaultButtonText[actionType];
 
-  const handleCancel = () => {
-    onCancel?.();
-    onOpenChange(false);
-  };
-
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent size={size}>

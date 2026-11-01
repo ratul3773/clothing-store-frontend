@@ -1,19 +1,17 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { Suspense, useState, type ReactNode } from "react";
 import { Provider } from "react-redux";
-import { makeStore, type AppStore } from "@/redux/store";
+import { makeStore } from "@/redux/store";
+import CartSessionCleanup from "@/components/common/cart/CartSessionCleanup";
 
 export default function ReduxProvider({
   children,
 }: {
   children: ReactNode;
 }) {
-  const storeRef = useRef<AppStore | null>(null);
-
-  if (!storeRef.current) {
-    storeRef.current = makeStore();
-  }
-
-  return <Provider store={storeRef.current}>{children}</Provider>;
+  const [store] = useState(makeStore);
+  // Streamed routes hydrate against their original Redux snapshot.
+  const [serverState] = useState(() => store.getState());
+  return <Provider store={store} serverState={serverState}><Suspense fallback={null}><CartSessionCleanup /></Suspense>{children}</Provider>;
 }

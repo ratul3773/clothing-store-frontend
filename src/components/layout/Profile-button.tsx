@@ -7,8 +7,10 @@ import { Button } from "../ui/button";
 import AuthFormTrigger from "./AuthFormTrigger";
 
 export default async function ProfileButton() {
-  const session = await getServerSession();
-  const isAuthenticated = session.isAuthenticated;
+  // The decorative header must not take down a guest/cart page when the auth
+  // backend times out. Route/API authorization still runs independently.
+  const session = await getServerSession().catch(() => null);
+  const isAuthenticated = session?.isAuthenticated ?? false;
   return (
     <>
       {isAuthenticated ? (

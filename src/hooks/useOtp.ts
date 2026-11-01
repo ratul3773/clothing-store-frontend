@@ -8,6 +8,7 @@ import { OtpFormValues } from "@/components/common/auth/auth.schemas";
 import { RESEND_COOLDOWN,RESEND_STORAGE_KEY } from "@/components/common/auth/otp-form";
 import { toast } from "sonner";
 import { UseFormReturn } from "react-hook-form";
+import { cartMergeNotice } from "@/lib/cart-merge";
 
 export function useOtp(
     email: string, 
@@ -32,6 +33,8 @@ const [resendSeconds, setResendSeconds] = useState(0);
                 setErrorMessage(error.message || "An error occurred during verification.");
             }
             else {
+                const mergeNotice = cartMergeNotice(data);
+                if (mergeNotice) toast.info(mergeNotice);
                 onVerified();
                 toast.success("Email verified successfully.You can now log in to your account.");
             }

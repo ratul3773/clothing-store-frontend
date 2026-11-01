@@ -3,7 +3,6 @@ import { Suspense, type ReactNode } from 'react'
 import Background from '@/components/layout/Background'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
-import CartSheet from '@/components/common/CartSheet'
 import AuthSheet from '@/components/common/auth/AuthSheet'
 import AnimatedTransit from './AnimatedTransit'
 import ProfileButton from './Profile-button'
@@ -24,7 +23,6 @@ export default function Shell({ children }: { children: ReactNode; }) {
         <AnimatedTransit>{children}</AnimatedTransit>
       </main>
       <Footer />
-      <CartSheet />
       <AuthSheet />
     </>
   )

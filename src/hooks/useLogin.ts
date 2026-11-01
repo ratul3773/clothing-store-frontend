@@ -7,6 +7,8 @@ import { useNavigate } from "@/lib/nav";
 import { getErrorMessage } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
+import { cartMergeNotice } from "@/lib/cart-merge";
 
 
 export function useLogin(isAdminLogin: boolean = false) {
@@ -18,7 +20,7 @@ const [errorMessage, setErrorMessage] = useState<string>("");
 async function onSubmit(values: SignInValues) {
     setErrorMessage("");
     try {
-        const { error } = await authClient.signIn.email({
+        const { data, error } = await authClient.signIn.email({
             email: values.email,
             password: values.password,
         });
@@ -26,6 +28,8 @@ async function onSubmit(values: SignInValues) {
             setErrorMessage(error.message || "Unable to sign in.");
             return;
         }
+        const mergeNotice = cartMergeNotice(data);
+        if (mergeNotice) toast.info(mergeNotice);
         navigateTo(isAdminLogin ? "/admin" : "/account");
         router.refresh();
         setAuthOpen(false);
