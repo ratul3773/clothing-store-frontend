@@ -2,7 +2,6 @@
 
 import Reveal from '@/components/common/Reveal'
 import { Button } from '@/components/ui/button'
-import { useStore } from '@/components/providers/StoreProvider'
 import { bdt } from '@/lib/utils'
 import { useCms } from '@/lib/useCms'
 import useNow from '@/lib/useNow'
@@ -11,7 +10,6 @@ import type { getCombos } from '@/app/(store)/_services/home.api'
 
 export default function ComboCard({ combo: c, index }: { combo: ReturnType<typeof getCombos>[number]; index: number }) {
   useCms()
-  const { addCombo } = useStore()
   const now = useNow(30_000)
   const sum = comboSum(c, now ?? undefined)
   return (
@@ -26,7 +24,7 @@ export default function ComboCard({ combo: c, index }: { combo: ReturnType<typeo
           <h3 className="font-display mt-1 text-lg">{c.name}</h3>
           <div className="mt-4 flex items-center justify-between">
             <p><span className="text-xl font-semibold">{bdt(c.price)}</span> <span className="text-sm text-background/50 line-through">{bdt(sum)}</span></p>
-            <Button size="sm" variant="light" onClick={() => addCombo(c.id)}>Add combo</Button>
+            <Button size="sm" variant="light" disabled title="Live combo variants are not available yet">Coming soon</Button>
           </div>
         </div>
       </div>

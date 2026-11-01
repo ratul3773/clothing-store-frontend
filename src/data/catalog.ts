@@ -20,6 +20,7 @@ export type Product = {
   colors: Color[]
   sizes: string[]
   stock: Record<string, number>
+  variants?: { id: string; colorId: string; colorName: string; size: string; available: number }[]
   rating: number
   reviews: number
   sku: string

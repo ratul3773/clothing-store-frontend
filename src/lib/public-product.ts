@@ -93,6 +93,7 @@ export function toStorefrontProduct(product: PublicProduct): Product {
     colors,
     sizes,
     stock,
+    variants: product.variants,
     rating: 0,
     reviews: 0,
     sku: product.code ?? "",
