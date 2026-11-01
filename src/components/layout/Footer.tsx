@@ -50,9 +50,9 @@ export default function Footer() {
           <div>
             <p className="label-mono mb-4 text-background/50">Account</p>
             <ul className="space-y-2 text-sm">
-              <li><Link className="transition hover:text-accent" href="/account">My orders</Link></li>
+              <li><Link className="transition hover:text-accent" href="/account">Profile</Link></li>
+              <li><Link className="transition hover:text-accent" href="/account?tab=orders">My orders</Link></li>
               <li><Link className="transition hover:text-accent" href="/account?tab=wishlist">Wishlist</Link></li>
-              <li><Link className="transition hover:text-accent" href="/admin">Owner panel</Link></li>
             </ul>
           </div>
           <div className="space-y-4">
