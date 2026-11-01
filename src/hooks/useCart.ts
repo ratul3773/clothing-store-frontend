@@ -4,14 +4,14 @@ import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import { authClient } from "@/lib/auth-client";
 import useCartApi from "./useAccountCart";
 import { cartErrorMessage, cartErrorStatus, type CartLineView } from "@/lib/cart-view";
-import type { CartIntent } from "@/redux/apis/types/cart.types";
+import type { CartIntent, CartPageQuery } from "@/redux/apis/types/cart.types";
 
-export default function useCart() {
+export default function useCart(pagination?: CartPageQuery) {
   const clientReady = useSyncExternalStore(noSubscription, clientSnapshot, serverSnapshot);
   const session = authClient.useSession();
   const user = session.data?.user;
   const customer = user?.role === "customer" && user.emailVerified;
-  const account = useCartApi();
+  const account = useCartApi(pagination);
   const { query, busy, run } = account;
   const mode = !clientReady || session.isPending
     ? "resolving"
@@ -82,8 +82,9 @@ export default function useCart() {
     await reload();
   };
 
-  const eligible = lines.filter((item) => item.status === "AVAILABLE");
-  const selection = eligible.filter((item) => item.selected);
+  const selectionItems = blocked || mode === "resolving" ? [] : query.currentData?.selectionItems ?? lines;
+  const eligible = selectionItems.filter((item) => item.status === "AVAILABLE");
+  const selection = eligible.filter((item) => selected[item.id] ?? true);
   const cart = {
     mode: blocked && status === 401 ? "session-error" : mode,
     identityKey,
@@ -93,14 +94,12 @@ export default function useCart() {
     ready: !blocked && mode !== "resolving" && !!query.currentData && !error,
     busy,
     error: error ? cartErrorMessage(error) : "",
-    count: lines.reduce((sum, item) => sum + item.quantity, 0),
+    count: blocked || mode === "resolving" ? 0 : query.currentData?.totalQuantity ?? 0,
+    pagination: query.currentData?.pagination,
     eligibleIds: eligible.map((item) => item.id),
     selectedCount: selection.length,
     allSelected: eligible.length > 0 && eligible.length === selection.length,
     selectedSubtotal: selection.reduce((sum, item) => sum + (item.lineSubtotal ?? 0), 0),
-    notice: mode === "account"
-      ? "You are viewing your account bag. Your guest bag was handled by the server during sign-in."
-      : "",
   };
   return { cart, edit, setSelection, reload, retrySession };
 }

@@ -13,7 +13,7 @@ import {
   useRemoveCartItemMutation,
   useUpdateCartItemMutation,
 } from "@/redux/apis/cart.api";
-import type { CartIntent } from "@/redux/apis/types/cart.types";
+import type { CartIntent, CartPageQuery } from "@/redux/apis/types/cart.types";
 import { cartErrorStatus } from "@/lib/cart-view";
 
 let mutationQueue = Promise.resolve();
@@ -24,9 +24,11 @@ function enqueue<T>(task: () => Promise<T>) {
   return next;
 }
 
-export default function useAccountCart() {
+const DEFAULT_PAGE: CartPageQuery = { page: 1, itemsPerPage: 5 };
+
+export default function useAccountCart(pagination: CartPageQuery = DEFAULT_PAGE) {
   const store = useStore<RootState>();
-  const query = useGetCartQuery(undefined, {
+  const query = useGetCartQuery(pagination, {
     pollingInterval: 0,
     refetchOnMountOrArgChange: false,
     refetchOnFocus: false,
@@ -41,7 +43,7 @@ export default function useAccountCart() {
 
   const run = useCallback((intent: CartIntent) => enqueue(async () => {
     const state = store.getState();
-    const cached = cartApi.endpoints.getCart.select(undefined)(state);
+    const cached = cartApi.endpoints.getCart.select(pagination)(state);
     if (hasPendingCartMutation(state) || cached.status === "pending") return false;
     if (!cached.data || cached.error) throw new Error("Reload your bag before making changes.");
     const cart = cached.data;
@@ -80,7 +82,7 @@ export default function useAccountCart() {
       }
       throw error;
     }
-  }), [store, add, update, remove, clear, refetch]);
+  }), [store, pagination, add, update, remove, clear, refetch]);
 
   return { query, busy, run };
 }

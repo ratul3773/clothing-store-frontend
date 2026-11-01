@@ -1,4 +1,5 @@
 export type CartItemStatus = "AVAILABLE" | "INSUFFICIENT_STOCK" | "OUT_OF_STOCK" | "UNAVAILABLE";
+export type CartPageQuery = { page: number; itemsPerPage: number };
 
 export type CartItem = {
   id: string;
@@ -18,12 +19,14 @@ export type Cart = {
   version: number;
   currency: "BDT";
   moneyUnit: "taka";
-  limits: { distinctItems: number; quantityPerVariant: number };
+  limits: { distinctItems: number | null; quantityPerVariant: number | null };
   items: CartItem[];
   distinctItemCount: number;
   totalQuantity: number;
   validItemsSubtotal: number;
   allItemsAvailable: boolean;
+  pagination?: { currentPage: number; totalPages: number; itemsPerPage: number; totalItems: number };
+  selectionItems?: Array<{ id: string; status: CartItemStatus; lineSubtotal: number | null }>;
 };
 
 export type CartIntent =

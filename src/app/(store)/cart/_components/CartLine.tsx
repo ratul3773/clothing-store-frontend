@@ -37,7 +37,7 @@ function CartLine({ item, disabled, onUpdate, onRemove, onSelect }: Props) {
             {item.product?.slug ? <Link href={`/p/${encodeURIComponent(item.product.slug)}`} className="font-semibold hover:underline">{name}</Link> : <p className="font-semibold">{name}</p>}
             {item.variant && <p className="mt-1 text-xs text-muted-foreground">{item.variant.color} / {item.variant.size}</p>}
           </div>
-          <Button type="button" variant="destructive" disabled={disabled} onClick={() => void onRemove(item.id)} aria-label={`Remove ${name}`}><Trash2 className="text-destructive" size={16} /></Button>
+          <Button type="button" size="icon" variant="destructive" className="border-none" disabled={disabled} onClick={() => void onRemove(item.id)} aria-label={`Remove ${name}`}><Trash2 size={16} /></Button>
         </div>
         {statusLabels[item.status] && <p className="text-xs text-destructive">{statusLabels[item.status]}</p>}
         <div className="mt-auto flex flex-wrap items-center justify-between gap-2">

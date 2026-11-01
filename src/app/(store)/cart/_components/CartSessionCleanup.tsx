@@ -19,7 +19,11 @@ export default function CartSessionCleanup() {
   useLayoutEffect(() => {
     if (session.isPending || session.error) return;
     if (previous.current && previous.current !== id) {
-      dispatch(cartApi.util.getRunningQueryThunk("getCart", undefined))?.abort();
+      dispatch((dispatch, getState) => {
+        for (const args of cartApi.util.selectCachedArgsForQuery(getState(), "getCart")) {
+          dispatch(cartApi.util.getRunningQueryThunk("getCart", args))?.abort();
+        }
+      });
       for (const request of dispatch(cartApi.util.getRunningMutationsThunk())) {
         if (["addCartItem", "updateCartItem", "removeCartItem", "clearCart"].includes(request.arg.endpointName)) request.abort();
       }

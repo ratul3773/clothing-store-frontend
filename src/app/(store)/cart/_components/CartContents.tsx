@@ -4,18 +4,25 @@ import { useEffect, useRef, useState } from "react";
 import { ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CartLine from "./CartLine";
+import CartSkeleton from "./CartSkeleton";
 import useCart from "@/hooks/useCart";
 import { useCallback } from "react";
 import { bdt } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import AlertDialogText from "@/components/common/Alert-Dialogue";
+import PaginationComponent from "@/components/common/Pagination";
 
 export default function CartContents({ drawer = false, onNavigate }: { drawer?: boolean; onNavigate?: () => void }) {
-  const { cart, edit, setSelection, reload, retrySession } = useCart();
+  const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const { cart, edit, setSelection, reload, retrySession } = useCart({ page, itemsPerPage });
   const update = useCallback((id: string, quantity: number) => edit({ type: "quantity", id, quantity }), [edit]);
   const remove = useCallback((id: string) => edit({ type: "remove", id }), [edit]);
   const selectAll = useRef<HTMLInputElement>(null);
   const disabled = !cart.ready || cart.loading || cart.busy;
+  const showSkeleton = !cart.lines.length && (cart.mode === "resolving" || (
+    (cart.mode === "guest" || cart.mode === "account") && !cart.error && (!cart.ready || cart.loading)
+  ));
   const [deleteAllConfirm, setDeleteAllConfirm] = useState(false);
 
   useEffect(() => {
@@ -25,12 +32,7 @@ export default function CartContents({ drawer = false, onNavigate }: { drawer?: 
   return (
     <>
     <div className={drawer ? "flex min-h-0 flex-1 flex-col" : "mt-6"}>
-      <div className={drawer ? "space-y-2 border-b border-border px-5 py-3 text-xs" : "mb-5 space-y-2 text-sm"}>
-        {cart.notice &&  
-        <p className="text-muted-foreground">
-          {cart.notice}
-        </p>
-          }
+      <div className={drawer ? "space-y-2 px-5 py-2 text-xs" : "mb-5 space-y-2 text-sm"}>
         {cart.mode === "restricted" && 
         <p role="status">Bags are available to verified customer accounts. Verify your email or sign in with a customer account.
         </p>
@@ -60,10 +62,12 @@ export default function CartContents({ drawer = false, onNavigate }: { drawer?: 
             onClick={() => void reload()}
             >{cart.mode === "guest" ? "Dismiss" : "Reload bag"}
             </Button></div>}
-        <p role="status" aria-live="polite" className="text-muted-foreground">{cart.mode === "resolving" || (cart.mode === "guest" && !cart.ready) ? "Checking your bag…" : cart.loading ? "Loading your bag…" : cart.busy ? "Saving your bag…" : ""}</p>
+        <p role="status" aria-live="polite" className={cart.loading ? "sr-only" : "text-muted-foreground"}>{!showSkeleton && cart.loading ? "Loading your bag…" : cart.busy ? "Saving your bag…" : ""}</p>
       </div>
 
-      {cart.ready && !cart.lines.length && 
+      {showSkeleton && <CartSkeleton drawer={drawer} />}
+
+      {!showSkeleton && cart.ready && !cart.lines.length &&
       <div className="grid place-items-center py-16 text-center">
         <ShoppingBag size={30} className="text-muted-foreground" />
         <h2 className="mt-4 font-display text-2xl">Your bag is empty</h2>
@@ -87,14 +91,28 @@ export default function CartContents({ drawer = false, onNavigate }: { drawer?: 
             </label>
             <Button 
             type="button"
-            variant="ghost"
+            variant="destructive"
             size="sm"
+            className="border-none"
             disabled={disabled} onClick={() => setDeleteAllConfirm(true)}>
               Clear bag
             </Button>
           </div>
-          {cart.lines.map((item) => 
+          {cart.lines.map((item) =>
           <CartLine key={`${cart.identityKey}:${item.id}`} item={item} disabled={disabled} onUpdate={update} onRemove={remove} onSelect={setSelection} />)}
+          {cart.pagination && <PaginationComponent
+            showPageNumbers={!drawer}
+            paginationInfo={{
+              ...cart.pagination,
+              showingStart: (cart.pagination.currentPage - 1) * itemsPerPage + 1,
+              showingEnd: Math.min(cart.pagination.currentPage * itemsPerPage, cart.pagination.totalItems),
+            }}
+            onPageChange={setPage}
+            onItemsPerPageChange={(value) => {
+              setItemsPerPage(value);
+              setPage(1);
+            }}
+          />}
         </section>
         <aside className={drawer ? "space-y-3 border-t border-border p-5" : "space-y-4 border border-border p-5"}>
           <div className="flex justify-between gap-3 text-sm"><span>Selected subtotal ({cart.selectedCount})</span><b>{bdt(cart.selectedSubtotal)}</b></div>
