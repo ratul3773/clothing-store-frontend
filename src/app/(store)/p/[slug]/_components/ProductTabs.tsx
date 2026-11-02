@@ -18,7 +18,7 @@ export default function ProductTabs({ p, size }: { p: Product; size: string | nu
   const [tab, setTab] = useState('details')
   const { reviews } = useStore()
   const count = reviewCount(p, reviews)
-  const chart = sizeChart[p.category] ?? []
+  const chart = sizeChart[p.category ?? ""] ?? []
   const waist = p.sizes.every((z) => /^\d+(\.\d+)?$/.test(z))
   return (
     <T.Root value={tab} onValueChange={setTab} className="mt-10">

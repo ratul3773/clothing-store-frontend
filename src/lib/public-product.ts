@@ -1,5 +1,7 @@
 import type { PublicProduct } from "@/redux/apis/types/product.types";
 import type { Color, Product } from "@/data/catalog";
+import type { Combo } from "@/redux/apis/types/combo.types";
+import { comboProductSlug } from "./productHref";
 
 const sizeOrder: Record<string, number> = {
   XXS: 0,
@@ -72,13 +74,18 @@ export function toStorefrontProduct(product: PublicProduct): Product {
   );
 
   return {
+    type: product.type,
+    ...(product.type === "COMBO" ? { comboId: product.comboId, items: product.items, maxQuantity: product.maxQuantity } : {}),
+    inStock: product.inStock,
+    lowStock: product.lowStock,
+    isExchangeEligible: product.isExchangeEligible,
     id: product.id,
     slug: product.slug,
     name: product.name,
-    category: product.category.slug,
+    category: product.category?.slug ?? null,
     status: "active",
     custom: true,
-    sub: product.category.name,
+    sub: product.category?.name ?? "",
     price: product.regularPrice,
     offer:
       product.hasOffer && product.effectivePrice < product.regularPrice
@@ -86,7 +93,7 @@ export function toStorefrontProduct(product: PublicProduct): Product {
         : undefined,
     badges: product.badges,
     material: product.material ?? "",
-    fit: fitLabel(product.fit),
+    fit: product.type === "COMBO" ? "" : fitLabel(product.fit),
     care: product.careInstructions ?? "",
     desc: product.description ?? "",
     images,
@@ -104,4 +111,16 @@ export function toStorefrontProduct(product: PublicProduct): Product {
 
 export function toStorefrontProducts(products: PublicProduct[]): Product[] {
   return products.map(toStorefrontProduct);
+}
+
+/** Legacy combo endpoints use a different slug from the unified catalog. */
+export function toStorefrontCombo(combo: Combo): Product {
+  return {
+    type: "COMBO", id: combo.id, comboId: combo.id, slug: comboProductSlug(combo.id),
+    name: combo.name, category: null, status: "active", custom: true, sub: "",
+    price: combo.price, badges: ["COMBO"], material: "", fit: "", care: "",
+    desc: combo.description ?? "", images: [...new Set(combo.items.flatMap((item) => item.product.imageUrl ? [item.product.imageUrl] : []))],
+    colors: [], sizes: [], stock: {}, variants: [], rating: 0, reviews: 0, sku: "", look: [], sold: 0,
+    items: combo.items, maxQuantity: combo.maxQuantity, inStock: combo.inStock, isExchangeEligible: null,
+  };
 }

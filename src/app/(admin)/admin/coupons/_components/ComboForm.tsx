@@ -1,83 +1,106 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { products, type Combo } from '@/data/catalog'
-import { saveCombo, uid } from '@/data/cms'
-import { useStore } from '@/components/providers/StoreProvider'
-import { bdt } from '@/lib/utils'
-import Modal from '@/components/cms/Modal'
-import ImageField from '@/components/cms/ImageField'
-import { Btn, Field, Input, Select } from '@/components/cms/ui'
-import { comboToDraft, emptyCombo, partsTotal, validateCombo, type ComboDraft } from '../_utils/coupon.utils'
+import { useRef, useState } from "react";
+import Image from "next/image";
+import { toast } from "sonner";
+import Modal from "@/components/cms/Modal";
+import { Btn, Field, Input, Textarea } from "@/components/cms/ui";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useGetAdminComboQuery, useCreateComboMutation, useUpdateComboMutation } from "@/redux/apis/combo.api";
+import { apiErrorMessage, isConflictError } from "@/redux/api.utils";
+import type { Combo } from "@/redux/apis/types/combo.types";
+import { addComboComponent, comboChanges, comboDraft, comboPayload, emptyComboDraft, validateComboDraft, type ComboDraft } from "../_utils/combo.utils";
+import ComboVariantPicker from "./ComboVariantPicker";
 
-type Props = { open: boolean; onOpenChange: (o: boolean) => void; combo: Combo | null }
-
-export default function ComboForm({ open, onOpenChange, combo }: Props) {
-  return open ? <Inner key={combo?.id ?? 'new'} onOpenChange={onOpenChange} combo={combo} /> : null
+type Props = { open: boolean; onOpenChange: (open: boolean) => void; comboId: string | null };
+export default function ComboForm({ open, onOpenChange, comboId }: Props) {
+  return open ? <LoadEditor key={comboId ?? "new"} onOpenChange={onOpenChange} comboId={comboId} /> : null;
 }
 
-function Inner({ onOpenChange, combo }: Omit<Props, 'open'>) {
-  const { toast } = useStore()
-  const [d, setD] = useState<ComboDraft>(combo ? comboToDraft(combo) : emptyCombo)
-  const [submitted, setSubmitted] = useState(false)
-  const errors = validateCombo(d)
-  const err = (k: keyof typeof errors) => (submitted ? errors[k] : undefined)
-  const set = <K extends keyof ComboDraft>(k: K, v: ComboDraft[K]) => setD((x) => ({ ...x, [k]: v }))
-  const has = (id: string) => d.items.some((i) => i.id === id)
-  const toggle = (id: string) => set('items', has(id) ? d.items.filter((i) => i.id !== id) : [...d.items, { id, color: 0 }])
-  const sum = partsTotal(d.items)
-  const price = Number(d.price)
-  const saving = sum - price
+function LoadEditor({ onOpenChange, comboId }: Omit<Props, "open">) {
+  const { data, isLoading, error, refetch } = useGetAdminComboQuery(comboId ?? "", { skip: !comboId });
+  if (isLoading) return <Modal open onOpenChange={onOpenChange} title="Edit combo">
+    <Skeleton className="h-48" />
+  </Modal>;
+  if (comboId && !data) return <Modal open onOpenChange={onOpenChange} title="Edit combo">
+    <div role="alert"><p>{apiErrorMessage(error)}</p><Btn onClick={() => void refetch()}>Retry combo</Btn></div>
+  </Modal>;
+  return <Editor original={data ?? null} onOpenChange={onOpenChange} />;
+}
 
-  const submit = () => {
-    setSubmitted(true)
-    if (Object.keys(errors).length) return
-    saveCombo({ id: combo?.id ?? uid('c'), name: d.name.trim(), tag: d.tag.trim(), image: d.image.trim(), price, items: d.items })
-    toast(combo ? 'Combo updated' : 'Combo created')
-    onOpenChange(false)
-  }
-
-  return (
-    <Modal open onOpenChange={onOpenChange} size="lg" title={combo ? 'Edit combo' : 'New combo'} footer={<><Btn onClick={() => onOpenChange(false)}>Cancel</Btn><Btn variant="primary" onClick={submit}>Save</Btn></>}>
-      <div className="grid gap-4">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Name" error={err('name')}><Input value={d.name} onChange={(e) => set('name', e.target.value)} /></Field>
-          <Field label="Tag line" hint="e.g. Oxford + Chino"><Input value={d.tag} onChange={(e) => set('tag', e.target.value)} /></Field>
-        </div>
-        <div>
-          <p className="mb-1 text-xs font-medium text-foreground/80">Image</p>
-          <ImageField value={d.image} onChange={(v) => set('image', v)} />
-          {err('image') && <p className="mt-1 text-xs text-red-600">{err('image')}</p>}
-        </div>
-        <div>
-          <p className="mb-1 text-xs font-medium text-foreground/80">Products ({d.items.length} selected)</p>
-          <ul className="max-h-56 divide-y divide-border overflow-y-auto rounded-md border border-border">
-            {products.filter((p) => p.status === 'active' || has(p.id)).map((p) => {
-              const item = d.items.find((i) => i.id === p.id)
-              return (
-                <li key={p.id} className="flex items-center gap-3 px-3 py-1.5 text-[13px]">
-                  <input type="checkbox" checked={!!item} onChange={() => toggle(p.id)} aria-label={p.name} />
-                  <span className="min-w-0 flex-1 truncate">{p.name}</span>
-                  {item && (
-                    <Select className="w-32" value={item.color} onChange={(e) => set('items', d.items.map((i) => (i.id === p.id ? { ...i, color: Number(e.target.value) } : i)))}>
-                      {p.colors.map((c, idx) => <option key={idx} value={idx}>{c.name}</option>)}
-                    </Select>
-                  )}
-                  <span className="w-16 text-right tabular-nums text-muted-foreground">{bdt(p.offer ?? p.price)}</span>
-                </li>
-              )
-            })}
-          </ul>
-          {err('items') && <p className="mt-1 text-xs text-red-600">{err('items')}</p>}
-        </div>
-        <div className="grid items-end gap-4 sm:grid-cols-2">
-          <Field label="Combo price (৳)" error={err('price')}><Input type="number" min={0} value={d.price} onChange={(e) => set('price', e.target.value)} /></Field>
-          <div className="rounded-md bg-muted p-2.5 text-xs">
-            <p>Sum of parts: <span className="font-medium tabular-nums">{bdt(sum)}</span></p>
-            <p className={saving > 0 ? 'text-emerald-600' : 'text-amber-600'}>{d.price ? (saving > 0 ? `Customer saves ${bdt(saving)} (${Math.round((saving / sum) * 100)}%)` : 'Combo is not cheaper than buying separately') : 'Enter a price to see savings'}</p>
-          </div>
-        </div>
+function Editor({ original, onOpenChange }: { original: Combo | null; onOpenChange: Props["onOpenChange"] }) {
+  const [baseline, setBaseline] = useState(original);
+  const [draft, setDraft] = useState<ComboDraft>(() => original ? comboDraft(original) : emptyComboDraft());
+  const [error, setError] = useState("");
+  const [conflict, setConflict] = useState(false);
+  const [replacement, setReplacement] = useState(false);
+  const [create, creating] = useCreateComboMutation();
+  const [update, updating] = useUpdateComboMutation();
+  const pending = useRef(false);
+  const busy = creating.isLoading || updating.isLoading;
+  const set = <K extends keyof ComboDraft>(key: K, value: ComboDraft[K]) => setDraft((d) => ({ ...d, [key]: value }));
+  const changes = baseline ? comboChangesSafely(draft, baseline) : null;
+  const pieces = draft.items.reduce((sum, item) => sum + item.quantity, 0);
+  const submit = async () => {
+    if (pending.current) return;
+    const validation = validateComboDraft(draft);
+    if (validation) { setError(validation); return; }
+    pending.current = true;
+    setError("");
+    try {
+      if (baseline && !replacement) {
+        const data = comboChanges(draft, baseline);
+        if (!Object.keys(data).length) return;
+        await update({ id: baseline.id, data }).unwrap();
+      } else await create(comboPayload(draft)).unwrap();
+      toast.success(baseline && !replacement ? "Combo updated" : "Combo created");
+      onOpenChange(false);
+    } catch (failure) {
+      setError(apiErrorMessage(failure));
+      setConflict(!!baseline && !replacement && isConflictError(failure));
+    } finally { pending.current = false; }
+  };
+  const deactivate = async () => {
+    if (!baseline || pending.current) return;
+    pending.current = true;
+    try {
+      const saved = await update({ id: baseline.id, data: { isActive: false } }).unwrap();
+      setBaseline(saved);
+      setDraft((d) => ({ ...d, isActive: false }));
+      toast.success("Existing combo deactivated. Your draft is preserved.");
+    } catch (failure) { setError(apiErrorMessage(failure)); }
+    finally { pending.current = false; }
+  };
+  return <Modal open onOpenChange={(open) => { if (!pending.current) onOpenChange(open); }} size="xl" title={replacement ? "Create replacement combo" : baseline ? "Edit combo" : "New combo"} footer={<><Btn disabled={busy} onClick={() => onOpenChange(false)}>Cancel</Btn><Btn variant="primary" disabled={busy || (!!baseline && !replacement && changes !== null && !Object.keys(changes).length)} onClick={() => void submit()}>{busy ? "Saving..." : replacement ? "Save replacement" : "Save combo"}</Btn></>}>
+    <fieldset disabled={busy} className="min-w-0 space-y-4">
+      {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+      {conflict && !replacement && <div className="space-y-2 rounded border border-border p-3 text-sm">
+        <p>Cart-referenced contents cannot change, including references in expired guest carts awaiting cleanup. Your draft is preserved. Deactivation and replacement are separate actions.</p>
+        <div className="flex flex-wrap gap-2"><Btn disabled={!baseline?.isActive} onClick={() => void deactivate()}>Deactivate existing combo</Btn><Btn onClick={() => { setReplacement(true); setError(""); }}>Create replacement from draft</Btn></div>
+      </div>}
+      {replacement && <p role="status" className="text-sm">Saving creates a new combo. The original is unchanged unless you deactivated it. Review the active setting below.</p>}
+      <Field label="Name"><Input maxLength={200} value={draft.name} onChange={(e) => set("name", e.target.value)} /></Field>
+      <Field label="Description"><Textarea maxLength={10000} value={draft.description} onChange={(e) => set("description", e.target.value)} /></Field>
+      <Field label="Combo price (BDT taka)"><Input type="number" min={1} max={2147483647} step={1} value={draft.price} onChange={(e) => set("price", e.target.value)} /></Field>
+      <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={draft.isActive} onChange={(e) => set("isActive", e.target.checked)} />Active</label>
+      <p className="text-xs text-muted-foreground">Active combos also need an eligible schedule and publicly available components to appear in the shop.</p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Starts at - Asia/Dhaka (UTC+06:00)" hint="Inclusive; blank means no start boundary"><Input type="datetime-local" step={1} value={draft.startsAt} onChange={(e) => set("startsAt", e.target.value)} /></Field>
+        <Field label="Ends at - Asia/Dhaka (UTC+06:00)" hint="Exclusive; blank means no end boundary"><Input type="datetime-local" step={1} value={draft.endsAt} onChange={(e) => set("endsAt", e.target.value)} /></Field>
       </div>
-    </Modal>
-  )
+      <h3 className="text-sm font-semibold">Selected pieces ({pieces} / 3)</h3>
+      {!draft.items.length && <p className="text-sm text-muted-foreground">Select exact variants below. A combo needs two or three physical pieces.</p>}
+      <ul className="space-y-3">{draft.items.map((item) => <li key={item.variantId} className="flex flex-wrap items-center gap-3 rounded border border-border p-2">
+        <Image src={item.product.imageUrl ?? "/product-placeholder.svg"} alt="" width={40} height={50} className="h-12 w-10 object-cover" />
+        <span className="min-w-0 flex-1 text-sm">{item.product.name}<span className="block text-xs text-muted-foreground">{item.variant.color} / {item.variant.size}</span></span>
+        <Field label={`Quantity of ${item.product.name} ${item.variant.size}`}><Input type="number" className="w-20" min={1} max={3} value={item.quantity} onChange={(e) => set("items", draft.items.map((entry) => entry.variantId === item.variantId ? { ...entry, quantity: Number(e.target.value) } : entry))} /></Field>
+        <Btn aria-label={`Remove ${item.product.name} ${item.variant.size}`} onClick={() => set("items", draft.items.filter((entry) => entry.variantId !== item.variantId))}>Remove</Btn>
+      </li>)}</ul>
+      <ComboVariantPicker disabled={busy || pieces >= 3} onAdd={(item) => setDraft((d) => ({ ...d, items: addComboComponent(d.items, item) }))} />
+    </fieldset>
+  </Modal>;
+}
+
+function comboChangesSafely(draft: ComboDraft, original: Combo) {
+  try { return comboChanges(draft, original); } catch { return null; }
 }

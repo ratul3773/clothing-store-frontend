@@ -1,6 +1,7 @@
 export type CartItemStatus = "AVAILABLE" | "INSUFFICIENT_STOCK" | "OUT_OF_STOCK" | "UNAVAILABLE";
 
-export type CartItem = {
+export type VariantCartItem = {
+  type: "VARIANT";
   id: string;
   variantId: string;
   quantity: number;
@@ -13,6 +14,12 @@ export type CartItem = {
   lineSubtotal: number | null;
 };
 
+export type ComboCartItem = Omit<VariantCartItem, "type" | "variantId" | "product" | "variant" | "regularPrice"> & {
+  type: "COMBO"; comboId: string; variantId: null; product: null; variant: null; regularPrice: null;
+  combo: import("./combo.types").Combo | null;
+};
+export type CartItem = VariantCartItem | ComboCartItem;
+
 export type Cart = {
   id: string | null;
   version: number;
@@ -24,10 +31,11 @@ export type Cart = {
   totalQuantity: number;
   validItemsSubtotal: number;
   allItemsAvailable: boolean;
-  selectionItems?: Array<{ id: string; status: CartItemStatus; lineSubtotal: number | null }>;
+  selectionItems?: Array<{ id: string; type: "VARIANT" | "COMBO"; status: CartItemStatus; lineSubtotal: number | null }>;
 };
 
 export type CartIntent =
+  | { type: "addCombo"; comboId: string; quantity: number }
   | { type: "add"; variantId: string; quantity: number }
   | { type: "quantity"; id: string; quantity: number }
   | { type: "remove"; id: string }

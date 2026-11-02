@@ -45,6 +45,24 @@ export const cartApi = baseApi.injectEndpoints({
       transformErrorResponse: cartError,
       invalidatesTags: (result) => result ? ["Cart"] : [],
     }),
+    addCartCombo: builder.mutation<Cart, CartMutation & { comboId: string; quantity: number }>({
+      query: ({ comboId, quantity, version }) => ({ url: "/cart/combos", method: "POST", body: { comboId, quantity, version }, timeout: 15_000 }),
+      transformResponse: unwrapData<Cart>,
+      transformErrorResponse: cartError,
+      invalidatesTags: (result) => result ? ["Cart"] : [],
+    }),
+    updateCartCombo: builder.mutation<Cart, CartMutation & { id: string; quantity: number }>({
+      query: ({ id, quantity, version }) => ({ url: `/cart/combos/${id}`, method: "PATCH", body: { quantity, version }, timeout: 15_000 }),
+      transformResponse: unwrapData<Cart>,
+      transformErrorResponse: cartError,
+      invalidatesTags: (result) => result ? ["Cart"] : [],
+    }),
+    removeCartCombo: builder.mutation<Cart, CartMutation & { id: string }>({
+      query: ({ id, version }) => ({ url: `/cart/combos/${id}`, method: "DELETE", params: { version }, timeout: 15_000 }),
+      transformResponse: unwrapData<Cart>,
+      transformErrorResponse: cartError,
+      invalidatesTags: (result) => result ? ["Cart"] : [],
+    }),
     clearCart: builder.mutation<Cart, CartMutation>({
       query: ({ version }) => ({ url: "/cart", method: "DELETE", params: { version }, timeout: 15_000 }),
       transformResponse: unwrapData<Cart>,
@@ -57,12 +75,16 @@ export const cartApi = baseApi.injectEndpoints({
 export const {
   useGetCartQuery, useAddCartItemMutation, useUpdateCartItemMutation,
   useRemoveCartItemMutation, useClearCartMutation,
+  useAddCartComboMutation, useUpdateCartComboMutation, useRemoveCartComboMutation,
 } = cartApi;
 
 // Read RTK Query's own pending states synchronously so rapid clicks in different
 // components cannot start overlapping writes. There is no custom lock or queue.
 export function hasPendingCartMutation(state: RootState) {
   return [
+    cartApi.endpoints.addCartCombo.select(cartMutationKey("addCombo"))(state),
+    cartApi.endpoints.updateCartCombo.select(cartMutationKey("comboQuantity"))(state),
+    cartApi.endpoints.removeCartCombo.select(cartMutationKey("removeCombo"))(state),
     cartApi.endpoints.addCartItem.select(cartMutationKey("add"))(state),
     cartApi.endpoints.updateCartItem.select(cartMutationKey("quantity"))(state),
     cartApi.endpoints.removeCartItem.select(cartMutationKey("remove"))(state),

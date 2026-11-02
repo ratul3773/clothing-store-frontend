@@ -28,11 +28,27 @@ import type {
 const productTag = (id: string) => ({ type: "Product" as const, id });
 const inventoryTag = (id: string) => ({ type: "Inventory" as const, id });
 
-const productTags = (id: string) => [productTag(id), "Products" as const];
+const productTags = (id: string) => [productTag(id), "Products" as const, "Combos" as const, "Combo" as const, "Cart" as const];
 
 export const productApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     /* ------------------------------------------------------------- public */
+    // Saved collections are loaded completely for local pagination. The backend
+    // accepts at most 50 UUIDs per request; old demo IDs are intentionally omitted.
+    getProductsByIds: builder.query<PublicProduct[], string[]>({
+      async queryFn(ids, _api, _options, baseQuery) {
+        const validIds = [...new Set(ids)].filter((id) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id));
+        const products: PublicProduct[] = [];
+        for (let offset = 0; offset < validIds.length; offset += 50) {
+          const result = await baseQuery({ url: "/products", params: { ids: validIds.slice(offset, offset + 50), page: 1, limit: 50 } });
+          if (result.error) return { error: result.error };
+          products.push(...unwrapPaged<PublicProduct>(result.data).items);
+        }
+        const byId = new Map(products.map((product) => [product.id, product]));
+        return { data: validIds.flatMap((id) => byId.has(id) ? [byId.get(id)!] : []) };
+      },
+      providesTags: ["Products"],
+    }),
     getProducts: builder.query<Paged<PublicProduct>, PublicProductQuery | void>({
       query: (params) => ({ url: "/products", params: params ?? undefined }),
       transformResponse: unwrapPaged<PublicProduct>,
@@ -361,6 +377,7 @@ export const productApi = baseApi.injectEndpoints({
 export type { AdminProduct, AdminVariant, ProductImage, PublicProduct };
 
 export const {
+  useGetProductsByIdsQuery,
   useGetProductsQuery,
   useGetProductQuery,
   useGetAdminProductsQuery,

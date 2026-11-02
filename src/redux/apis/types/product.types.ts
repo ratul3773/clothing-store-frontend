@@ -109,7 +109,8 @@ export type ProductAuthor = {
   email: string;
 };
 
-export type PublicProduct = {
+export type OrdinaryProduct = {
+  type: "PRODUCT";
   id: string;
   name: string;
   slug: string;
@@ -145,7 +146,17 @@ export type PublicProduct = {
   lowStock: boolean;
 };
 
-export type AdminProduct = Omit<PublicProduct, "variants"> & {
+export type PublicCombo = Omit<OrdinaryProduct, "type" | "category" | "isExchangeEligible"> & {
+  type: "COMBO";
+  comboId: string;
+  category: null;
+  isExchangeEligible: null;
+  maxQuantity: number;
+  items: import("./combo.types").ComboComponent[];
+};
+export type PublicProduct = OrdinaryProduct | PublicCombo;
+
+export type AdminProduct = Omit<OrdinaryProduct, "variants" | "type"> & {
   status: ProductStatus;
   version: number;
   archivedAt: string | null;

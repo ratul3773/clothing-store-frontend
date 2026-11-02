@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import { useStore } from "react-redux";
 import type { RootState } from "@/redux/store";
 import {
+  useAddCartComboMutation, useUpdateCartComboMutation, useRemoveCartComboMutation,
   cartApi,
   cartMutationKey,
   hasPendingCartMutation,
@@ -39,7 +40,10 @@ export default function useAccountCart(pagination: PaginationQuery = DEFAULT_PAG
   const [update, updated] = useUpdateCartItemMutation({ fixedCacheKey: cartMutationKey("quantity") });
   const [remove, removed] = useRemoveCartItemMutation({ fixedCacheKey: cartMutationKey("remove") });
   const [clear, cleared] = useClearCartMutation({ fixedCacheKey: cartMutationKey("clear") });
-  const busy = added.isLoading || updated.isLoading || removed.isLoading || cleared.isLoading;
+  const [addCombo, comboAdded] = useAddCartComboMutation({ fixedCacheKey: cartMutationKey("addCombo") });
+  const [updateCombo, comboUpdated] = useUpdateCartComboMutation({ fixedCacheKey: cartMutationKey("comboQuantity") });
+  const [removeCombo, comboRemoved] = useRemoveCartComboMutation({ fixedCacheKey: cartMutationKey("removeCombo") });
+  const busy = comboAdded.isLoading || comboUpdated.isLoading || comboRemoved.isLoading || added.isLoading || updated.isLoading || removed.isLoading || cleared.isLoading;
   const { refetch } = query;
 
   const run = useCallback((intent: CartIntent) => enqueue(async () => {
@@ -49,10 +53,10 @@ export default function useAccountCart(pagination: PaginationQuery = DEFAULT_PAG
     if (!cached.data || cached.error) throw new Error("Reload your bag before making changes.");
     const cart = cached.data.data;
 
-    if (intent.type === "add") {
+    if (intent.type === "add" || intent.type === "addCombo") {
       if (!Number.isSafeInteger(intent.quantity) || intent.quantity < 1)
         throw new Error("Choose a positive quantity.");
-      const existing = cart.items.find((item) => item.variantId === intent.variantId);
+      const existing = cart.items.find((item) => intent.type === "add" ? item.type === "VARIANT" && item.variantId === intent.variantId : item.type === "COMBO" && item.comboId === intent.comboId);
       if (existing && intent.quantity > Number.MAX_SAFE_INTEGER - existing.quantity)
         throw new Error("The requested quantity is too large.");
     }
@@ -66,12 +70,16 @@ export default function useAccountCart(pagination: PaginationQuery = DEFAULT_PAG
     }
 
     const common = { version: cart.version };
-    const request = intent.type === "add"
+    const line = "id" in intent ? cart.items.find((item) => item.id === intent.id) : undefined;
+    if ((intent.type === "quantity" || intent.type === "remove") && !line) throw new Error("This item was removed. Reload your bag.");
+    const request = intent.type === "addCombo"
+      ? addCombo({ ...common, comboId: intent.comboId, quantity: intent.quantity })
+      : intent.type === "add"
       ? add({ ...common, variantId: intent.variantId, quantity: intent.quantity })
       : intent.type === "quantity"
-        ? update({ ...common, id: intent.id, quantity: intent.quantity })
+        ? (line?.type === "COMBO" ? updateCombo : update)({ ...common, id: intent.id, quantity: intent.quantity })
         : intent.type === "remove"
-          ? remove({ ...common, id: intent.id })
+          ? (line?.type === "COMBO" ? removeCombo : remove)({ ...common, id: intent.id })
           : clear(common);
     try {
       await request.unwrap();
@@ -83,7 +91,7 @@ export default function useAccountCart(pagination: PaginationQuery = DEFAULT_PAG
       }
       throw error;
     }
-  }), [store, pagination, add, update, remove, clear, refetch]);
+  }), [store, pagination, add, update, remove, addCombo, updateCombo, removeCombo, clear, refetch]);
 
   return { query, busy, run };
 }

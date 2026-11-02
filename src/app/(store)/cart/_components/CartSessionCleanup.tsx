@@ -25,7 +25,7 @@ export default function CartSessionCleanup() {
         }
       });
       for (const request of dispatch(cartApi.util.getRunningMutationsThunk())) {
-        if (["addCartItem", "updateCartItem", "removeCartItem", "clearCart"].includes(request.arg.endpointName)) request.abort();
+        if (["addCartCombo", "updateCartCombo", "removeCartCombo", "addCartItem", "updateCartItem", "removeCartItem", "clearCart"].includes(request.arg.endpointName)) request.abort();
       }
       dispatch(cartApi.util.resetApiState());
     }

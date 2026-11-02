@@ -16,13 +16,13 @@ export default function ProductSummary({ p }: { p: Product }) {
   const was = flash ? p.offer ?? p.price : p.offer ? p.price : 0
   return (
     <>
-      <p className="label-mono text-muted-foreground">{p.sub} · {p.fit}</p>
+      <p className="label-mono text-muted-foreground">{p.type === 'COMBO' ? 'Fixed combo' : [p.sub, p.fit].filter(Boolean).join(' / ')}</p>
       <h1 className="font-display mt-2 text-2xl">{p.name}</h1>
       <div className="mt-4 flex items-center gap-4">
         <span className="text-lg font-semibold">{bdt(priceOf(p))}</span>
         {was > 0 && <span className="text-lg text-muted-foreground line-through">{bdt(was)}</span>}
-        {flash ? <Badge className="bg-accent text-accent-foreground">{`FLASH −${flash.discountPct}%`}</Badge> : p.offer ? (p.badges.map((badge) => <Badge key={badge}>{badge}</Badge>)) : null}
-        <span className="ml-auto flex items-center gap-1 text-sm"><Star size={15} className="fill-accent text-accent" /> {p.rating} <span className="text-muted-foreground">({reviewCount(p, reviews)})</span></span>
+        {flash ? <Badge className="bg-accent text-accent-foreground">{`FLASH −${flash.discountPct}%`}</Badge> : p.offer || p.type === 'COMBO' ? (p.badges.map((badge) => <Badge key={badge}>{badge}</Badge>)) : null}
+        {p.type !== 'COMBO' && <span className="ml-auto flex items-center gap-1 text-sm"><Star size={15} className="fill-accent text-accent" /> {p.rating} <span className="text-muted-foreground">({reviewCount(p, reviews)})</span></span>}
       </div>
       {flash && (
         <div className="mt-4 flex flex-wrap items-center gap-4 rounded-[3px] border border-accent/50 bg-accent/5 p-3">

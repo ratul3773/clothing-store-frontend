@@ -20,7 +20,7 @@ export default function ProductCard({ p, index = 0, now }: { p: Product; index?:
   const flash = activeFlash(p, now ?? undefined)
   const price = priceOf(p, now ?? undefined)
   const was = flash ? p.offer ?? p.price : p.offer ? p.price : 0
-  const badges = [...(flash ? [`FLASH −${flash.discountPct}%`] : []), ...p.badges, ...(totalStock(p) < 25 ? ['LOW STOCK'] : [])].slice(0, 2)
+  const badges = [...(flash ? [`FLASH −${flash.discountPct}%`] : []), ...p.badges, ...((p.lowStock ?? (p.type !== 'COMBO' && totalStock(p) > 0 && totalStock(p) < 25)) ? ['LOW STOCK'] : []), ...(p.inStock === false ? ['OUT OF STOCK'] : [])].slice(0, 2)
   const off = discountPct(p, price)
 
   return (
@@ -34,18 +34,18 @@ export default function ProductCard({ p, index = 0, now }: { p: Product; index?:
     >
       <Link href={productHref(p)} className="block">
         <div className="relative aspect-[4/5] overflow-hidden rounded-[3px] bg-muted">
-          <Image fill sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw" src={p.images[0]} alt={p.name} loading={index === 0 ? 'eager' : 'lazy'} className="absolute inset-0 h-full w-full object-cover transition-all duration-[900ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-110 group-hover:opacity-0" />
-          <Image fill sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw" src={p.images[1] ?? p.images[0]} alt="" loading="lazy" className="absolute inset-0 h-full w-full scale-105 object-cover opacity-0 transition-all duration-[900ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-100 group-hover:opacity-100" />
+          <Image fill sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw" src={p.images[0] || "/product-placeholder.svg"} alt={p.name} loading={index === 0 ? 'eager' : 'lazy'} className="absolute inset-0 h-full w-full object-cover transition-all duration-[900ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-110 group-hover:opacity-0" />
+          <Image fill sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw" src={p.images[1] ?? p.images[0] ?? "/product-placeholder.svg"} alt="" loading="lazy" className="absolute inset-0 h-full w-full scale-105 object-cover opacity-0 transition-all duration-[900ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-100 group-hover:opacity-100" />
           <div className="absolute left-3 top-3 flex flex-col items-start gap-1.5">
             {badges.map((b) => <Badge key={b} className={b.startsWith('FLASH') ? 'bg-accent text-accent-foreground' : undefined}>{b.replace("_", " ")}</Badge>)}
           </div>
           <div className="absolute inset-x-0 bottom-0 translate-y-full bg-foreground/90 py-3 text-center backdrop-blur transition-transform duration-500 group-hover:translate-y-0">
-            <span className="label-mono text-background">View · {p.sizes[0]}–{p.sizes[p.sizes.length - 1]}</span>
+            <span className="label-mono text-background">View{p.type === 'COMBO' ? ` - ${p.items?.reduce((sum, item) => sum + item.quantity, 0)} pieces` : p.sizes.length ? ` - ${p.sizes[0]} to ${p.sizes[p.sizes.length - 1]}` : ''}</span>
           </div>
         </div>
         <div className="mt-4 flex items-start justify-between gap-3">
           <div>
-            <p className="label-mono text-muted-foreground">{p.sub} · {p.sku}</p>
+            <p className="label-mono text-muted-foreground">{p.type === 'COMBO' ? 'Fixed combo' : [p.sub, p.sku].filter(Boolean).join(' / ')}</p>
             <h3 className="font-display mt-1.5  leading-none transition-colors group-hover:text-accent">{p.name}</h3>
           </div>
           <div className="text-right">

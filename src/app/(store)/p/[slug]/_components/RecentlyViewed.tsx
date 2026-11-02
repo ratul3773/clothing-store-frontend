@@ -4,19 +4,19 @@ import { useMemo } from 'react'
 import ProductCard from '@/components/common/ProductCard'
 import Reveal from '@/components/common/Reveal'
 import { useRecentlyViewed } from '../_hooks/useRecentlyViewed'
-import { useGetProductsQuery } from '@/redux/apis/product.api'
+import { useGetProductsByIdsQuery } from '@/redux/apis/product.api'
 import { toStorefrontProducts } from '@/lib/public-product'
 import ProductGridSkeleton from '@/components/common/ProductSkeleton/ProductGridSkeleton'
 
 export default function RecentlyViewed({ currentId }: { currentId: string }) {
   const { ids } = useRecentlyViewed()
 
-  const { data, isLoading } = useGetProductsQuery(
-    { ids: ids, limit: ids.length },
+  const { currentData: data, isLoading } = useGetProductsByIdsQuery(
+    ids,
     { skip: ids.length === 0 },
   )
   const list = useMemo(() => {
-    const byId = new Map(toStorefrontProducts(data?.items ?? []).map((p) => [p.id, p]))
+    const byId = new Map(toStorefrontProducts(data ?? []).map((p) => [p.id, p]))
     return ids
       .filter((id) => id !== currentId)
       .map((id) => byId.get(id))                      // keeps most-recent-first order

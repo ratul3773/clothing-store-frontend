@@ -17,7 +17,7 @@ export default function SizeAssistant({ p, open, onOpenChange, onPick }: Props) 
   const [w, setW] = useState('74')
   const [pref, setPref] = useState('regular')
   const r = recommend(p, +h, +w, pref)
-  const measure = (sizeChart[p.category] ?? []).find((x) => x.size === r.size)?.a
+  const measure = (sizeChart[p.category ?? ""] ?? []).find((x) => x.size === r.size)?.a
   return (
     <Sheet open={open} onOpenChange={onOpenChange} title="Smart size assistant" description="Uses our real size chart. It never invents measurements." side="center">
       <div className="space-y-4 p-5">
@@ -33,7 +33,7 @@ export default function SizeAssistant({ p, open, onOpenChange, onPick }: Props) 
         <motion.div key={r.size} initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="rounded-[3px] bg-foreground p-6 text-background">
           <p className="label-mono text-background/60">We suggest</p>
           <p className="font-display text-8xl text-accent">{r.size}</p>
-          <p className="mt-2 text-sm text-background/80">Your estimated {r.shirts ? 'chest' : 'waist'} is about {r.target}". {p.name} in {r.size}{measure ? ` measures ${measure} and` : ''} is cut as {p.fit.toLowerCase()}. Between sizes? Size up for comfort.</p>
+          <p className="mt-2 text-sm text-background/80">Your estimated {r.shirts ? 'chest' : 'waist'} is about {r.target}&quot;. {p.name} in {r.size}{measure ? ` measures ${measure} and` : ''} is cut as {p.fit.toLowerCase()}. Between sizes? Size up for comfort.</p>
         </motion.div>
         <Button className="w-full" size="lg" variant="accent" onClick={() => { onPick(r.size); onOpenChange(false) }}>Use size {r.size}</Button>
       </div>
