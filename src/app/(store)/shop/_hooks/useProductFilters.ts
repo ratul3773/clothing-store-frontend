@@ -1,111 +1,116 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useSearchParams } from '@/lib/nav'
-import { useCms } from '@/lib/useCms'
 import { useGetCategoriesQuery } from '@/redux/apis/category.api'
 import { useGetProductsQuery } from '@/redux/apis/product.api'
-import type { Category } from '@/redux/apis/types/category.types'
 import type { Badge } from '@/redux/apis/types/product.types'
 import { toStorefrontProducts } from '@/lib/public-product'
 
-export default function useProductFilters() {
-  const version = useCms()
-  const [sp, setSp] = useSearchParams()
-  const cat = sp.get('cat') ?? 'all'
-  const q = (sp.get('q') ?? '').toLowerCase()
-  const sub = sp.get('sub')
-  const badgeParam = sp.get('badge') as Badge | null
-  const [offersOnly, setOffersOnly] = useState(sp.get('offers') === '1')
-  const [inStock, setInStock] = useState(false)
-  const [badge, setBadge] = useState<Badge | ''>(badgeParam ?? '')
-  const [priceSel, setPrice] = useState<[number, number] | null>(null)
-  const [sort, setSort] = useState('newest')
+const PRICE_RANGE: [number, number] = [0, 6000]
 
-  const apiQuery = useMemo(() => ({
-    limit: 100,
+const BADGE_OPTIONS: Array<{ value: Badge; label: string }> = [
+  { value: 'NEW', label: 'New' },
+  { value: 'SALE', label: 'Sale' },
+  { value: 'BEST_SELLER', label: 'Best seller' },
+  { value: 'LIMITED', label: 'Limited' },
+  { value: 'COMBO', label: 'Combo' },
+]
+
+const SORT_TO_API = { low: 'price_asc', high: 'price_desc' } as const
+
+const toInt = (value: string | null, fallback: number, max = Infinity) => {
+  const n = Number(value)
+  return Number.isSafeInteger(n) && n > 0 && n <= max ? n : fallback
+}
+
+type Changes = Record<string, string | number | null>
+
+export default function useProductFilters() {
+  const [sp, setSp] = useSearchParams()
+
+  // ---- read everything from the URL ----
+  const page = toInt(sp.get('page'), 1)
+  const limit = toInt(sp.get('limit'), 6, 100)
+  const cat = sp.get('cat') ?? 'all'
+  const sub = sp.get('sub')
+  const q = (sp.get('q') ?? '').toLowerCase()
+  const offersOnly = sp.get('offers') === '1'
+  const inStock = sp.get('stock') === '1'
+  const badge = (sp.get('badge') ?? '') as Badge | ''
+  const sort = sp.get('sort') ?? 'newest'
+  const min = sp.get('min')
+  const max = sp.get('max')
+  const priceSel: [number, number] | null = min && max ? [Number(min), Number(max)] : null
+
+  // ---- one writer: set/delete params, go back to page 1 unless told otherwise ----
+  const update = (changes: Changes, keepPage = false) => {
+    const next = new URLSearchParams(sp)
+    Object.entries(changes).forEach(([key, value]) =>
+      value === null ? next.delete(key) : next.set(key, String(value)),
+    )
+    if (!keepPage) next.set('page', '1')
+    setSp(next)
+  }
+
+  // ---- data ----
+  const { currentData: productPage, isLoading, isFetching, isError, error } = useGetProductsQuery({
+    page,
+    limit,
     category: sub ?? (cat !== 'all' ? cat : undefined),
     q: q || undefined,
-    inStock: inStock ? 'true' as const : undefined,
-    offers: offersOnly ? 'true' as const : undefined,
+    inStock: inStock ? 'true' : undefined,
+    offers: offersOnly ? 'true' : undefined,
     badge: badge || undefined,
     minPrice: priceSel?.[0],
     maxPrice: priceSel?.[1],
-    sort: sort === 'low' ? 'price_asc' as const : sort === 'high' ? 'price_desc' as const : sort as 'newest' | 'name_asc' | 'name_desc',
-  }), [badge, cat, inStock, offersOnly, priceSel, q, sort, sub])
+    sort: (SORT_TO_API[sort as keyof typeof SORT_TO_API] ?? sort) as
+      'newest' | 'name_asc' | 'name_desc' | 'price_asc' | 'price_desc',
+  })
+  const {
+    data: categoryData,
+    isLoading: isCategoriesLoading,
+    isError: isCategoriesError,
+    error: categoriesError,
+  } = useGetCategoriesQuery()
 
-  const { data: productPage, isLoading, isFetching, isError, error } = useGetProductsQuery(apiQuery)
-  // const { data: catalogPage } = useGetProductsQuery({ limit: 100, sort: 'newest' })
-  const { data: categoryData, isLoading: isCategoriesLoading, isError: isCategoriesError, error: categoriesError } = useGetCategoriesQuery()
-  const products = useMemo(() => toStorefrontProducts(productPage?.items ?? []), [productPage?.items])
-  // const catalogProducts = useMemo(() => toStorefrontProducts(catalogPage?.items ?? []), [catalogPage?.items])
+  const list = useMemo(() => toStorefrontProducts(productPage?.items ?? []), [productPage?.items])
 
-  const categories = useMemo(() => {
-    const flat = (categoryData ?? []).flatMap(function walk(category: Category): Category[] {
-      return [category, ...(category.children ?? []).flatMap(walk)]
-    })
-    return flat.filter((category) => !category.parentId)
-  }, [categoryData])
-
-  const allCategories = useMemo(() => {
-    const result = [] as NonNullable<typeof categoryData>
-    const walk = (items: NonNullable<typeof categoryData>) => {
-      items.forEach((category) => {
-        result.push(category)
-        if (category.children) walk(category.children)
-      })
-    }
-    walk(categoryData ?? [])
-    return result
-  }, [categoryData])
-
-  const subcategories = useMemo(
-    () => allCategories.filter((category) => category.parentId === categories.find((item) => item.slug === cat)?.id),
-    [allCategories, categories, cat],
+  const rootCategories = useMemo(
+    () => (categoryData ?? []).filter((c) => !c.parentId),
+    [categoryData],
   )
+  const categories = useMemo(
+    () => rootCategories.map((c) => ({ cat: c.slug, label: c.name })),
+    [rootCategories],
+  )
+  const subcategories = rootCategories.find((c) => c.slug === cat)?.children ?? []
 
-  // Until the shopper moves the slider the price filter is off, so newly created products always appear.
-  const price: [number, number] = [0, 6000]
-  const list = useMemo(() => products, [products, version])
+  return {
+    // values
+    cat, q, sub, offersOnly, inStock, badge, sort,
+    price: priceSel ?? PRICE_RANGE,
+    list,
+    paginationInfo: productPage?.meta,
+    categories,
+    subcategories,
+    badgeOptions: BADGE_OPTIONS,
 
-  const setCat = (c: string) => { const n = new URLSearchParams(sp); c === 'all' ? n.delete('cat') : n.set('cat', c); n.delete('sub'); setSp(n) }
-  const toggleSub = (s: string) => { const n = new URLSearchParams(sp); sub === s ? n.delete('sub') : n.set('sub', s); setSp(n) }
-  const reset = () => { setSp({}); setOffersOnly(false); setInStock(false); setBadge(''); setPrice(null); setSort('newest') }
+    // setters
+    setOffersOnly: (v: boolean) => update({ offers: v ? '1' : null }),
+    setInStock: (v: boolean) => update({ stock: v ? '1' : null }),
+    setBadge: (v: Badge | '') => update({ badge: v || null }),
+    setSort: (v: string) => update({ sort: v }),
+    setPrice: ([lo, hi]: [number, number]) => update({ min: lo, max: hi }),
+    setPage: (p: number) => update({ page: p }, true),
+    setLimit: (l: number) => update({ limit: l }),
+    setCat: (c: string) => update({ cat: c === 'all' ? null : c, sub: null }),
+    toggleSub: (s: string) => update({ sub: sub === s ? null : s }),
+    reset: () => setSp({ page: '1', limit: String(limit) }),
 
-  const badgeOptions: Array<{ value: Badge; label: string }> = [
-    { value: 'NEW', label: 'New' },
-    { value: 'SALE', label: 'Sale' },
-    { value: 'BEST_SELLER', label: 'Best seller' },
-    { value: 'LIMITED', label: 'Limited' },
-    { value: 'COMBO', label: 'Combo' },
-  ]
-  const categoryOptions = categories.map((category) => ({ cat: category.slug, label: category.name }))
-
-  return { 
-    cat, 
-    q, 
-    sub, 
-    offersOnly, 
-    setOffersOnly, 
-    inStock, 
-    setInStock, 
-    badge, 
-    setBadge, 
-    price, 
-    setPrice, 
-    sort, 
-    setSort, 
-    list, 
-    setCat, 
-    toggleSub, 
-    reset, 
-    categories: categoryOptions, 
-    subcategories, 
-    badgeOptions, 
-    isLoading: (isLoading || isFetching), 
-    isCategoriesLoading, 
-    isCategoriesError, 
-    categoriesError, 
-    isError, 
-    error }
+    // status
+    isLoading: isLoading || isFetching,
+    isError, error,
+    isCategoriesLoading, isCategoriesError, categoriesError,
+  }
 }

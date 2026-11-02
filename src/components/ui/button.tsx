@@ -34,7 +34,7 @@ const customerButtonVariants = cva(
           'bg-card text-foreground before:bg-accent hover:text-accent-foreground',
         destructive:
           'text-destructive before:bg-destructive/10 border border-destructive/50',
-        link: 'text-primary underline-offset-4 hover:underline before:bg-primary/10',
+        link: 'text-primary underline-offset-4 hover:underline',
       },
       size: {
         xs: 'h-6 gap-1 rounded-md px-2 text-xs',

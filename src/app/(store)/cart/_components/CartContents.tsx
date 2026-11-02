@@ -100,7 +100,8 @@ export default function CartContents({ drawer = false, onNavigate }: { drawer?: 
           </div>
           {cart.lines.map((item) =>
           <CartLine key={`${cart.identityKey}:${item.id}`} item={item} disabled={disabled} onUpdate={update} onRemove={remove} onSelect={setSelection} />)}
-          {!drawer && cart.meta && <PaginationComponent
+          {!drawer && cart.meta && 
+          <PaginationComponent
             showPageNumbers={!drawer}
             paginationInfo={cart.meta}
             onPageChange={setPage}

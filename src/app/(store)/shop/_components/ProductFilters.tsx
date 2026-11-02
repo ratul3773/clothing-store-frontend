@@ -29,9 +29,13 @@ export default function ProductFilters({ f }: { f: Filters }) {
           ) : (
             <>
               {categories.map((c) => (
-                <button key={c.cat} onClick={() => f.setCat(c.cat)} className={cn('font-display relative overflow-hidden rounded-[3px] border px-3 py-2 text-left transition', cat === c.cat ? 'border-foreground bg-foreground text-background' : 'border-border hover:border-foreground')}>
+                <Button 
+                key={c.cat}
+                variant="outline"
+                size="sm"
+                onClick={() => f.setCat(c.cat)} >
                   {c.label}
-                </button>
+                </Button>
               ))}
             </>
           )}
