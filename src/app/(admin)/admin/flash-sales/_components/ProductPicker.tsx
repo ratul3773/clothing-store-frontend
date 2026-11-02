@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import { products } from '@/data/catalog'
 import { bdt } from '@/lib/utils'
@@ -29,8 +30,7 @@ export default function ProductPicker({ selected, onChange, pct, conflicts }: Pr
             <li key={p.id}>
               <label className="flex cursor-pointer items-center gap-3 px-3 py-1.5 text-[13px] hover:bg-muted/40">
                 <input type="checkbox" checked={on} onChange={() => toggle(p.id)} />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.images[0]} alt="" className="size-8 rounded border border-border object-cover" />
+                <Image width={32} height={32} src={p.images[0]} alt="" className="size-8 rounded border border-border object-cover" />
                 <span className="min-w-0 flex-1 truncate">
                   {p.name}
                   {conflicts[p.id] && <span className="ml-2 text-xs text-amber-600">Also in: {conflicts[p.id].join(', ')}</span>}

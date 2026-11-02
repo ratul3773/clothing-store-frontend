@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState } from 'react'
 import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { combos, products, type Combo } from '@/data/catalog'
@@ -33,8 +34,7 @@ export default function CombosTab() {
           columns={[
             { key: 'name', header: 'Combo', cell: (c) => (
               <div className="flex items-center gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={c.image} alt="" className="size-10 rounded border border-border object-cover" />
+                <Image width={40} height={40} src={c.image} alt="" className="size-10 rounded border border-border object-cover" />
                 <div><p className="font-medium">{c.name}</p><p className="text-xs text-muted-foreground">{c.tag}</p></div>
               </div>
             ) },

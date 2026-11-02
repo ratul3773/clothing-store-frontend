@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'motion/react'
 import { Heart } from 'lucide-react'
@@ -33,8 +34,8 @@ export default function ProductCard({ p, index = 0, now }: { p: Product; index?:
     >
       <Link href={productHref(p)} className="block">
         <div className="relative aspect-[4/5] overflow-hidden rounded-[3px] bg-muted">
-          <img src={p.images[0]} alt={p.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-all duration-[900ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-110 group-hover:opacity-0" />
-          <img src={p.images[1] ?? p.images[0]} alt="" loading="lazy" className="absolute inset-0 h-full w-full scale-105 object-cover opacity-0 transition-all duration-[900ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-100 group-hover:opacity-100" />
+          <Image fill sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw" src={p.images[0]} alt={p.name} loading={index === 0 ? 'eager' : 'lazy'} className="absolute inset-0 h-full w-full object-cover transition-all duration-[900ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-110 group-hover:opacity-0" />
+          <Image fill sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw" src={p.images[1] ?? p.images[0]} alt="" loading="lazy" className="absolute inset-0 h-full w-full scale-105 object-cover opacity-0 transition-all duration-[900ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-100 group-hover:opacity-100" />
           <div className="absolute left-3 top-3 flex flex-col items-start gap-1.5">
             {badges.map((b) => <Badge key={b} className={b.startsWith('FLASH') ? 'bg-accent text-accent-foreground' : undefined}>{b.replace("_", " ")}</Badge>)}
           </div>

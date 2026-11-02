@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import Reveal from '@/components/common/Reveal'
@@ -19,7 +20,7 @@ export default function PromoBanners() {
       {list.map((b, i) => {
         const body = (
           <div className="group relative flex h-40 items-end overflow-hidden rounded-[3px] bg-foreground text-background sm:h-44">
-            {b.image && <img src={b.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60 transition duration-[1200ms] group-hover:scale-110 group-hover:opacity-80" />}
+            {b.image && <Image fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" src={b.image} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60 transition duration-[1200ms] group-hover:scale-110 group-hover:opacity-80" />}
             <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/30 to-transparent" />
             <div className="relative flex w-full items-end justify-between gap-4 p-5">
               <div>

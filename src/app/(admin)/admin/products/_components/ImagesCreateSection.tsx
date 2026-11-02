@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image'
 import { useEffect, useMemo, useRef } from "react";
 import { ImagePlus, X } from "lucide-react";
 
@@ -95,8 +96,7 @@ export default function ImagesCreateSection({ files, onChange, error }: Props) {
                 key={`${preview.file.name}-${preview.file.lastModified}-${index}`}
                 className="group relative aspect-square overflow-hidden rounded border border-border bg-muted"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image fill sizes="(max-width: 640px) 50vw, 160px"
                   src={preview.url}
                   alt={preview.file.name}
                   className="size-full object-cover"

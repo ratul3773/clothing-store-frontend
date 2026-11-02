@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Reveal from '@/components/common/Reveal'
 import { Button } from '@/components/ui/button'
 import { bdt } from '@/lib/utils'
@@ -16,7 +17,7 @@ export default function ComboCard({ combo: c, index }: { combo: ReturnType<typeo
     <Reveal delay={index * 0.1}>
       <div className="group overflow-hidden rounded-[3px] border border-background/20 transition hover:border-accent">
         <div className="relative aspect-[4/3] overflow-hidden">
-          <img src={c.image} alt={c.name} className="h-full w-full object-cover transition duration-1000 group-hover:scale-110" />
+          <Image fill sizes="(max-width: 768px) 100vw, 33vw" src={c.image} alt={c.name} className="h-full w-full object-cover transition duration-1000 group-hover:scale-110" />
           <span className="label-mono absolute left-3 top-3 rounded-[2px] bg-accent px-2 py-1 text-accent-foreground">Save {bdt(Math.max(0, sum - c.price))}</span>
         </div>
         <div className="p-5">

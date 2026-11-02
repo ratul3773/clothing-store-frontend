@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { ArrowRight } from 'lucide-react'
@@ -145,7 +146,7 @@ export default function HeroNeural() {
             <div className="absolute -inset-10 rounded-full bg-[radial-gradient(circle,rgba(255,106,77,0.45),transparent_65%)]" />
             <motion.div className="absolute -inset-3 rounded-full border border-dashed border-[#ff6a4d]/60" animate={reduce ? undefined : { rotate: 360 }} transition={{ duration: 40, repeat: Infinity, ease: 'linear' }} />
             <motion.div className="absolute -inset-7 rounded-full border border-[#8fd3ad]/25" animate={reduce ? undefined : { rotate: -360 }} transition={{ duration: 70, repeat: Infinity, ease: 'linear' }} />
-            <img src={hero} alt="" className="h-full w-full rounded-full border-2 border-[#ff6a4d] object-cover shadow-[0_0_60px_rgba(255,106,77,0.5)]" />
+            <Image width={coreR * 2} height={coreR * 2} src={hero} alt="" className="h-full w-full rounded-full border-2 border-[#ff6a4d] object-cover shadow-[0_0_60px_rgba(255,106,77,0.5)]" />
             <div className="absolute inset-0 rounded-full bg-[#07110c]/25" />
           </motion.div>
 

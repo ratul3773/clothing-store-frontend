@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image'
 import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 
@@ -59,8 +60,7 @@ export default function CategoriesTable({ rows, selected, onSelect, onCreate, on
           )}
           <div className="size-8 shrink-0 overflow-hidden rounded border border-border bg-muted">
             {category.imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image width={32} height={32}
                 src={category.imageUrl}
                 alt=""
                 className="size-full object-cover"

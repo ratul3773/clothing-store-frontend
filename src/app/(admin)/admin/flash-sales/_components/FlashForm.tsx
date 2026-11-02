@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import { AlertTriangle } from 'lucide-react'
 import { byId } from '@/data/catalog'
@@ -94,8 +95,7 @@ function Inner({ onOpenChange, sale, now }: Props) {
                 const base = p.offer ?? p.price
                 return (
                   <div key={p.id} className="rounded-md border border-border p-2 text-xs">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={p.images[0]} alt="" className="mb-1.5 aspect-square w-full rounded object-cover" />
+                    <Image width={240} height={240} src={p.images[0]} alt="" className="mb-1.5 aspect-square h-auto w-full rounded object-cover" />
                     <p className="truncate font-medium">{p.name}</p>
                     <p className="tabular-nums"><span className="font-semibold text-red-600">{bdt(Math.round(base * (1 - pct / 100)))}</span> <span className="text-muted-foreground line-through">{bdt(base)}</span></p>
                   </div>

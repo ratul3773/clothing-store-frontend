@@ -1,11 +1,14 @@
 'use client'
 
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { ArrowUpRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { Banner } from '@/data/site'
+
+const MotionImage = motion.create(Image)
 
 const INTERVAL = 5500
 
@@ -35,7 +38,10 @@ export default function HeroCarousel({ banners }: { banners: Banner[] }) {
             transition={{ duration: 1.1, ease: 'easeInOut' }}
           >
             {b.image && (
-              <motion.img
+              <MotionImage
+                fill
+                sizes="100vw"
+                loading="eager"
                 src={b.image}
                 alt={b.title}
                 className="absolute inset-0 h-full w-full object-cover"

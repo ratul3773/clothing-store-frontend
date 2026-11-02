@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image'
 import { Badge, Card, CardHeader } from "@/components/cms/ui";
 import { bdt } from "@/lib/utils";
 import type { Badge as BadgeValue, ProductStatus } from "@/redux/apis/types/product.types";
@@ -36,8 +37,7 @@ export default function ProductPreview({
       <div className="space-y-3 p-4">
         <div className="relative aspect-[4/5] overflow-hidden rounded border border-border bg-muted">
           {primary ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={primary} alt="" className="size-full object-cover" />
+            <Image fill sizes="(max-width: 1024px) 100vw, 320px" src={primary} alt="" className="size-full object-cover" />
           ) : (
             <div className="flex size-full items-center justify-center text-xs text-muted-foreground">
               No image yet
@@ -64,8 +64,7 @@ export default function ProductPreview({
                 key={`${image}-${index}`}
                 className="size-10 shrink-0 overflow-hidden rounded border border-border bg-muted"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={image} alt="" className="size-full object-cover" />
+                <Image width={40} height={40} src={image} alt="" className="size-full object-cover" />
               </div>
             ))}
           </div>

@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import Reveal from '@/components/common/Reveal'
@@ -33,7 +34,7 @@ export default function CategoryTiles() {
       {tiles.map((c, k) => (
         <Reveal key={c.cat} delay={k * 0.1}>
           <Link href={`/shop?cat=${encodeURIComponent(c.cat)}`} className="group relative block aspect-[16/10] overflow-hidden rounded-[3px] bg-foreground">
-            <img src={c.image!} alt={c.title} className="absolute inset-0 h-full w-full object-cover opacity-70 transition duration-[1200ms] group-hover:scale-110 group-hover:opacity-90" />
+            <Image fill sizes="(max-width: 1024px) 100vw, 33vw" src={c.image!} alt={c.title} className="absolute inset-0 h-full w-full object-cover opacity-70 transition duration-[1200ms] group-hover:scale-110 group-hover:opacity-90" />
             <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent" />
             <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-6 text-background">
               <div>
