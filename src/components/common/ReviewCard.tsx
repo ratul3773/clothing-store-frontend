@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { BadgeCheck, CornerDownRight } from 'lucide-react'
 import StarRating from '@/components/common/StarRating'
 import { findProduct } from '@/lib/storefront'
@@ -16,7 +17,7 @@ export default function ReviewCard({ r, showProduct, children }: Props) {
       <p className="mt-3 leading-snug">“{r.text}”</p>
       {r.images.length > 0 && (
         <div className="mt-3 flex gap-2">
-          {r.images.map((src, i) => <a key={i} href={src} target="_blank" rel="noreferrer"><img src={src} alt={`Review photo ${i + 1}`} className="h-20 w-16 rounded-[2px] object-cover transition hover:scale-105" /></a>)}
+          {r.images.map((src, i) => <a key={i} href={src} target="_blank" rel="noreferrer"><Image width={64} height={80} src={src} alt={`Review photo ${i + 1}`} className="h-20 w-16 rounded-[2px] object-cover transition hover:scale-105" /></a>)}
         </div>
       )}
       <p className="label-mono mt-3 text-muted-foreground">{r.author} · {new Date(r.createdAt).toLocaleDateString('en-GB')}</p>

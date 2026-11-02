@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import { Search } from 'lucide-react'
 import { products } from '@/data/catalog'
@@ -73,8 +74,7 @@ export default function ReviewsTable() {
                 return (
                   <div className="flex items-center gap-2">
                     {p?.images[0] && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={p.images[0]} alt="" className="size-9 rounded border border-border object-cover" />
+                      <Image width={36} height={36} src={p.images[0]} alt="" className="size-9 rounded border border-border object-cover" />
                     )}
                     <span className="font-medium">{p?.name ?? r.productId}</span>
                   </div>

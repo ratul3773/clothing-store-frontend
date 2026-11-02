@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useRef } from 'react'
 import { ImagePlus, X } from 'lucide-react'
 import { readImage } from '@/app/(store)/account/_utils/account.utils'
@@ -13,8 +14,7 @@ export default function ImageField({ value, onChange, placeholder = 'https://…
   return (
     <div className="flex items-center gap-2">
       <div className="size-10 shrink-0 overflow-hidden rounded border border-border bg-muted">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        {value && <img src={value} alt="" className="size-full object-cover" />}
+        {value && <Image width={40} height={40} src={value} alt="" className="size-full object-cover" />}
       </div>
       <Input value={value.startsWith('data:') ? 'Uploaded image' : value} readOnly={value.startsWith('data:')} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
       <input ref={ref} type="file" accept="image/*" hidden onChange={async (e) => { const f = e.target.files?.[0]; if (f) onChange(await readImage(f)); e.target.value = '' }} />

@@ -27,7 +27,7 @@ export default function SizeAssistant({ p, open, onOpenChange, onPick }: Props) 
         </div>
         <div className="flex gap-2">
           {FIT_PREFERENCES.map((x) => (
-            <button key={x} onClick={() => setPref(x)} className={cn('label-mono flex-1 rounded-[3px] border py-3 transition', pref === x ? 'border-foreground bg-foreground text-background' : 'border-border hover:border-foreground')}>{x}</button>
+            <Button key={x} type="button" variant="outline" size="sm" aria-pressed={pref === x} onClick={() => setPref(x)} className={cn('label-mono h-auto flex-1 py-3 sm:h-auto', pref === x ? 'border-foreground bg-foreground text-background' : 'border-border hover:border-foreground')}>{x}</Button>
           ))}
         </div>
         <motion.div key={r.size} initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="rounded-[3px] bg-foreground p-6 text-background">

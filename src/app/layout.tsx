@@ -10,7 +10,7 @@ import ReduxProvider from '@/components/providers/redux-provider'
 import Script from "next/script";
 import { Suspense } from 'react'
 import UniversalSkeleton from '@/components/common/UniversalSkeleton'
-const display = Big_Shoulders({ subsets: ['latin'], weight: ['500', '700', '800', '900'], variable: '--f-display', display: 'swap' })
+const display = Big_Shoulders({ subsets: ['latin'], weight: ['500', '700', '800', '900'], variable: '--f-display', display: 'swap', adjustFontFallback: false, fallback: ['Impact', 'sans-serif'] })
 const sans = Hanken_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--f-sans', display: 'swap' })
 const mono = DM_Mono({ subsets: ['latin'], weight: ['400', '500'], variable: '--f-mono', display: 'swap' })
 
@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ThemeProvider>
-          {/* <Suspense fallback={<UniversalSkeleton />}> */}
+          <Suspense fallback={<UniversalSkeleton />}>
             <ReduxProvider>
               <StoreProvider>
                 <TooltipProvider>
@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </TooltipProvider>
               </StoreProvider>
             </ReduxProvider>
-          {/* </Suspense> */}
+          </Suspense>
         </ThemeProvider>
         <Toaster />
       </body>

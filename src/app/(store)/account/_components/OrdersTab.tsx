@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { Link2 } from 'lucide-react'
 import { Pagination } from '@/components/ui/pagination'
 import usePagination from '@/lib/usePagination'
@@ -7,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useStore } from '@/components/providers/StoreProvider'
 import useNow from '@/lib/useNow'
-import { products } from '@/data/catalog'
 import { statusLabel, type Order } from '@/data/orders'
 import { isExchangeEligible } from '@/app/(store)/account/_utils/account.utils'
 import { bdt } from '@/lib/utils'
@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default function OrdersTab({ linked, unlinked, onExchange }: Props) {
-  const { patchOrder, addItem, toast } = useStore()
+  const { patchOrder, toast } = useStore()
   const now = useNow(30_000)
   const pg = usePagination(linked, 3)
   return (
@@ -33,7 +33,7 @@ export default function OrdersTab({ linked, unlinked, onExchange }: Props) {
       {pg.pageItems.map((o) => (
         <div key={o.id} className="group rounded-[3px] border border-border bg-card/70 p-5 transition hover:border-foreground">
           <div className="flex flex-wrap items-center gap-4">
-            <img src={o.items[0].image} alt="" className="h-20 w-16 rounded-[2px] object-cover" />
+            <Image width={64} height={80} src={o.items[0].image} alt="" className="h-20 w-16 rounded-[2px] object-cover" />
             <div className="min-w-40 flex-1">
               <p className="label-mono text-muted-foreground">{o.id} · {new Date(o.createdAt).toLocaleDateString('en-GB')} · {o.source}</p>
               <p className="font-semibold">{o.items.map((i) => i.name).join(', ')}</p>
@@ -45,13 +45,13 @@ export default function OrdersTab({ linked, unlinked, onExchange }: Props) {
             </div>
             <div className="flex flex-wrap gap-2">
               <Button to={`/order?id=${o.id}`} size="sm" variant="outline">View</Button>
-              <Button size="sm" variant="ghost" onClick={() => { o.items.forEach((i) => { const p = products.find((x) => x.id === i.productId && x.status === 'active'); if (p) addItem(p, i.color, i.size, i.qty, false) }); toast('Added to bag') }}>Reorder</Button>
+              <Button size="sm" variant="ghost" disabled title="Reordering requires live order variants">Reorder coming soon</Button>
               {now !== null && isExchangeEligible(o, now) && <Button size="sm" variant="accent" onClick={() => onExchange(o)}>Request exchange</Button>}
             </div>
           </div>
         </div>
       ))}
-      <Pagination page={pg.page} pageCount={pg.pageCount} onChange={pg.setPage} id="pg-orders" />
+      {/* <Pagination page={pg.page} pageCount={pg.pageCount} onChange={pg.setPage} id="pg-orders" /> */}
     </>
   )
 }

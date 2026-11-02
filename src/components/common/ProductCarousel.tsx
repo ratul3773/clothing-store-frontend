@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useReducedMotion } from 'motion/react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import ProductCard from '@/components/common/ProductCard'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { Product } from '@/data/catalog'
 
@@ -95,8 +96,8 @@ export default function ProductCarousel({ items, interval = 4200, className }: {
       </div>
       {/* fade hints that more products continue off-screen */}
       {!edge.end && <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 hidden w-16 bg-gradient-to-l from-background/60 to-transparent sm:block" />}
-      <button type="button" aria-label="Previous products" onClick={() => step(-1)} className="absolute left-2 top-[38%] hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-border bg-background text-foreground opacity-0 shadow-lg transition hover:bg-accent hover:text-accent-foreground group-hover/car:opacity-100 md:grid"><ChevronLeft size={20} /></button>
-      <button type="button" aria-label="Next products" onClick={() => step(1)} className="absolute right-2 top-[38%] hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-border bg-background text-foreground opacity-0 shadow-lg transition hover:bg-accent hover:text-accent-foreground group-hover/car:opacity-100 md:grid"><ChevronRight size={20} /></button>
+      <Button type="button" variant="outline" size="icon-sm" shape="pill" aria-label="Previous products" onClick={() => step(-1)} className="absolute left-2 top-[38%] hidden h-11 w-11 -translate-y-1/2 border-border bg-background opacity-0 shadow-lg group-hover/car:opacity-100 md:inline-flex"><ChevronLeft size={20} /></Button>
+      <Button type="button" variant="outline" size="icon-sm" shape="pill" aria-label="Next products" onClick={() => step(1)} className="absolute right-2 top-[38%] hidden h-11 w-11 -translate-y-1/2 border-border bg-background opacity-0 shadow-lg group-hover/car:opacity-100 md:inline-flex"><ChevronRight size={20} /></Button>
     </div>
   )
 }

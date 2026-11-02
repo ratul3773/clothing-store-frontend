@@ -1,6 +1,7 @@
 'use client'
 
 import { Field, inputCls } from '@/components/common/FormField'
+import { Button } from '@/components/ui/button'
 import { useStore } from '@/components/providers/StoreProvider'
 import type { CheckoutFields } from '@/app/(store)/checkout/_types/checkout.types'
 
@@ -16,7 +17,7 @@ export default function CheckoutForm({ f, set }: Props) {
       <h1 className="font-display text-lg sm:text-2xl font-medium">Checkout</h1>
       {!s.user && (
         <p className="mt-4 rounded-[3px] border border-border bg-card/70 p-4 text-sm">
-          No account needed. Already a member? <button onClick={() => s.setAuthOpen(true)} className="font-semibold text-accent underline underline-offset-4">Sign in</button> to use saved addresses.
+          No account needed. Already a member? <Button type="button" variant="link" size="xs" onClick={() => s.setAuthOpen(true)} className="h-auto p-0 text-sm font-semibold tracking-normal text-accent underline underline-offset-4">Sign in</Button> to use saved addresses.
         </p>
       )}
       <div className="mt-8 space-y-5">

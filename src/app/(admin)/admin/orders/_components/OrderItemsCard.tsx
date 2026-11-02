@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { Card, CardHeader } from '@/components/cms/ui'
 import { bdt } from '@/lib/utils'
 import type { Order } from '@/data/orders'
@@ -20,8 +21,7 @@ export default function OrderItemsCard({ order }: { order: Order }) {
             <tr key={n} className="border-b border-border last:border-0">
               <td className="px-4 py-2">
                 <div className="flex items-center gap-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={i.image} alt="" className="size-10 rounded object-cover" />
+                  <Image width={40} height={40} src={i.image} alt="" className="size-10 rounded object-cover" />
                   <div><p className="font-medium">{i.name}</p><p className="text-xs text-muted-foreground">{i.color} / {i.size}</p></div>
                 </div>
               </td>

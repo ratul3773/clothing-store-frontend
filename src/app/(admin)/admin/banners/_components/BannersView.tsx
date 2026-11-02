@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState } from 'react'
 import { ArrowDown, ArrowUp, Pencil, Plus, Sparkles, Trash2 } from 'lucide-react'
 import { banners, type Banner } from '@/data/site'
@@ -54,8 +55,7 @@ export default function BannersView() {
           empty={<Empty title="No banners yet" description="The storefront hero falls back to its default until you add an active hero banner." action={<Btn variant="primary" onClick={loadSamples}><Sparkles className="size-4" />Load sample banners</Btn>} />}
           columns={[
             { key: 'img', header: 'Preview', cell: (b) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={b.image} alt="" className="h-12 w-24 rounded border border-border object-cover" />
+              <Image width={96} height={48} src={b.image} alt="" className="h-12 w-24 rounded border border-border object-cover" />
             ) },
             { key: 'title', header: 'Banner', cell: (b) => <div><p className="font-medium">{b.title}</p><p className="max-w-xs truncate text-xs text-muted-foreground">{b.subtitle}</p></div> },
             { key: 'pl', header: 'Placement', cell: (b) => <Badge tone={b.placement === 'hero' ? 'blue' : 'violet'}>{b.placement === 'hero' ? 'Hero' : 'Promo'}</Badge> },

@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from '@/lib/nav'
 import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'motion/react'
 import ThemeToggle from '@/components/common/ThemeToggle'
-import { Heart, Menu, Search, ShoppingBag, User, X } from 'lucide-react'
+import { Heart, Menu, Search, X } from 'lucide-react'
 import { useStore } from '@/components/providers/StoreProvider'
 import NavMenu from '@/components/layout/NavMenu'
 import { settings } from '@/data/site'
@@ -15,10 +15,11 @@ import { useGetCategoriesQuery } from '@/redux/apis/category.api'
 import BrandName from '@/components/common/BrandName'
 import { Tip } from '@/components/ui/controls'
 import { Button } from '../ui/button'
+import CartButton from './CartButton'
 
 export default function Header({ profileButton }: { profileButton: React.ReactNode }) {
   useCms()
-  const { count, setCartOpen, wishlist } = useStore()
+  const { wishlist } = useStore()
   const navigate = useNavigate()
   const [q, setQ] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
@@ -78,9 +79,9 @@ export default function Header({ profileButton }: { profileButton: React.ReactNo
       )}
       <div className="border-b border-border bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-340 items-center gap-6 px-5 lg:px-10">
-          <button className="lg:hidden" aria-label="Menu" onClick={() => setMenu((m) => !m)}>
+          <Button type="button" variant="ghost" size="icon" shape="pill" className="lg:hidden" aria-label="Menu" aria-expanded={menu} onClick={() => setMenu((m) => !m)}>
             {menu ? <X size={22} /> : <Menu size={22} />}
-          </button>
+          </Button>
           <Link href="/" className="font-display leading-none">
             <BrandName name={settings.store.name} />
           </Link>
@@ -128,27 +129,7 @@ export default function Header({ profileButton }: { profileButton: React.ReactNo
               </Link>
             </Tip>
 
-            <Button
-              onClick={() => setCartOpen(true)}
-              aria-label={`Cart, ${count} items`}
-              size="icon"
-              variant="outline"
-              className="h-10 w-10 border-none place-items-center rounded-full"
-            >
-              <ShoppingBag size={18} />
-              <AnimatePresence mode="popLayout">
-                {count > 0 && (
-                  <motion.span
-                    key={count}
-                    initial={{ scale: 0.4, y: -8 }}
-                    animate={{ scale: 1, y: 0 }}
-                    className="label-mono absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1 text-[0.65rem] text-accent-foreground"
-                  >
-                    {count}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </Button>
+            <CartButton />
             {profileButton}
           </div>
         </div>

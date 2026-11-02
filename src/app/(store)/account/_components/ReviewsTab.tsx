@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { PenLine } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Pagination } from '@/components/ui/pagination'
@@ -27,7 +28,7 @@ export default function ReviewsTab({ delivered, form }: { delivered: Order[]; fo
             <ReviewCard key={review.id} r={review} showProduct />
           ) : (
             <div key={`${order.id}-${item.productId}`} className="flex flex-wrap items-center gap-4 rounded-[3px] border border-dashed border-accent bg-accent/5 p-5">
-              <img src={item.image} alt="" className="h-20 w-16 rounded-[2px] object-cover" />
+              <Image width={64} height={80} src={item.image} alt="" className="h-20 w-16 rounded-[2px] object-cover" />
               <div className="min-w-40 flex-1"><p className="font-semibold">{findProduct(item.productId)?.name ?? item.name}</p><p className="label-mono text-muted-foreground">{order.id} · {[item.color, item.size].filter(Boolean).join(' · ')}</p></div>
               <Button size="sm" variant="accent" onClick={() => form.open({ order, item })}><PenLine size={14} /> Write a review</Button>
             </div>

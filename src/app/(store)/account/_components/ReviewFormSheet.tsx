@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Sheet } from '@/components/ui/sheeet'
 import { Choice } from '@/components/ui/controls'
@@ -16,7 +17,7 @@ export default function ReviewFormSheet({ f }: { f: ReturnType<typeof useReviewF
       {t && (
         <div className="max-h-[75vh] space-y-4 overflow-y-auto p-5">
           <div className="flex items-center gap-3">
-            <img src={t.item.image} alt="" className="h-16 w-12 rounded-[2px] object-cover" />
+            <Image width={48} height={64} src={t.item.image} alt="" className="h-16 w-12 rounded-[2px] object-cover" />
             <div><p className="font-semibold">{t.item.name}</p><p className="label-mono text-muted-foreground">{t.order.id} · {[t.item.color, t.item.size].filter(Boolean).join(' · ')}</p></div>
           </div>
           <Field label="Rating"><StarRating value={f.rating} onChange={f.setRating} size={28} /></Field>

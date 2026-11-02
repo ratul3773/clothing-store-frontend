@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState } from 'react'
 import { Eye, EyeOff, Trash2 } from 'lucide-react'
 import { useStore } from '@/components/providers/StoreProvider'
@@ -59,8 +60,7 @@ function Inner({ id, onClose, replyToReview, patchReview, removeReview, toast }:
           {r.images.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {r.images.map((src, i) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img key={i} src={src} alt={`Review photo ${i + 1}`} className="size-24 rounded-md border border-border object-cover" />
+                <Image width={96} height={96} key={i} src={src} alt={`Review photo ${i + 1}`} className="size-24 rounded-md border border-border object-cover" />
               ))}
             </div>
           )}

@@ -2,30 +2,30 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react'
 import { toast as sonnerToast } from 'sonner'
-import { coupons, products, type Product } from '@/data/catalog'
+import { products } from '@/data/catalog'
 import { initializeDemoFlashSale, settings } from '@/data/site'
 import type { Order, OrderItem, Source } from '@/data/orders'
-import cart from '@/components/providers/store/cart.slice'
 import wishlist from '@/components/providers/store/wishlist.slice'
 import session from '@/components/providers/store/session.slice'
 import orders from '@/components/providers/store/orders.slice'
 import reviews from '@/components/providers/store/reviews.slice'
-import { selectCount, selectCouponDiscount, selectDeliveryFee, selectLineInfo, selectStock, selectSubtotal, stockKey } from '@/components/providers/store/selectors'
+import { selectStock, stockKey } from '@/components/providers/store/selectors'
 import type { StoreContext } from '@/components/providers/store/store.types'
 import useNow from '@/lib/useNow'
 
-export type { Line, User, Address } from '@/components/providers/store/types'
+export type { User, Address } from '@/components/providers/store/types'
 
 const C = createContext<StoreContext>(null as never)
 export const useStore = () => useContext(C)
 
 /**
+ * Legacy non-cart demo features only. Cart contents use the cart API
+ * through useCart, never this provider.
  * Composes the store slices (each a Redux-Toolkit-shaped slice in ./store) behind the useStore() facade.
  * To move to Redux Toolkit: configureStore({ reducer: { cart: cart.reducer, ... } }), swap the useReducer calls for
  * useSelector/useDispatch, and keep the facade below (or inline it into hooks). Components need no change.
  */
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [cartState, dCart] = useReducer(cart.reducer, cart.initialState)
   const [wish, dWish] = useReducer(wishlist.reducer, wishlist.initialState)
   const [sess, dSess] = useReducer(session.reducer, session.initialState)
   const [ord, dOrd] = useReducer(orders.reducer, orders.initialState)
@@ -46,9 +46,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     dWish(wishlist.actions.pushRecent(id))
   }, [])
 
-  const { lines, coupon } = cartState
-  const subtotal = selectSubtotal(lines, now ?? undefined)
-
   const value = useMemo<StoreContext>(() => {
     const placeOrder: StoreContext['placeOrder'] = (o) => {
       const order: Order = { ...o, id: `${settings.orders.prefix}-${10502 + ord.items.length}`, status: o.status ?? 'PENDING_CONFIRMATION', createdAt: new Date().toISOString() }
@@ -60,24 +57,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       return order
     }
     return {
-      lines, cartOpen: cartState.open, coupon, subtotal, count: selectCount(lines),
-      addItem: (p: Product, color, size, qty = 1, open = true) => dCart(cart.actions.addLine({ line: { key: `${p.id}|${color}|${size}`, productId: p.id, color, size, qty }, open })),
-      addCombo: (id) => dCart(cart.actions.addLine({ line: { key: `combo|${id}`, comboId: id, color: '', size: 'Choose at confirm', qty: 1 }, open: true })),
-      setQty: (key, by) => dCart(cart.actions.changeQty({ key, by })),
-      remove: (key) => dCart(cart.actions.removeLine(key)),
-      clear: () => dCart(cart.actions.clear()),
-      setCartOpen: (b) => dCart(cart.actions.setOpen(b)),
-      lineInfo: (line) => selectLineInfo(line, now ?? undefined),
-      applyCoupon: (code, sub) => {
-        const c = coupons.find((x) => x.code === code.trim().toUpperCase())
-        if (!c) return 'That coupon code does not exist.'
-        if (sub < c.min) return `Minimum order for ${c.code} is ৳${c.min.toLocaleString()}.`
-        dCart(cart.actions.setCoupon(c.code))
-        return null
-      },
-      removeCoupon: () => dCart(cart.actions.setCoupon(null)),
-      couponDiscount: (sub) => selectCouponDiscount(coupon, sub),
-      deliveryFee: selectDeliveryFee,
       wishlist: wish.ids,
       recent: wish.recent,
       pushRecent,
@@ -103,7 +82,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       toast,
       toastError,
     }
-  }, [cartState, lines, coupon, subtotal, wish, sess, ord, rev, toast, toastError, pushRecent, now])
+  }, [wish, sess, ord, rev, toast, toastError, pushRecent])
 
   return (
     <C.Provider value={value}>

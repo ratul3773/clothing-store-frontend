@@ -1,3 +1,4 @@
+import type { PaginationQuery } from "../../api.utils";
 /**
  * Types mirroring the backend product module (`product.mapper.ts`,
  * `product.validation.ts`). All prices and stock values are integer taka /
@@ -22,10 +23,6 @@ export type ProductSort =
   | "price_desc";
 export type AdminProductSort = ProductSort | "updated_desc";
 
-export type PaginationQuery = {
-  page?: number;
-  limit?: number;
-};
 
 export type PublicProductQuery = PaginationQuery & {
   ids?: string[];

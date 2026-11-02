@@ -29,9 +29,16 @@ export default function ProductFilters({ f }: { f: Filters }) {
           ) : (
             <>
               {categories.map((c) => (
-                <button key={c.cat} onClick={() => f.setCat(c.cat)} className={cn('font-display relative overflow-hidden rounded-[3px] border px-3 py-2 text-left transition', cat === c.cat ? 'border-foreground bg-foreground text-background' : 'border-border hover:border-foreground')}>
+                <Button 
+                key={c.cat}
+                variant="outline"
+                size="sm"
+                type="button"
+                aria-pressed={cat === c.cat}
+                className={cn('justify-start', cat === c.cat && 'border-foreground bg-foreground text-background')}
+                onClick={() => f.setCat(c.cat)} >
                   {c.label}
-                </button>
+                </Button>
               ))}
             </>
           )}
@@ -42,7 +49,7 @@ export default function ProductFilters({ f }: { f: Filters }) {
           <p className="label-mono mb-3 text-muted-foreground">Type</p>
           <div className="flex flex-wrap gap-2">
             {f.subcategories.map((s) => (
-              <button key={s.id} onClick={() => f.toggleSub(s.slug)} className={cn('label-mono rounded-full border px-3.5 py-2 transition', sub === s.slug ? 'border-accent bg-accent text-accent-foreground' : 'border-foreground/30 hover:border-foreground')}>{s.name}</button>
+              <Button key={s.id} type="button" variant="outline" size="sm" shape="pill" aria-pressed={sub === s.slug} onClick={() => f.toggleSub(s.slug)} className={cn('label-mono', sub === s.slug ? 'border-accent bg-accent text-accent-foreground' : 'border-foreground/30 hover:border-foreground')}>{s.name}</Button>
             ))}
           </div>
         </div>
@@ -51,7 +58,7 @@ export default function ProductFilters({ f }: { f: Filters }) {
         <p className="label-mono mb-3 text-muted-foreground">Badge</p>
         <div className="flex flex-wrap gap-2">
           {f.badgeOptions.map((option) => (
-            <button key={option.value} onClick={() => f.setBadge(badge === option.value ? '' : option.value)} className={cn('rounded-[3px] border px-3 py-2 text-sm transition hover:-translate-y-0.5', badge === option.value ? 'border-accent bg-accent text-accent-foreground' : 'border-foreground/30 hover:border-foreground')}>{option.label}</button>
+            <Button key={option.value} type="button" variant="outline" size="sm" aria-pressed={badge === option.value} onClick={() => f.setBadge(badge === option.value ? '' : option.value)} className={cn('hover:-translate-y-0.5', badge === option.value ? 'border-accent bg-accent text-accent-foreground' : 'border-foreground/30 hover:border-foreground')}>{option.label}</Button>
           ))}
         </div>
       </div>

@@ -13,7 +13,7 @@ export default function SecuritySettings() {
     <form onSubmit={p.submit} className="max-w-xl space-y-5">
       <div className="flex items-center justify-between">
         <h2 className="font-display flex items-center gap-3 sm:text-lg"><ShieldCheck className="text-accent" /> Change password</h2>
-        <button type="button" onClick={p.toggleShow} className="label-mono flex items-center gap-1.5 text-muted-foreground hover:text-foreground">{p.show ? <EyeOff size={14} /> : <Eye size={14} />}{p.show ? 'Hide' : 'Show'}</button>
+        <Button type="button" variant="ghost" size="xs" aria-pressed={p.show} onClick={p.toggleShow} className="label-mono h-auto gap-1.5 p-0 text-muted-foreground hover:text-foreground">{p.show ? <EyeOff size={14} /> : <Eye size={14} />}{p.show ? 'Hide' : 'Show'}</Button>
       </div>
       <Field label="Current password"><input className={inputCls} type={type} autoComplete="current-password" value={p.f.cur} onChange={p.set('cur')} /></Field>
       <Field label="New password"><input className={inputCls} type={type} autoComplete="new-password" value={p.f.next} onChange={p.set('next')} /></Field>

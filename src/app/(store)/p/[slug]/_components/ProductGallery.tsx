@@ -1,11 +1,15 @@
 'use client'
 
+import Image from 'next/image'
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { activeFlash, type Product } from '@/data/catalog'
 import { useCms } from '@/lib/useCms'
+
+const MotionImage = motion.create(Image)
 
 interface Props { p: Product; color: Product['colors'][number]; onSelect: (i: number) => void }
 
@@ -24,18 +28,18 @@ export default function ProductGallery({ p, color, onSelect }: Props) {
     <div className="grid grid-cols-[4.5rem_1fr] gap-4">
       <div className="space-y-3">
         {p.images.map((im, i) => (
-          <button key={i} onClick={() => {
+          <Button key={i} type="button" variant="ghost" size="icon-sm" aria-label={`Show product image ${i + 1}`} aria-pressed={selectedImage === i} onClick={() => {
             setSelection({ colorImage: color.image, image: i })
             const colorIndex = p.colors.findIndex((candidate) => candidate.image === i)
             if (colorIndex >= 0) onSelect(colorIndex)
-          }} className={cn('block aspect-[4/5] w-full overflow-hidden rounded-[2px] border-2 transition', selectedImage === i ? 'border-accent' : 'border-transparent opacity-60 hover:opacity-100')}>
-            <img src={im} alt="" className="h-full w-full object-cover" />
-          </button>
+          }} className={cn('block aspect-[4/5] h-auto w-full overflow-hidden rounded-[2px] border-2 p-0 transition [&>span]:h-full [&>span]:w-full', selectedImage === i ? 'border-accent' : 'border-transparent opacity-60 hover:opacity-100')}>
+            <Image width={72} height={90} src={im} alt="" className="h-full w-full object-cover" />
+          </Button>
         ))}
       </div>
       <div className="relative aspect-[4/5] overflow-hidden rounded-[3px] bg-muted">
         <AnimatePresence mode="popLayout">
-          <motion.img key={main} src={main} alt={`${p.name} in ${color.name}`} initial={{ clipPath: 'inset(0 0 100% 0)', scale: 1.1 }} animate={{ clipPath: 'inset(0 0 0% 0)', scale: 1 }} exit={{ opacity: 0.99 }} transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }} className="absolute inset-0 h-full w-full object-cover" />
+          <MotionImage fill sizes="(max-width: 1024px) 100vw, 50vw" loading="eager" key={main} src={main} alt={`${p.name} in ${color.name}`} initial={{ clipPath: 'inset(0 0 100% 0)', scale: 1.1 }} animate={{ clipPath: 'inset(0 0 0% 0)', scale: 1 }} exit={{ opacity: 0.99 }} transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }} className="absolute inset-0 h-full w-full object-cover" />
         </AnimatePresence>
         <div className="absolute left-4 top-4 flex gap-2">{flash && <Badge className="bg-accent text-accent-foreground">{`FLASH −${flash.discountPct}%`}</Badge>}{p.badges.map((b) => <Badge key={b}>{b}</Badge>)}</div>
       </div>

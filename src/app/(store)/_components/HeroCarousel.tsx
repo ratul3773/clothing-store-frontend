@@ -1,11 +1,14 @@
 'use client'
 
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { ArrowUpRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { Banner } from '@/data/site'
+
+const MotionImage = motion.create(Image)
 
 const INTERVAL = 5500
 
@@ -35,7 +38,10 @@ export default function HeroCarousel({ banners }: { banners: Banner[] }) {
             transition={{ duration: 1.1, ease: 'easeInOut' }}
           >
             {b.image && (
-              <motion.img
+              <MotionImage
+                fill
+                sizes="100vw"
+                loading="eager"
                 src={b.image}
                 alt={b.title}
                 className="absolute inset-0 h-full w-full object-cover"
@@ -65,7 +71,7 @@ export default function HeroCarousel({ banners }: { banners: Banner[] }) {
         {count > 1 && (
           <div className="absolute bottom-5 right-5 z-10 flex gap-2 sm:bottom-8 sm:right-8">
             {banners.map((x, k) => (
-              <button key={x.id} aria-label={`Show banner ${k + 1}`} onClick={() => setIdx(k)} className={cn('h-1.5 rounded-full bg-background transition-all duration-500', k === i ? 'w-10 opacity-100' : 'w-4 opacity-50 hover:opacity-80')} />
+              <Button key={x.id} type="button" variant="ghost" size="icon-xs" shape="pill" aria-label={`Show banner ${k + 1}`} aria-pressed={k === i} onClick={() => setIdx(k)} className={cn('h-1.5 bg-background p-0 transition-all duration-500', k === i ? 'w-10 opacity-100' : 'w-4 opacity-50 hover:opacity-80')} />
             ))}
           </div>
         )}

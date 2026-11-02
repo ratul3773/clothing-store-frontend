@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import * as NM from '@radix-ui/react-navigation-menu'
 import { ArrowUpRight, ChevronDown } from 'lucide-react'
@@ -55,7 +56,7 @@ export default function NavMenu() {
                   })}
                 </ul>
                 <div className="relative bg-foreground text-background">
-                   {category.imageUrl && <img src={category.imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" />}
+                   {category.imageUrl && <Image fill sizes="192px" src={category.imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" />}
                    <div className="absolute inset-0 bg-gradient-to-t from-foreground via-foreground/30 to-transparent" />
                    <p className="absolute inset-x-3 bottom-3 text-xs leading-snug">{category.description ?? `Explore ${category.name}.`}</p>
                 </div>

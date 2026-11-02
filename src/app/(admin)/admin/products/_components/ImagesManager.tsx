@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image'
 import {
   ArrowDown,
   ArrowUp,
@@ -87,8 +88,7 @@ export default function ImagesManager({ product }: { product: AdminProduct }) {
                   className="group overflow-hidden rounded border border-border bg-card"
                 >
                   <div className="relative aspect-square bg-muted">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image fill sizes="(max-width: 640px) 50vw, 240px"
                       src={image.url}
                       alt={image.alt ?? ""}
                       className="size-full object-cover"

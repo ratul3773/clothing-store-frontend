@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image'
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -88,11 +89,10 @@ export default function ImageMetaDialog({
     >
       <form id="image-meta-form" onSubmit={onSubmit} className="space-y-4">
         <div className="overflow-hidden rounded border border-border bg-muted">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image width={800} height={600}
             src={image.url}
             alt={image.alt ?? ""}
-            className="max-h-56 w-full object-cover"
+            className="h-auto max-h-56 w-full object-cover"
           />
         </div>
         <TextField

@@ -17,7 +17,7 @@ const customerButtonVariants = cva(
     'disabled:pointer-events-none disabled:opacity-40',
     'before:absolute before:inset-0 before:-z-0',
     'before:translate-y-[101%] before:transition-transform',
-    'before:duration-500 before:ease-[cubic-bezier(.7,0,.2,1)]',
+    'before:duration-350 before:ease-[cubic-bezier(.7,0,.2,1)]',
     'hover:before:translate-y-0',
   ].join(' '),
   {
@@ -32,6 +32,9 @@ const customerButtonVariants = cva(
         ghost: 'text-foreground before:bg-foreground/10',
         light:
           'bg-card text-foreground before:bg-accent hover:text-accent-foreground',
+        destructive:
+          'text-destructive before:bg-destructive/10 border border-destructive/50',
+        link: 'text-primary underline-offset-4 hover:underline',
       },
       size: {
         xs: 'h-6 gap-1 rounded-md px-2 text-xs',

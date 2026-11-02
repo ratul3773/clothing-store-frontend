@@ -1,5 +1,6 @@
 "use client";
 
+import Image from 'next/image'
 import { useState } from "react";
 import { Plus } from "lucide-react";
 
@@ -54,8 +55,7 @@ export default function InventoryTable({
         <div className="flex items-center gap-2.5">
           <div className="size-8 shrink-0 overflow-hidden rounded border border-border bg-muted">
             {product.images[0] ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image width={32} height={32}
                 src={product.images[0].url}
                 alt={product.images[0].alt ?? ""}
                 className="size-full object-cover"
