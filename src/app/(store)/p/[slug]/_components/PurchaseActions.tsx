@@ -11,9 +11,9 @@ export default function PurchaseActions({ qty, liked, onDec, onInc, onAdd, onWis
     <>
       <div className="mt-4 flex flex-wrap gap-3">
         <div className="flex items-center rounded-[3px] border border-foreground/40">
-          <button disabled={!canDecrease || adding} aria-label="Less" className="grid w-11 place-items-center transition hover:bg-foreground hover:text-background disabled:opacity-30" onClick={onDec}><Minus size={15} /></button>
+          <Button type="button" variant="ghost" size="icon-sm" disabled={!canDecrease || adding} aria-label="Less" className="h-full w-11 self-stretch rounded-none disabled:opacity-30" onClick={onDec}><Minus size={15} /></Button>
           <span className="w-8 text-center font-semibold">{qty}</span>
-          <button disabled={!canIncrease || adding} aria-label="More" className="grid w-11 place-items-center transition hover:bg-foreground hover:text-background disabled:opacity-30" onClick={onInc}><Plus size={15} /></button>
+          <Button type="button" variant="ghost" size="icon-sm" disabled={!canIncrease || adding} aria-label="More" className="h-full w-11 self-stretch rounded-none disabled:opacity-30" onClick={onInc}><Plus size={15} /></Button>
         </div>
         <Button size="lg" disabled={!canAdd} onClick={onAdd}>{adding ? isInCart ? 'Updating…' : 'Adding…' : isInCart ? 'Update cart' : 'Add to bag'}</Button>
         <Button size="lg" variant="accent" disabled>Checkout coming soon</Button>

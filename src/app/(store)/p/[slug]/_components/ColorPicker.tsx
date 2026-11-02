@@ -1,6 +1,7 @@
 'use client'
 
 import { Tip } from '@/components/ui/controls'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { Product } from '@/data/catalog'
 
@@ -13,7 +14,7 @@ export default function ColorPicker({ colors, index, onSelect }: Props) {
       <div className="flex gap-3">
         {colors.map((c, i) => (
           <Tip key={c.name} label={c.name}>
-            <button aria-label={c.name} onClick={() => onSelect(i)} className={cn('relative h-8 w-8 rounded-full border border-foreground/40 transition hover:scale-110', index === i && 'ring-2 ring-accent ring-offset-2 ring-offset-background')} style={{ background: c.hex }} />
+            <Button type="button" variant="ghost" size="icon-sm" shape="pill" aria-label={c.name} aria-pressed={index === i} onClick={() => onSelect(i)} className={cn('relative h-8 w-8 border border-foreground/40 p-0 transition hover:scale-110', index === i && 'ring-2 ring-accent ring-offset-2 ring-offset-background')} style={{ background: c.hex }} />
           </Tip>
         ))}
       </div>

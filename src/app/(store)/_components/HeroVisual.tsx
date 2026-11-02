@@ -3,11 +3,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { ArrowRight } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { getHeroImages } from '@/app/(store)/_services/home.api'
 import { NEURAL_EDGES, NEURAL_LAYOUT, NEURAL_QA, NEURAL_RING1 } from '@/app/(store)/_constants/home.constants'
 
 const INTERVAL = 7500
+const MotionButton = motion.create(Button)
 const OUT = [0.16, 1, 0.3, 1] as const // ease-out expo: fast burst from the core, slow settle
 type Pt = { x: number; y: number }
 
@@ -156,7 +158,10 @@ export default function HeroNeural() {
                 initial={{ x: core.x - p.x, y: core.y - p.y, scale: 0, opacity: 0 }}
                 animate={{ x: 0, y: 0, scale: 1, opacity: 1 }}
                 transition={{ duration: reduce ? 0 : 1.5, delay: delayOf(n.id), ease: OUT }}>
-                <motion.button
+                <MotionButton
+                  mode="normal"
+                  variant="ghost"
+                  size="xs"
                   type="button"
                   aria-pressed={on}
                   onClick={() => { setActive(i); setPaused(true) }}
@@ -167,13 +172,13 @@ export default function HeroNeural() {
                   whileHover={{ scale: 1.08 }}
                   whileTap={{ scale: 0.95 }}
                   className={cn(
-                    '-translate-x-1/2 -translate-y-1/2 flex max-w-[10.5rem] cursor-pointer items-center gap-2 rounded-full border px-3 py-2 text-left text-[0.78rem] font-medium leading-tight backdrop-blur-md transition-colors duration-300 sm:max-w-[12rem] sm:text-sm',
+                    '-translate-x-1/2 -translate-y-1/2 flex h-auto max-w-[10.5rem] cursor-pointer items-center gap-2 whitespace-normal rounded-full border px-3 py-2 text-left text-[0.78rem] font-medium leading-tight backdrop-blur-md transition-colors duration-300 sm:max-w-[12rem] sm:text-sm [&>span]:whitespace-normal',
                     on ? 'border-[#ff6a4d] bg-[#ff6a4d] text-[#1a0d09] shadow-[0_0_0_6px_rgba(255,106,77,0.2),0_0_36px_rgba(255,106,77,0.55)]' : 'border-[#8fd3ad]/40 bg-[#0e1c15]/70 text-[#ece6d8] hover:border-[#ff6a4d]',
                   )}
                 >
                   <span className={cn('grid h-5 w-5 shrink-0 place-items-center rounded-full font-mono text-[0.65rem]', on ? 'bg-[#1a0d09]/20' : 'bg-[#8fd3ad]/20 text-[#8fd3ad]')}>?</span>
                   {n.q}
-                </motion.button>
+                </MotionButton>
               </motion.div>
             )
           })}
@@ -194,14 +199,14 @@ export default function HeroNeural() {
                 <div className="mt-3 flex items-center justify-between">
                   <div className="flex gap-1.5">
                     {NEURAL_QA.map((n, i) => (
-                      <button key={n.id} type="button" aria-label={`Show answer ${i + 1}`} onClick={() => { setActive(i); setPaused(true) }} className="h-1 w-5 overflow-hidden rounded-full bg-[#ece6d8]/20">
+                      <Button key={n.id} type="button" variant="ghost" size="icon-xs" shape="pill" aria-label={`Show answer ${i + 1}`} aria-pressed={i === active} onClick={() => { setActive(i); setPaused(true) }} className="h-1 w-5 overflow-hidden bg-[#ece6d8]/20 p-0 [&>span]:h-full [&>span]:w-full [&>span]:justify-start">
                         <motion.span key={i === active ? `a${active}${paused}` : n.id} className="block h-full bg-[#ff6a4d]"
                           initial={{ width: i < active ? '100%' : '0%' }} animate={{ width: i <= active ? '100%' : '0%' }}
                           transition={{ duration: i === active && !paused && !reduce ? INTERVAL / 1000 : 0.3, ease: 'linear' }} />
-                      </button>
+                      </Button>
                     ))}
                   </div>
-                  <button type="button" onClick={next} className="label-mono flex items-center gap-1 text-[#ece6d8]/60 transition-colors hover:text-[#ece6d8]">Next <ArrowRight size={12} /></button>
+                  <Button type="button" variant="ghost" size="xs" onClick={next} className="label-mono h-auto gap-1 p-0 text-[#ece6d8]/60 transition-colors hover:text-[#ece6d8]">Next <ArrowRight size={12} /></Button>
                 </div>
               </motion.div>
             </AnimatePresence>

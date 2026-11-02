@@ -1,6 +1,7 @@
 'use client'
 
 import { ImagePlus, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { MAX_REVIEW_IMAGES } from '@/data/reviews'
 
 type Props = { images: string[]; onAdd: (f: FileList | null) => void; onRemove: (i: number) => void }
@@ -13,7 +14,7 @@ export default function ReviewImagePicker({ images, onAdd, onRemove }: Props) {
         {images.map((src, i) => (
           <div key={i} className="relative">
             <img src={src} alt={`Upload ${i + 1}`} className="h-24 w-[4.8rem] rounded-[2px] object-cover" />
-            <button type="button" onClick={() => onRemove(i)} aria-label="Remove photo" className="absolute -right-2 -top-2 grid h-8 w-8 place-items-center rounded-full bg-foreground text-background transition hover:bg-accent"><X size={15} /></button>
+            <Button type="button" variant="solid" size="icon-sm" shape="pill" onClick={() => onRemove(i)} aria-label="Remove photo" className="absolute -right-2 -top-2 h-8 w-8 bg-foreground text-background"><X size={15} /></Button>
           </div>
         ))}
         {images.length < MAX_REVIEW_IMAGES && (

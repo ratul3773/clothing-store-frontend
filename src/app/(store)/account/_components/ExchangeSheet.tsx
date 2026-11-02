@@ -19,7 +19,7 @@ export default function ExchangeSheet({ x }: { x: ReturnType<typeof useExchange>
           <p className="text-sm font-semibold">{ex.items[0].name} · {ex.items[0].color} · {ex.items[0].size}</p>
           <Field label="Reason"><select className={inputCls} value={reason} onChange={(e) => setReason(e.target.value)}>{REASONS.map((r) => <option key={r}>{r}</option>)}</select></Field>
           <Field label="Replacement size">
-            <div className="flex flex-wrap gap-2">{(byId(ex.items[0].productId)?.sizes ?? []).map((s) => <button key={s} onClick={() => setNewSize(s)} className={`h-11 min-w-12 rounded-[3px] border px-3 transition ${newSize === s ? 'border-foreground bg-foreground text-background' : 'border-foreground/30 hover:border-foreground'}`}>{s}</button>)}</div>
+            <div className="flex flex-wrap gap-2">{(byId(ex.items[0].productId)?.sizes ?? []).map((s) => <Button key={s} type="button" variant="outline" size="icon-sm" aria-pressed={newSize === s} onClick={() => setNewSize(s)} className={`h-11 w-auto min-w-12 px-3 ${newSize === s ? 'border-foreground bg-foreground text-background' : 'border-foreground/30 hover:border-foreground'}`}>{s}</Button>)}</div>
           </Field>
           <Button className="w-full" size="lg" variant="accent" disabled={!newSize} onClick={() => { patchOrder(ex.id, { exchange: { reason, size: newSize, state: 'REQUESTED' } }); close(); toast('Exchange requested') }}>Submit request</Button>
         </div>

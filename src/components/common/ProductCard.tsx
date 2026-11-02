@@ -5,6 +5,7 @@ import { motion } from 'motion/react'
 import { Heart } from 'lucide-react'
 import { activeFlash, priceOf, totalStock, type Product } from '@/data/catalog'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { useStore } from '@/components/providers/StoreProvider'
 import { bdt, cn } from '@/lib/utils'
 import { useCms } from '@/lib/useCms'
@@ -56,7 +57,12 @@ export default function ProductCard({ p, index = 0, now }: { p: Product; index?:
           {off > 0 && <span className="label-mono ml-auto text-accent">−{off}%</span>}
         </div>
       </Link>
-      <button
+      <Button
+        type="button"
+        variant="light"
+        size="icon-sm"
+        shape="pill"
+        aria-pressed={liked}
         aria-label={liked ? 'Remove from wishlist' : 'Add to wishlist'}
         onClick={() => toggleWish(p.id)}
         className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-card/90 text-foreground backdrop-blur transition hover:scale-110"
@@ -64,7 +70,7 @@ export default function ProductCard({ p, index = 0, now }: { p: Product; index?:
         <motion.span key={String(liked)} initial={{ scale: 0.4 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 500, damping: 12 }}>
           <Heart size={16} className={cn(liked && 'fill-accent text-accent')} />
         </motion.span>
-      </button>
+      </Button>
     </motion.article>
   )
 }

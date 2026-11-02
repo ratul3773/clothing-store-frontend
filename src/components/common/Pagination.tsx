@@ -103,9 +103,9 @@ export default function PaginationComponent({
   const pageNumbers = generatePageNumbers(currentPage, totalPages);
 
   return (
-    <div className={`flex w-full flex-col gap-4 mt-6 sm:mt-8 mb-2 lg:flex-row lg:items-center lg:justify-between ${className}`}>
+    <div className={`flex w-full flex-col gap-4 mt-6 sm:mt-8 mb-2 sm:flex-row lg:items-center lg:justify-between ${className}`}>
       {showSummary && (onItemsPerPageChange ? (
-        <div className="flex w-full flex-wrap items-center justify-center gap-2 text-sm text-gray-700 lg:w-auto">
+        <div className="flex w-full flex-wrap items-center justify-start gap-2 text-sm text-gray-700">
           <span>Showing</span>
           <Pick 
           value={itemsPerPage.toString()} 

@@ -65,7 +65,7 @@ export default function HeroCarousel({ banners }: { banners: Banner[] }) {
         {count > 1 && (
           <div className="absolute bottom-5 right-5 z-10 flex gap-2 sm:bottom-8 sm:right-8">
             {banners.map((x, k) => (
-              <button key={x.id} aria-label={`Show banner ${k + 1}`} onClick={() => setIdx(k)} className={cn('h-1.5 rounded-full bg-background transition-all duration-500', k === i ? 'w-10 opacity-100' : 'w-4 opacity-50 hover:opacity-80')} />
+              <Button key={x.id} type="button" variant="ghost" size="icon-xs" shape="pill" aria-label={`Show banner ${k + 1}`} aria-pressed={k === i} onClick={() => setIdx(k)} className={cn('h-1.5 bg-background p-0 transition-all duration-500', k === i ? 'w-10 opacity-100' : 'w-4 opacity-50 hover:opacity-80')} />
             ))}
           </div>
         )}

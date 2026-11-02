@@ -79,9 +79,9 @@ export default function Header({ profileButton }: { profileButton: React.ReactNo
       )}
       <div className="border-b border-border bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-340 items-center gap-6 px-5 lg:px-10">
-          <button className="lg:hidden" aria-label="Menu" onClick={() => setMenu((m) => !m)}>
+          <Button type="button" variant="ghost" size="icon" shape="pill" className="lg:hidden" aria-label="Menu" aria-expanded={menu} onClick={() => setMenu((m) => !m)}>
             {menu ? <X size={22} /> : <Menu size={22} />}
-          </button>
+          </Button>
           <Link href="/" className="font-display leading-none">
             <BrandName name={settings.store.name} />
           </Link>
