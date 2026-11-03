@@ -55,7 +55,7 @@ export default function ProductCard({ p, index = 0, now }: { p: Product; index?:
           </div>
         </div>
         <div className="mt-3 flex items-center gap-2">
-          {p.colors.map((c) => <span key={c.name} title={c.name} className="h-3.5 w-3.5 rounded-full border border-foreground/40" style={{ background: c.hex }} />)}
+          {p.colors.map((c) => <span key={c.name} title={c.name} className="h-5 w-5 rounded-full border border-foreground/40" style={{ background: c.hex }} />)}
           {p.type === 'COMBO' ? (p.savings ?? 0) > 0 && <span className="label-mono ml-auto text-accent">{comboDiscountLabel(p.discountPercentage ?? 0)}</span> : off > 0 && <span className="label-mono ml-auto text-accent">−{off}%</span>}
         </div>
       </Link>

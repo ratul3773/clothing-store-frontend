@@ -15,7 +15,7 @@ export default function ComboDeals() {
     <div className="mx-auto max-w-[88rem] px-5 lg:px-10">
       <Reveal className="mb-12 max-w-2xl"><p className="label-mono text-accent">Fixed combinations</p><h2 className="font-display mt-3 text-4xl">Better together</h2></Reveal>
       {isError ? <div role="alert"><p>Could not load combos.</p><Button onClick={() => void refetch()}>Retry combos</Button></div> :
-        <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3">{isLoading ? <ProductGridSkeleton count={4} /> : data?.items.map((combo, index) => <ProductCard key={combo.id} p={toStorefrontCombo(combo)} index={index} />)}</div>}
+        <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-4">{isLoading ? <ProductGridSkeleton count={4} /> : data?.items.map((combo, index) => <ProductCard key={combo.id} p={toStorefrontCombo(combo)} index={index} />)}</div>}
     </div>
   </section>;
 }

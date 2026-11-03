@@ -89,7 +89,7 @@ export default function ProductCarousel({ items, interval = 4200, className }: {
         )}
       >
         {items.map((p, i) => (
-          <div key={p.id} className="w-[calc((100%-1rem*1.4)/2.4)] shrink-0 snap-start sm:w-[calc((100%-1rem*2.3)/3.3)] lg:w-[calc((100%-1.5rem*3.3)/4.3)]">
+          <div key={p.id} className="w-[calc((100%-1rem*2.3)/1.4)] shrink-0 snap-start sm:w-[calc((100%-1rem*2.3)/3.3)] lg:w-[calc((100%-1.5rem*3.3)/4.3)]">
             <ProductCard p={p} index={i} />
           </div>
         ))}
