@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'motion/react'
 import { Heart } from 'lucide-react'
+import StarRating from '@/components/common/StarRating'
 import { activeFlash, priceOf, totalStock, type Product } from '@/data/catalog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -11,18 +12,21 @@ import { useStore } from '@/components/providers/StoreProvider'
 import { bdt, cn } from '@/lib/utils'
 import { useCms } from '@/lib/useCms'
 import { productHref } from '@/lib/productHref'
-import { discountPct } from '@/lib/storefront'
+import { discountPct, reviewCount, visibleReviews } from '@/lib/storefront'
 import { comboDiscountLabel } from '@/lib/combo-pricing'
 
 export default function ProductCard({ p, index = 0, now }: { p: Product; index?: number; now?: number }) {
   useCms()
-  const { wishlist, toggleWish } = useStore()
+  const { wishlist, toggleWish, reviews } = useStore()
   const liked = wishlist.includes(p.id)
   const flash = activeFlash(p, now ?? undefined)
   const price = priceOf(p, now ?? undefined)
   const was = p.type === 'COMBO' ? (p.savings ?? 0) > 0 ? p.combinedPrice ?? 0 : 0 : flash ? p.offer ?? p.price : p.offer ? p.price : 0
   const badges = [...(flash ? [`FLASH −${flash.discountPct}%`] : []), ...p.badges, ...((p.lowStock ?? (p.type !== 'COMBO' && totalStock(p) > 0 && totalStock(p) < 25)) ? ['LOW STOCK'] : []), ...(p.inStock === false ? ['OUT OF STOCK'] : [])].slice(0, 2)
   const off = discountPct(p, price)
+  const count = reviewCount(p, reviews)
+  const writtenReviews = visibleReviews(reviews).filter((review) => review.productId === p.id)
+  const rating = p.rating > 0 ? p.rating : writtenReviews.length ? writtenReviews.reduce((sum, review) => sum + review.rating, 0) / writtenReviews.length : 0
 
   return (
     <motion.article
@@ -48,6 +52,11 @@ export default function ProductCard({ p, index = 0, now }: { p: Product; index?:
           <div>
             <p className="label-mono text-muted-foreground">{p.type === 'COMBO' ? 'Fixed combo' : [p.sub, p.sku].filter(Boolean).join(' / ')}</p>
             <h3 className="font-display mt-1.5  leading-none transition-colors group-hover:text-accent">{p.name}</h3>
+            {p.type !== 'COMBO' && <p className="mt-2 flex flex-wrap items-center gap-1 text-xs text-muted-foreground" aria-label={count > 0 ? `${rating.toFixed(1)} out of 5, ${count} review${count === 1 ? '' : 's'}` : '0 reviews'}>
+              <StarRating value={count > 0 ? rating : 0} size={13} className="shrink-0" />
+              {count > 0 && <span className="font-semibold text-foreground">{rating.toFixed(1)}</span>}
+              <span>{count > 0 ? `(${count} review${count === 1 ? '' : 's'})` : '0 reviews'}</span>
+            </p>}
           </div>
           <div className="text-right">
             <p className="font-semibold">{bdt(price)}</p>
@@ -55,7 +64,7 @@ export default function ProductCard({ p, index = 0, now }: { p: Product; index?:
           </div>
         </div>
         <div className="mt-3 flex items-center gap-2">
-          {p.colors.map((c) => <span key={c.name} title={c.name} className="h-5 w-5 rounded-full border border-foreground/40" style={{ background: c.hex }} />)}
+          {p.colors.map((c) => <span key={c.name} title={c.name} className="h-3.5 w-3.5 rounded-full border border-foreground/40" style={{ background: c.hex }} />)}
           {p.type === 'COMBO' ? (p.savings ?? 0) > 0 && <span className="label-mono ml-auto text-accent">{comboDiscountLabel(p.discountPercentage ?? 0)}</span> : off > 0 && <span className="label-mono ml-auto text-accent">−{off}%</span>}
         </div>
       </Link>
