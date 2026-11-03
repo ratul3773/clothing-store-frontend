@@ -149,6 +149,8 @@ export type OrdinaryProduct = {
 export type PublicCombo = Omit<OrdinaryProduct, "type" | "category" | "isExchangeEligible"> & {
   type: "COMBO";
   comboId: string;
+  combinedPrice: number;
+  savings: number;
   category: null;
   isExchangeEligible: null;
   maxQuantity: number;

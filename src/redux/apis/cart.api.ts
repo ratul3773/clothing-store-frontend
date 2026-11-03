@@ -45,8 +45,8 @@ export const cartApi = baseApi.injectEndpoints({
       transformErrorResponse: cartError,
       invalidatesTags: (result) => result ? ["Cart"] : [],
     }),
-    addCartCombo: builder.mutation<Cart, CartMutation & { comboId: string; quantity: number }>({
-      query: ({ comboId, quantity, version }) => ({ url: "/cart/combos", method: "POST", body: { comboId, quantity, version }, timeout: 15_000 }),
+    addCartCombo: builder.mutation<Cart, CartMutation & { comboId: string; quantity: number; selections: import("./types/combo.types").ComboSelection[] }>({
+      query: ({ comboId, quantity, version, selections }) => ({ url: "/cart/combos", method: "POST", body: { comboId, quantity, version, selections }, timeout: 15_000 }),
       transformResponse: unwrapData<Cart>,
       transformErrorResponse: cartError,
       invalidatesTags: (result) => result ? ["Cart"] : [],

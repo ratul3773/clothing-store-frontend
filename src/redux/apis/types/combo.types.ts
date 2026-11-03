@@ -1,18 +1,23 @@
 export type ComboComponent = {
-  variantId: string;
+  id: string;
+  colorId: string;
   quantity: number;
-  product: { id: string; name: string; slug: string; imageUrl: string | null };
-  variant: { color: string; size: string };
+  product: { id: string; name: string; slug: string; imageUrl: string | null; unitPrice: number };
+  color: { id: string; name: string; hex: string | null };
+  variants: Array<{ id: string; size: string; available: number; maxQuantity: number }>;
 };
+export type ComboSelection = { comboItemId: string; variantId: string };
+export type CartComboSelection = ComboSelection & { size: string };
 export type Combo = {
   id: string; name: string; slug: string; description: string | null;
   price: number; currency: "BDT"; moneyUnit: "taka"; imageUrl: string | null;
+  combinedPrice: number; savings: number; discountPercentage: number;
   startsAt: string | null; endsAt: string | null; isActive: boolean;
   items: ComboComponent[]; maxQuantity: number; inStock: boolean;
 };
 export type CreateCombo = {
   name: string; description?: string | null; price: number; isActive?: boolean;
   startsAt?: string | null; endsAt?: string | null;
-  items: Array<{ variantId: string; quantity: number }>;
+  items: Array<{ colorId: string; quantity: number }>;
 };
 export type UpdateCombo = Partial<CreateCombo>;

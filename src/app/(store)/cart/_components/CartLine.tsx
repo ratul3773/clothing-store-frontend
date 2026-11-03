@@ -10,6 +10,7 @@ import type { CartLineView } from "@/lib/cart-view";
 import ComboComponents from "@/components/common/ComboComponents";
 import { comboHref } from "@/lib/productHref";
 import { bdt } from "@/lib/utils";
+import { comboDiscountLabel } from "@/lib/combo-pricing";
 
 const statusLabels = {
   AVAILABLE: "",
@@ -29,7 +30,7 @@ function CartLine({ item, disabled, onUpdate, onRemove, onSelect }: Props) {
   const { quantity, setQuantity, changed } = useQuantityDraft(item.id, item.quantity);
   const details = item.type === "COMBO" ? item.combo : item.product;
   const name = details?.name ?? "Unavailable item";
-  const href = details ? item.type === "COMBO" ? comboHref(item.comboId) : `/p/${encodeURIComponent(details.slug)}` : null;
+  const href = details ? item.type === "COMBO" ? comboHref(details.slug) : `/p/${encodeURIComponent(details.slug)}` : null;
   const canSelect = item.status === "AVAILABLE";
   return (
     <article className="flex gap-3 border-b border-border py-5">
@@ -39,7 +40,9 @@ function CartLine({ item, disabled, onUpdate, onRemove, onSelect }: Props) {
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             {href ? <Link href={href} className="font-semibold hover:underline">{name}</Link> : <p className="font-semibold">{name}</p>}
-            {item.type === "COMBO" && item.combo && <><p className="text-xs font-semibold">Combo</p><ComboComponents items={item.combo.items} compact /></>}
+            {item.type === "COMBO" && item.combo && <><p className="text-xs font-semibold">Combo</p><ComboComponents items={item.combo.items} selections={item.selections} compact /></>}
+            {item.type === "COMBO" && item.requiresSelection && href && <p className="text-xs text-destructive">This saved combo needs size selections. <Link href={href} className="underline">Choose sizes and add it again</Link>, then remove this line.</p>}
+            {item.type === "COMBO" && item.combo && item.combo.savings > 0 && <p className="mt-1 text-xs text-success">Save {bdt(item.combo.savings)} per combo ({comboDiscountLabel(item.combo.discountPercentage)})</p>}
             {item.variant && <p className="mt-1 text-xs text-muted-foreground">{item.variant.color} / {item.variant.size}</p>}
           </div>
           <Button type="button" size="icon" variant="destructive" className="border-none" disabled={disabled} onClick={() => void onRemove(item.id)} aria-label={`Remove ${name}`}><Trash2 size={16} /></Button>

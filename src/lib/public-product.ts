@@ -1,7 +1,6 @@
 import type { PublicProduct } from "@/redux/apis/types/product.types";
 import type { Color, Product } from "@/data/catalog";
 import type { Combo } from "@/redux/apis/types/combo.types";
-import { comboProductSlug } from "./productHref";
 
 const sizeOrder: Record<string, number> = {
   XXS: 0,
@@ -75,7 +74,7 @@ export function toStorefrontProduct(product: PublicProduct): Product {
 
   return {
     type: product.type,
-    ...(product.type === "COMBO" ? { comboId: product.comboId, items: product.items, maxQuantity: product.maxQuantity } : {}),
+    ...(product.type === "COMBO" ? { comboId: product.comboId, items: product.items, maxQuantity: product.maxQuantity, combinedPrice: product.combinedPrice, savings: product.savings, discountPercentage: product.discountPercentage } : {}),
     inStock: product.inStock,
     lowStock: product.lowStock,
     isExchangeEligible: product.isExchangeEligible,
@@ -113,12 +112,13 @@ export function toStorefrontProducts(products: PublicProduct[]): Product[] {
   return products.map(toStorefrontProduct);
 }
 
-/** Legacy combo endpoints use a different slug from the unified catalog. */
+/** Adapt the combo endpoint to the shared storefront presentation. */
 export function toStorefrontCombo(combo: Combo): Product {
   return {
-    type: "COMBO", id: combo.id, comboId: combo.id, slug: comboProductSlug(combo.id),
+    type: "COMBO", id: combo.id, comboId: combo.id, slug: combo.slug,
     name: combo.name, category: null, status: "active", custom: true, sub: "",
     price: combo.price, badges: ["COMBO"], material: "", fit: "", care: "",
+    combinedPrice: combo.combinedPrice, savings: combo.savings, discountPercentage: combo.discountPercentage,
     desc: combo.description ?? "", images: [...new Set(combo.items.flatMap((item) => item.product.imageUrl ? [item.product.imageUrl] : []))],
     colors: [], sizes: [], stock: {}, variants: [], rating: 0, reviews: 0, sku: "", look: [], sold: 0,
     items: combo.items, maxQuantity: combo.maxQuantity, inStock: combo.inStock, isExchangeEligible: null,

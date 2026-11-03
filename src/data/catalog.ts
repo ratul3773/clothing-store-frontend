@@ -4,6 +4,9 @@ export type Color = { name: string; hex: string; image: number }
 export type Product = {
   type?: 'PRODUCT' | 'COMBO'
   comboId?: string
+  combinedPrice?: number
+  savings?: number
+  discountPercentage?: number
   items?: import('@/redux/apis/types/combo.types').ComboComponent[]
   inStock?: boolean
   lowStock?: boolean

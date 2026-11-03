@@ -10,7 +10,9 @@ import { useGetAdminComboQuery, useCreateComboMutation, useUpdateComboMutation }
 import { apiErrorMessage, isConflictError } from "@/redux/api.utils";
 import type { Combo } from "@/redux/apis/types/combo.types";
 import { addComboComponent, comboChanges, comboDraft, comboPayload, emptyComboDraft, validateComboDraft, type ComboDraft } from "../_utils/combo.utils";
-import ComboVariantPicker from "./ComboVariantPicker";
+import ComboColorPicker from "./ComboColorPicker";
+import { bdt } from "@/lib/utils";
+import { comboDraftPricing, comboDiscountLabel } from "@/lib/combo-pricing";
 
 type Props = { open: boolean; onOpenChange: (open: boolean) => void; comboId: string | null };
 export default function ComboForm({ open, onOpenChange, comboId }: Props) {
@@ -41,6 +43,8 @@ function Editor({ original, onOpenChange }: { original: Combo | null; onOpenChan
   const set = <K extends keyof ComboDraft>(key: K, value: ComboDraft[K]) => setDraft((d) => ({ ...d, [key]: value }));
   const changes = baseline ? comboChangesSafely(draft, baseline) : null;
   const pieces = draft.items.reduce((sum, item) => sum + item.quantity, 0);
+  const pricing = comboDraftPricing(draft.items, Number(draft.price));
+  const priceTooHigh = pieces >= 2 && Number(draft.price) >= pricing.combinedPrice;
   const submit = async () => {
     if (pending.current) return;
     const validation = validateComboDraft(draft);
@@ -81,7 +85,12 @@ function Editor({ original, onOpenChange }: { original: Combo | null; onOpenChan
       {replacement && <p role="status" className="text-sm">Saving creates a new combo. The original is unchanged unless you deactivated it. Review the active setting below.</p>}
       <Field label="Name"><Input maxLength={200} value={draft.name} onChange={(e) => set("name", e.target.value)} /></Field>
       <Field label="Description"><Textarea maxLength={10000} value={draft.description} onChange={(e) => set("description", e.target.value)} /></Field>
-      <Field label="Combo price (BDT taka)"><Input type="number" min={1} max={2147483647} step={1} value={draft.price} onChange={(e) => set("price", e.target.value)} /></Field>
+      <Field label="Combo price (BDT taka)" error={priceTooHigh ? "Must be lower than the combined item price." : undefined}><Input type="number" min={1} max={2147483647} step={1} value={draft.price} onChange={(e) => set("price", e.target.value)} aria-invalid={priceTooHigh} /></Field>
+      {draft.items.length > 0 && <div className="rounded border border-border bg-muted p-3 text-sm" aria-live="polite">
+        <p>Combined item price: <strong>{bdt(pricing.combinedPrice)}</strong></p>
+        <p className="mt-1 text-xs text-muted-foreground">Includes quantities and current product offers.</p>
+        {Number(draft.price) > 0 && pricing.savings > 0 && <p className="mt-2 text-success">Save {bdt(pricing.savings)} ({comboDiscountLabel(pricing.discountPercentage)})</p>}
+      </div>}
       <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={draft.isActive} onChange={(e) => set("isActive", e.target.checked)} />Active</label>
       <p className="text-xs text-muted-foreground">Active combos also need an eligible schedule and publicly available components to appear in the shop.</p>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -89,14 +98,14 @@ function Editor({ original, onOpenChange }: { original: Combo | null; onOpenChan
         <Field label="Ends at - Asia/Dhaka (UTC+06:00)" hint="Exclusive; blank means no end boundary"><Input type="datetime-local" step={1} value={draft.endsAt} onChange={(e) => set("endsAt", e.target.value)} /></Field>
       </div>
       <h3 className="text-sm font-semibold">Selected pieces ({pieces} / 3)</h3>
-      {!draft.items.length && <p className="text-sm text-muted-foreground">Select exact variants below. A combo needs two or three physical pieces.</p>}
-      <ul className="space-y-3">{draft.items.map((item) => <li key={item.variantId} className="flex flex-wrap items-center gap-3 rounded border border-border p-2">
+      {!draft.items.length && <p className="text-sm text-muted-foreground">Select products and colors below. Sizes are chosen by the customer. A combo needs two or three physical pieces.</p>}
+      <ul className="space-y-3">{draft.items.map((item) => <li key={item.colorId} className="flex flex-wrap items-center gap-3 rounded border border-border p-2">
         <Image src={item.product.imageUrl ?? "/product-placeholder.svg"} alt="" width={40} height={50} className="h-12 w-10 object-cover" />
-        <span className="min-w-0 flex-1 text-sm">{item.product.name}<span className="block text-xs text-muted-foreground">{item.variant.color} / {item.variant.size}</span></span>
-        <Field label={`Quantity of ${item.product.name} ${item.variant.size}`}><Input type="number" className="w-20" min={1} max={3} value={item.quantity} onChange={(e) => set("items", draft.items.map((entry) => entry.variantId === item.variantId ? { ...entry, quantity: Number(e.target.value) } : entry))} /></Field>
-        <Btn aria-label={`Remove ${item.product.name} ${item.variant.size}`} onClick={() => set("items", draft.items.filter((entry) => entry.variantId !== item.variantId))}>Remove</Btn>
+        <span className="min-w-0 flex-1 text-sm">{item.product.name}<span className="block text-xs text-muted-foreground">{item.color.name} / {bdt(item.product.unitPrice)} each</span></span>
+        <Field label="Quantity"><Input type="number" className="w-20" min={1} max={3} value={item.quantity} onChange={(e) => set("items", draft.items.map((entry) => entry.colorId === item.colorId ? { ...entry, quantity: Number(e.target.value) } : entry))} /></Field>
+        <Btn aria-label={`Remove ${item.product.name} ${item.color.name}`} onClick={() => set("items", draft.items.filter((entry) => entry.colorId !== item.colorId))}>Remove</Btn>
       </li>)}</ul>
-      <ComboVariantPicker disabled={busy || pieces >= 3} onAdd={(item) => setDraft((d) => ({ ...d, items: addComboComponent(d.items, item) }))} />
+      <ComboColorPicker disabled={busy || pieces >= 3} onAdd={(item) => setDraft((d) => ({ ...d, items: addComboComponent(d.items, item) }))} />
     </fieldset>
   </Modal>;
 }

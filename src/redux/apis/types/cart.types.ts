@@ -17,6 +17,8 @@ export type VariantCartItem = {
 export type ComboCartItem = Omit<VariantCartItem, "type" | "variantId" | "product" | "variant" | "regularPrice"> & {
   type: "COMBO"; comboId: string; variantId: null; product: null; variant: null; regularPrice: null;
   combo: import("./combo.types").Combo | null;
+  selections: import("./combo.types").CartComboSelection[];
+  requiresSelection: boolean;
 };
 export type CartItem = VariantCartItem | ComboCartItem;
 
@@ -35,7 +37,7 @@ export type Cart = {
 };
 
 export type CartIntent =
-  | { type: "addCombo"; comboId: string; quantity: number }
+  | { type: "addCombo"; comboId: string; quantity: number; selections: import("./combo.types").ComboSelection[] }
   | { type: "add"; variantId: string; quantity: number }
   | { type: "quantity"; id: string; quantity: number }
   | { type: "remove"; id: string }

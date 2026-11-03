@@ -12,6 +12,7 @@ import { bdt, cn } from '@/lib/utils'
 import { useCms } from '@/lib/useCms'
 import { productHref } from '@/lib/productHref'
 import { discountPct } from '@/lib/storefront'
+import { comboDiscountLabel } from '@/lib/combo-pricing'
 
 export default function ProductCard({ p, index = 0, now }: { p: Product; index?: number; now?: number }) {
   useCms()
@@ -19,7 +20,7 @@ export default function ProductCard({ p, index = 0, now }: { p: Product; index?:
   const liked = wishlist.includes(p.id)
   const flash = activeFlash(p, now ?? undefined)
   const price = priceOf(p, now ?? undefined)
-  const was = flash ? p.offer ?? p.price : p.offer ? p.price : 0
+  const was = p.type === 'COMBO' ? (p.savings ?? 0) > 0 ? p.combinedPrice ?? 0 : 0 : flash ? p.offer ?? p.price : p.offer ? p.price : 0
   const badges = [...(flash ? [`FLASH −${flash.discountPct}%`] : []), ...p.badges, ...((p.lowStock ?? (p.type !== 'COMBO' && totalStock(p) > 0 && totalStock(p) < 25)) ? ['LOW STOCK'] : []), ...(p.inStock === false ? ['OUT OF STOCK'] : [])].slice(0, 2)
   const off = discountPct(p, price)
 
@@ -55,7 +56,7 @@ export default function ProductCard({ p, index = 0, now }: { p: Product; index?:
         </div>
         <div className="mt-3 flex items-center gap-2">
           {p.colors.map((c) => <span key={c.name} title={c.name} className="h-3.5 w-3.5 rounded-full border border-foreground/40" style={{ background: c.hex }} />)}
-          {off > 0 && <span className="label-mono ml-auto text-accent">−{off}%</span>}
+          {p.type === 'COMBO' ? (p.savings ?? 0) > 0 && <span className="label-mono ml-auto text-accent">{comboDiscountLabel(p.discountPercentage ?? 0)}</span> : off > 0 && <span className="label-mono ml-auto text-accent">−{off}%</span>}
         </div>
       </Link>
       <Button

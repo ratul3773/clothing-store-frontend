@@ -1,14 +1,16 @@
 'use client'
 
-import { useContext, useEffect, useRef, type ReactNode } from 'react'
-import { motion, type Variants } from 'motion/react'
+import { useContext, useEffect, useState, type ReactNode } from 'react'
+import { motion, useIsPresent, type Variants } from 'motion/react'
 import { usePathname } from 'next/navigation'
 import { LayoutRouterContext } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
 function Frozen({ children }: { children: ReactNode }) {
   const ctx = useContext(LayoutRouterContext)
-  const frozen = useRef(ctx).current
-  return <LayoutRouterContext.Provider value={frozen}>{children}</LayoutRouterContext.Provider>
+  const present = useIsPresent()
+  const [frozen, setFrozen] = useState(ctx)
+  if (present && frozen !== ctx) setFrozen(ctx)
+  return <LayoutRouterContext.Provider value={present ? ctx : frozen}>{children}</LayoutRouterContext.Provider>
 }
 
 const ease = [0.76, 0, 0.24, 1] as const

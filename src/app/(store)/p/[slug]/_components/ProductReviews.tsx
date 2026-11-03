@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'motion/react'
-import { Pagination } from '@/components/ui/pagination'
+import Pagination from '@/components/common/Pagination'
 import ReviewCard from '@/components/common/ReviewCard'
 import { useStore } from '@/components/providers/StoreProvider'
 import usePagination from '@/lib/usePagination'
@@ -22,7 +22,7 @@ export default function ProductReviews({ p }: { p: Product }) {
         {mine.length === 0 && <p className="text-sm text-muted-foreground">No written reviews yet. Buyers can review from their account after delivery.</p>}
         {pg.pageItems.map((r) => <ReviewCard key={r.id} r={r} />)}
       </div>
-      <Pagination page={pg.page} pageCount={pg.pageCount} onChange={pg.setPage} id="pg-pdp" className="mt-4" />
+      <Pagination paginationInfo={{ page: pg.page, limit: 3, total: pg.total, totalPage: pg.total ? pg.pageCount : 0 }} onPageChange={pg.setPage} className="mt-4" />
     </div>
   )
 }

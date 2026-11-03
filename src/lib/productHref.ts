@@ -4,5 +4,4 @@ import type { Product } from '@/data/catalog'
 export const productHref = (p: Pick<Product, 'slug' | 'custom'>) =>
   `/p/${encodeURIComponent(p.slug)}`
 
-export const comboProductSlug = (id: string) => `combo--${id}`
-export const comboHref = (id: string) => `/p/${comboProductSlug(id)}`
+export const comboHref = (slug: string) => `/p/${slug}`

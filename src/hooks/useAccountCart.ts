@@ -56,7 +56,7 @@ export default function useAccountCart(pagination: PaginationQuery = DEFAULT_PAG
     if (intent.type === "add" || intent.type === "addCombo") {
       if (!Number.isSafeInteger(intent.quantity) || intent.quantity < 1)
         throw new Error("Choose a positive quantity.");
-      const existing = cart.items.find((item) => intent.type === "add" ? item.type === "VARIANT" && item.variantId === intent.variantId : item.type === "COMBO" && item.comboId === intent.comboId);
+      const existing = cart.items.find((item) => intent.type === "add" ? item.type === "VARIANT" && item.variantId === intent.variantId : item.type === "COMBO" && item.comboId === intent.comboId && item.selections.length === intent.selections.length && intent.selections.every((choice) => item.selections.some((saved) => saved.comboItemId === choice.comboItemId && saved.variantId === choice.variantId)));
       if (existing && intent.quantity > Number.MAX_SAFE_INTEGER - existing.quantity)
         throw new Error("The requested quantity is too large.");
     }
@@ -73,7 +73,7 @@ export default function useAccountCart(pagination: PaginationQuery = DEFAULT_PAG
     const line = "id" in intent ? cart.items.find((item) => item.id === intent.id) : undefined;
     if ((intent.type === "quantity" || intent.type === "remove") && !line) throw new Error("This item was removed. Reload your bag.");
     const request = intent.type === "addCombo"
-      ? addCombo({ ...common, comboId: intent.comboId, quantity: intent.quantity })
+      ? addCombo({ ...common, comboId: intent.comboId, quantity: intent.quantity, selections: intent.selections })
       : intent.type === "add"
       ? add({ ...common, variantId: intent.variantId, quantity: intent.quantity })
       : intent.type === "quantity"

@@ -1,4 +1,5 @@
 import type { Combo, ComboComponent, CreateCombo, UpdateCombo } from "@/redux/apis/types/combo.types";
+import { comboDraftPricing } from "@/lib/combo-pricing";
 
 export type ComboDraft = {
   name: string; description: string; price: string; isActive: boolean;
@@ -21,7 +22,10 @@ export function validateComboDraft(draft: ComboDraft): string | null {
   if (draft.items.some((item) => !Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 3)) return "Each component quantity must be 1 to 3.";
   const pieces = draft.items.reduce((sum, item) => sum + item.quantity, 0);
   if (pieces !== 2 && pieces !== 3) return "A combo must contain two or three physical pieces.";
-  if (new Set(draft.items.map((item) => item.variantId)).size !== draft.items.length) return "Combine repeated variants into one quantity.";
+  if (new Set(draft.items.map((item) => item.colorId)).size !== draft.items.length) return "Combine repeated product colors into one quantity.";
+  const { combinedPrice } = comboDraftPricing(draft.items, price);
+  if (!Number.isFinite(combinedPrice) || combinedPrice <= 0) return "Item prices are unavailable. Reload the selected products.";
+  if (price >= combinedPrice) return "Combo price must be lower than the combined current price of its items.";
   try {
     const start = fromDhakaInput(draft.startsAt), end = fromDhakaInput(draft.endsAt);
     if (start && end && start >= end) return "Start must be before end.";
@@ -32,10 +36,10 @@ export function validateComboDraft(draft: ComboDraft): string | null {
 export const comboPayload = (draft: ComboDraft): CreateCombo => ({
   name: draft.name.trim(), description: draft.description.trim() || null, price: Number(draft.price), isActive: draft.isActive,
   startsAt: fromDhakaInput(draft.startsAt), endsAt: fromDhakaInput(draft.endsAt),
-  items: draft.items.map(({ variantId, quantity }) => ({ variantId, quantity })),
+  items: draft.items.map(({ colorId, quantity }) => ({ colorId, quantity })),
 });
 
-const normalizedItems = (items: CreateCombo["items"]) => JSON.stringify([...items].sort((a, b) => a.variantId.localeCompare(b.variantId)));
+const normalizedItems = (items: CreateCombo["items"]) => JSON.stringify([...items].sort((a, b) => a.colorId.localeCompare(b.colorId)));
 export function comboChanges(draft: ComboDraft, original: Combo): UpdateCombo {
   const next = comboPayload(draft);
   const previous = comboPayload(comboDraft(original));
@@ -48,8 +52,8 @@ export function comboChanges(draft: ComboDraft, original: Combo): UpdateCombo {
 }
 
 export function addComboComponent(items: ComboComponent[], component: ComboComponent): ComboComponent[] {
-  const existing = items.find((item) => item.variantId === component.variantId);
-  return existing ? items.map((item) => item.variantId === component.variantId ? { ...item, quantity: item.quantity + 1 } : item) : [...items, component];
+  const existing = items.find((item) => item.colorId === component.colorId);
+  return existing ? items.map((item) => item.colorId === component.colorId ? { ...item, quantity: item.quantity + 1 } : item) : [...items, component];
 }
 
 export const formatComboDate = (iso: string | null) => iso ? new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Dhaka", dateStyle: "medium", timeStyle: "short" }).format(new Date(iso)) : "No boundary";

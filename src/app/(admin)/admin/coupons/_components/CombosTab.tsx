@@ -13,6 +13,7 @@ import Pagination from "@/components/common/Pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatComboDate } from "../_utils/combo.utils";
 import ComboForm from "./ComboForm";
+import { comboDiscountLabel } from "@/lib/combo-pricing";
 
 export default function CombosTab() {
   const [page, setPage] = useState(1);
@@ -32,8 +33,10 @@ export default function CombosTab() {
       <p className="p-3 text-xs text-muted-foreground">Schedules are shown in Asia/Dhaka. Active status alone does not guarantee public visibility. Capacity reflects component inventory.</p>
       {query.isError ? <div role="alert" className="p-4"><p>{apiErrorMessage(query.error)}</p><Btn onClick={() => void query.refetch()}>Retry combos</Btn></div> : query.isFetching ? <Skeleton className="m-3 h-48" /> : <DataTable rows={query.currentData?.items ?? []} rowKey={(c) => c.id} onRowClick={edit} empty={<Empty title="No combos" description="Create a fixed set of two or three pieces." />} columns={[
         { key: "name", header: "Combo", cell: (c) => <div className="flex items-center gap-3"><Image src={c.imageUrl ?? "/product-placeholder.svg"} alt="" width={40} height={50} className="h-12 w-10 object-cover" /><span className="font-medium">{c.name}</span></div> },
-        { key: "items", header: "Components", cell: (c) => <ul className="text-xs">{c.items.map((i) => <li key={i.variantId}>{i.product.name} / {i.variant.color} / {i.variant.size} x {i.quantity}</li>)}</ul> },
+        { key: "items", header: "Components", cell: (c) => <ul className="text-xs">{c.items.map((i) => <li key={i.colorId}>{i.product.name} / {i.color.name} x {i.quantity}</li>)}</ul> },
         { key: "price", header: "Price", cell: (c) => bdt(c.price) },
+        { key: "combinedPrice", header: "Combined price", cell: (c) => bdt(c.combinedPrice) },
+        { key: "savings", header: "Savings", cell: (c) => c.savings > 0 ? `${bdt(c.savings)} (${comboDiscountLabel(c.discountPercentage)})` : "No current saving" },
         { key: "active", header: "Status", cell: (c) => c.isActive ? "Active" : "Inactive" },
         { key: "schedule", header: "Schedule (Dhaka)", cell: (c) => <span className="text-xs">Start: {formatComboDate(c.startsAt)}<br />End: {formatComboDate(c.endsAt)}</span> },
         { key: "stock", header: "Capacity", cell: (c) => `${c.maxQuantity} combos` },
