@@ -13,15 +13,11 @@ import { useUpdateProductMutation } from "@/redux/apis/product.api";
 import type { AdminProduct } from "@/redux/apis/types/product.types";
 
 import { STATUS_TONES } from "../_constants/products.constants";
-import {
-  productCoreSchema,
-  type ProductCoreFormValues,
-} from "../_schemas/product.schema";
+
 import {
   formatDate,
   statusLabel,
   toCoreFormValues,
-  toCorePayload,
 } from "../_utils/products.utils";
 import BasicSection from "./BasicSection";
 import DetailsSection from "./DetailsSection";
@@ -133,68 +129,71 @@ export default function ProductEditForm({ product, reload }: Props) {
         </div>
       )}
 
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-           <fieldset disabled={!editable} className="min-w-0 space-y-4 border-0 p-0">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <fieldset
+          disabled={!editable}
+          className="min-w-0 space-y-4 border-0 p-0"
+        >
           {errorMsg && (
-              <AlertText
-                title="Error"
-                description={errorMsg}
-                setSubmitError={setErrorMsg}
-              />
+            <AlertText
+              title="Error"
+              description={errorMsg}
+              setSubmitError={setErrorMsg}
+            />
           )}
-           <form id="product-edit-form" onSubmit={onSubmit}>
+          <form id="product-edit-form" onSubmit={onSubmit}>
             <BasicSection form={form} />
             <PricingSection form={form} editing />
             <DetailsSection form={form} />
-            </form>
-            <ImagesManager product={product} />
-            <VariantsManager product={product} />
-            <OffersManager product={product} />
-           </fieldset>
+          </form>
+          <ImagesManager product={product} />
+          <VariantsManager product={product} />
+          <OffersManager product={product} />
+        </fieldset>
 
-          <div className="space-y-4 lg:sticky lg:top-4 lg:self-start">
-            <ProductPreview
-              name={values.name}
-              price={values.regularPrice}
-              images={images}
-              badges={values.badges}
-              colors={product.colors}
-              status={product.status}
-            />
+        <div className="space-y-4 lg:sticky lg:top-4 lg:self-start">
+          <ProductPreview
+            name={values.name}
+            price={values.regularPrice}
+            images={images}
+            badges={values.badges}
+            colors={product.colors}
+            status={product.status}
+          />
 
-            <Card>
-              <CardHeader title="Product record" />
-              <div className="space-y-2 p-4 text-xs text-muted-foreground">
-                <div className="flex items-center justify-between">
-                  <span>Status</span>
-                  <Badge tone={STATUS_TONES[product.status]}>
-                    {statusLabel(product.status)}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Version</span>
-                  <span className="tabular-nums">{product.version}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Created</span>
-                  <span>{formatDate(product.createdAt)}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Updated</span>
-                  <span>{formatDate(product.updatedAt)}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>On hand</span>
-                  <span className="tabular-nums">{product.totalOnHand}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Reserved</span>
-                  <span className="tabular-nums">{product.totalReserved}</span>
-                </div>
+          <Card>
+            <CardHeader title="Product record" />
+            <div className="space-y-2 p-4 text-xs text-muted-foreground">
+              <div className="flex items-center justify-between">
+                <span>Status</span>
+                <Badge tone={STATUS_TONES[product.status]}>
+                  {statusLabel(product.status)}
+                </Badge>
               </div>
-            </Card>
-          </div>
+              <div className="flex items-center justify-between">
+                <span>Version</span>
+                <span className="tabular-nums">{product.version}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Created</span>
+                <span>{formatDate(product.createdAt)}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Updated</span>
+                <span>{formatDate(product.updatedAt)}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>On hand</span>
+                <span className="tabular-nums">{product.totalOnHand}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Reserved</span>
+                <span className="tabular-nums">{product.totalReserved}</span>
+              </div>
+            </div>
+          </Card>
         </div>
+      </div>
     </div>
   );
 }

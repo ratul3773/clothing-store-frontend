@@ -19,7 +19,7 @@ import {
   imageMetaSchema,
   type ImageMetaFormValues,
 } from "../_schemas/product.schema";
-import { SelectField, TextField } from "../../_components/form-controls";
+import { SelectField, TextField } from "../../../../../components/common/form-controls";
 
 type Props = {
   productId: string;

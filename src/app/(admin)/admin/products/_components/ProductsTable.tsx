@@ -5,17 +5,14 @@ import { Pencil } from "lucide-react";
 import DataTable, { type Column } from "@/components/cms/DataTable";
 import { Badge, Btn, Empty } from "@/components/cms/ui";
 import { bdt } from "@/lib/utils";
-import type { PageMeta } from "@/redux/api.utils";
 import type { AdminProduct } from "@/redux/apis/types/product.types";
 
 import { PAGE_SIZE, STATUS_TONES } from "../_constants/products.constants";
 import { formatDate, productStockState, statusLabel } from "../_utils/products.utils";
 import ProductStatusActions from "./ProductStatusActions";
-import ServerPagination from "./ServerPagination";
 import StockBadge from "./StockBadge";
 import Image from "next/image";
 import TableSkeleton from "@/components/cms/TableSkeleton";
-import Pagination from "@/components/common/Pagination";
 
 type Props = {
   rows: AdminProduct[];

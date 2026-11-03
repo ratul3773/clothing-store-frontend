@@ -3,7 +3,14 @@
 import { useMemo, useState } from "react";
 import { Plus, Search } from "lucide-react";
 
-import { Btn, Card, Empty, Input, PageHeader, Toolbar } from "@/components/cms/ui";
+import {
+  Btn,
+  Card,
+  Empty,
+  Input,
+  PageHeader,
+  Toolbar,
+} from "@/components/cms/ui";
 import { apiErrorMessage } from "@/redux/api.utils";
 import { useGetAdminCategoriesQuery } from "@/redux/apis/category.api";
 import {
@@ -15,7 +22,8 @@ import CategoriesTable from "./CategoriesTable";
 import CategoryModal from "./CategoryModal";
 
 export default function CategoriesView() {
-  const { data, isLoading, isError, error, refetch } = useGetAdminCategoriesQuery();
+  const { data, isLoading, isError, error, refetch } =
+    useGetAdminCategoriesQuery();
   const [query, setQuery] = useState("");
   const [modal, setModal] = useState<{ open: boolean; editingId?: string }>({
     open: false,
@@ -34,7 +42,10 @@ export default function CategoriesView() {
     [data, modal.editingId],
   );
 
-  const selectedCategory = useMemo(() => data?.find((cat) => cat.id === selectedId), [data, selectedId]);
+  const selectedCategory = useMemo(
+    () => data?.find((cat) => cat.id === selectedId),
+    [data, selectedId],
+  );
 
   const filtered = useMemo(() => {
     const term = query.trim().toLowerCase();

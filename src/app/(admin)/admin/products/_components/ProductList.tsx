@@ -13,7 +13,6 @@ import type {
   AdminProductQuery,
 } from "@/redux/apis/types/product.types";
 
-import { PAGE_SIZE } from "../_constants/products.constants";
 import {
   defaultProductFilters,
   type ProductFilters as Filters,

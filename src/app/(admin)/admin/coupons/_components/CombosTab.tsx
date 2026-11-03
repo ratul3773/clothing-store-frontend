@@ -28,12 +28,12 @@ export default function CombosTab() {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [replacement, setReplacement] = useState(false);
-  const { 
-    data: ComboData, 
+  const {
+    data: ComboData,
     isLoading,
     isFetching,
     error,
-    refetch
+    refetch,
   } = useGetAdminCombosQuery({ page, limit });
   const [update, updating] = useUpdateComboMutation();
   const edit = (combo: Combo) => {
@@ -59,9 +59,7 @@ export default function CombosTab() {
     <>
       <Card>
         <div className="flex items-center justify-between gap-3 border-b border-border p-3">
-          <span className="text-sm">
-            {ComboData?.meta?.total ?? 0} combos
-          </span>
+          <span className="text-sm">{ComboData?.meta?.total ?? 0} combos</span>
           <Modal
             open={open}
             onOpenChange={changeOpen}
@@ -204,14 +202,18 @@ export default function CombosTab() {
           />
         )}
       </Card>
-      {ComboData?.meta && 
-      <Pagination 
-        mode="normal" 
-        paginationInfo={ComboData.meta} 
-        onPageChange={setPage} 
-        onItemsPerPageChange={(value) => { setLimit(value); setPage(1); }} 
-        itemsLabel="combos" 
-      />}
+      {ComboData?.meta && (
+        <Pagination
+          mode="normal"
+          paginationInfo={ComboData.meta}
+          onPageChange={setPage}
+          onItemsPerPageChange={(value) => {
+            setLimit(value);
+            setPage(1);
+          }}
+          itemsLabel="combos"
+        />
+      )}
     </>
   );
 }

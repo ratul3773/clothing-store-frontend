@@ -64,10 +64,7 @@ export default function ProductStatusActions({
           variant="primary"
           disabled={busy}
           onClick={() =>
-            void run(
-              () => publish(product.id).unwrap(),
-              "Product published.",
-            )
+            void run(() => publish(product.id).unwrap(), "Product published.")
           }
         >
           <Send className="size-3.5" /> Publish
@@ -107,10 +104,7 @@ export default function ProductStatusActions({
           size={size}
           disabled={busy}
           onClick={() =>
-            void run(
-              () => archive(product.id).unwrap(),
-              "Product archived.",
-            )
+            void run(() => archive(product.id).unwrap(), "Product archived.")
           }
         >
           <Archive className="size-3.5" /> Archive

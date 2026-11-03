@@ -28,7 +28,7 @@ import {
   SelectField,
   SwitchField,
   TextField,
-} from "../../_components/form-controls";
+} from "@/components/common/form-controls";
 
 type Props = {
   productId: string;
@@ -46,12 +46,7 @@ export default function VariantDialog(props: Props) {
   );
 }
 
-function CreateVariantDialog({
-  productId,
-  colors,
-  open,
-  onOpenChange,
-}: Props) {
+function CreateVariantDialog({ productId, colors, open, onOpenChange }: Props) {
   const { toast, toastError } = useStore();
   const [createVariant, createState] = useCreateVariantMutation();
 
@@ -137,7 +132,12 @@ function CreateVariantDialog({
           />
         )}
         <div className="grid gap-4 sm:grid-cols-2">
-          <TextField form={form} name="size" label="Size" placeholder="e.g. M" />
+          <TextField
+            form={form}
+            name="size"
+            label="Size"
+            placeholder="e.g. M"
+          />
           <TextField
             form={form}
             name="sizeOrder"
@@ -195,8 +195,7 @@ function EditVariantDialog({
     if (!open) return;
     form.reset({
       size: variant.size,
-      sizeOrder:
-        variant.sizeOrder === 0 ? "" : String(variant.sizeOrder),
+      sizeOrder: variant.sizeOrder === 0 ? "" : String(variant.sizeOrder),
       lowStockThreshold: String(variant.lowStockThreshold),
       isActive: variant.isActive,
     });

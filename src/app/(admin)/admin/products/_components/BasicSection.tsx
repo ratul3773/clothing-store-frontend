@@ -8,7 +8,11 @@ import { toCategoryRows } from "@/redux/apis/types/category.types";
 
 import type { ProductCoreFormValues } from "../_schemas/product.schema";
 import { slugPreview } from "../_utils/products.utils";
-import { SelectField, SwitchField, TextField } from "../../_components/form-controls";
+import {
+  SelectField,
+  SwitchField,
+  TextField,
+} from "@/components/common/form-controls";
 import BadgesField from "./BadgesField";
 
 export default function BasicSection({
@@ -47,7 +51,13 @@ export default function BasicSection({
 
   const subcategoryOptionsWithPlaceholder = subcategoryOptions.length
     ? subcategoryOptions
-    : [{ value: "__empty__", label: "No subcategories available", disabled: true }];
+    : [
+        {
+          value: "__empty__",
+          label: "No subcategories available",
+          disabled: true,
+        },
+      ];
 
   return (
     <Card>
@@ -84,8 +94,14 @@ export default function BasicSection({
           form={form}
           name="categoryId"
           label="Subcategory"
-          placeholder={!parentCategoryId ? "Select a category first" : "Select a subcategory"}
-          disabled={isLoading || !parentCategoryId || subcategoryOptions.length === 0}
+          placeholder={
+            !parentCategoryId
+              ? "Select a category first"
+              : "Select a subcategory"
+          }
+          disabled={
+            isLoading || !parentCategoryId || subcategoryOptions.length === 0
+          }
           options={subcategoryOptionsWithPlaceholder}
           hint={
             name.trim()

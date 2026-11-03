@@ -1,10 +1,27 @@
 import { Btn } from "@/components/cms/ui";
 
-export default function ComboConflictNotice({ active, onDeactivate, onReplacement }: {
-  active: boolean; onDeactivate: () => void; onReplacement: () => void;
+export default function ComboConflictNotice({
+  active,
+  onDeactivate,
+  onReplacement,
+}: {
+  active: boolean;
+  onDeactivate: () => void;
+  onReplacement: () => void;
 }) {
-  return <div className="space-y-2 rounded border border-border p-3 text-sm">
-    <p>Cart-referenced contents cannot change, including references in expired guest carts awaiting cleanup. Your draft is preserved. Deactivation and replacement are separate actions.</p>
-    <div className="flex flex-wrap gap-2"><Btn disabled={!active} onClick={onDeactivate}>Deactivate existing combo</Btn><Btn onClick={onReplacement}>Create replacement from draft</Btn></div>
-  </div>;
+  return (
+    <div className="space-y-2 rounded border border-border p-3 text-sm">
+      <p>
+        Cart-referenced contents cannot change, including references in expired
+        guest carts awaiting cleanup. Your draft is preserved. Deactivation and
+        replacement are separate actions.
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <Btn disabled={!active} onClick={onDeactivate}>
+          Deactivate existing combo
+        </Btn>
+        <Btn onClick={onReplacement}>Create replacement from draft</Btn>
+      </div>
+    </div>
+  );
 }

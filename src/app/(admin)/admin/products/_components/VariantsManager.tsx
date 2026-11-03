@@ -169,7 +169,9 @@ export default function VariantsManager({
                 <tr className="border-b border-border bg-muted/50 text-xs text-muted-foreground">
                   <th className="px-3 py-2 font-medium">Variant</th>
                   <th className="px-3 py-2 font-medium">SKU</th>
-                  <th className="px-3 py-2 text-right font-medium">Available</th>
+                  <th className="px-3 py-2 text-right font-medium">
+                    Available
+                  </th>
                   <th className="px-3 py-2 text-right font-medium">Low at</th>
                   <th className="px-3 py-2 font-medium">Status</th>
                   <th className="px-3 py-2 text-right font-medium">Actions</th>
@@ -185,7 +187,9 @@ export default function VariantsManager({
                       <span className="flex items-center gap-2">
                         <span
                           className="size-3 rounded-full border border-border"
-                          style={{ background: variant.colorHex ?? "transparent" }}
+                          style={{
+                            background: variant.colorHex ?? "transparent",
+                          }}
                         />
                         {variant.colorName} / {variant.size}
                       </span>
@@ -212,15 +216,14 @@ export default function VariantsManager({
                     </td>
                     <td className="px-3 py-2">
                       <div className="flex items-center justify-end gap-1">
-                        <Btn
-                          size="sm"
-                          onClick={() => setStockVariant(variant)}
-                        >
+                        <Btn size="sm" onClick={() => setStockVariant(variant)}>
                           <Warehouse className="size-3.5" /> Stock
                         </Btn>
                         <Btn
                           size="sm"
-                          onClick={() => setVariantDialog({ open: true, variant })}
+                          onClick={() =>
+                            setVariantDialog({ open: true, variant })
+                          }
                         >
                           <Pencil className="size-3.5" /> Edit
                         </Btn>
