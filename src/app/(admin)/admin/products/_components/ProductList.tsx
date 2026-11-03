@@ -8,7 +8,10 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useNavigate } from "@/lib/nav";
 import { apiErrorMessage } from "@/redux/api.utils";
 import { useGetAdminProductsQuery } from "@/redux/apis/product.api";
-import type { AdminProduct, AdminProductQuery } from "@/redux/apis/types/product.types";
+import type {
+  AdminProduct,
+  AdminProductQuery,
+} from "@/redux/apis/types/product.types";
 
 import { PAGE_SIZE } from "../_constants/products.constants";
 import {
@@ -19,11 +22,13 @@ import {
 import InventoryTable from "./InventoryTable";
 import ProductFilters from "./ProductFilters";
 import ProductsTable from "./ProductsTable";
+import Pagination from "@/components/common/Pagination";
 
 export default function ProductList() {
   const go = useNavigate();
   const [tab, setTab] = useState<ProductTab>("products");
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [filters, setFilters] = useState<Filters>(defaultProductFilters);
   const debouncedQuery = useDebouncedValue(filters.q, 350);
 
@@ -34,7 +39,7 @@ export default function ProductList() {
 
   const params: AdminProductQuery = {
     page,
-    limit: PAGE_SIZE,
+    limit,
     sort: filters.sort,
     ...(debouncedQuery.trim() ? { q: debouncedQuery.trim() } : {}),
     ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
@@ -66,7 +71,10 @@ export default function ProductList() {
       />
 
       <div className="mb-4 flex items-center gap-1 rounded-md border border-border bg-card p-1">
-        <TabButton active={tab === "products"} onClick={() => setTab("products")}>
+        <TabButton
+          active={tab === "products"}
+          onClick={() => setTab("products")}
+        >
           Products
         </TabButton>
         <TabButton
@@ -87,7 +95,10 @@ export default function ProductList() {
         {isError ? (
           <Empty
             title="Products could not be loaded"
-            description={apiErrorMessage(error, "Check the API connection and try again.")}
+            description={apiErrorMessage(
+              error,
+              "Check the API connection and try again.",
+            )}
             action={
               <Btn variant="primary" onClick={() => void refetch()}>
                 Try again
@@ -97,11 +108,7 @@ export default function ProductList() {
         ) : tab === "products" ? (
           <ProductsTable
             rows={products}
-            meta={meta}
-            page={page}
-            isLoading={isLoading}
-            loading={isFetching}
-            onPageChange={setPage}
+            isLoading={isLoading || isFetching}
             onEdit={openProduct}
             onCreate={createProduct}
           />
@@ -115,6 +122,18 @@ export default function ProductList() {
           />
         )}
       </Card>
+      {meta && (
+        <Pagination
+          mode="normal"
+          paginationInfo={meta}
+          onPageChange={setPage}
+          onItemsPerPageChange={(value) => {
+            setLimit(value);
+            setPage(1);
+          }}
+          itemsLabel="products"
+        />
+      )}
     </div>
   );
 }

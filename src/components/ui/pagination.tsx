@@ -35,22 +35,24 @@ function PaginationItem({ ...props }: React.ComponentProps<"li">) {
 
 type PaginationLinkProps = {
   isActive?: boolean
-} & Pick<React.ComponentProps<typeof Button>, "size"> &
+} & Pick<React.ComponentProps<typeof Button>, "size" | "mode"> &
   React.ComponentProps<"a">
 
 function PaginationLink({
   className,
   isActive,
   size = "sm",
+  mode = "animated",
   children,
   ...props
 }: PaginationLinkProps) {
   return (
     <Button
       asChild
+      mode={mode}
       variant={isActive ? "outline" : "ghost"}
       size={size}
-      className={cn(className)}
+      className={cn(mode === "normal" && "transition-none active:not-aria-[haspopup]:translate-y-0", className)}
     >
       <a
         aria-current={isActive ? "page" : undefined}

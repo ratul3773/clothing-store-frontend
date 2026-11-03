@@ -1,10 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import usePagination from '@/lib/usePagination'
-import { Btn, Empty } from '@/components/cms/ui'
+import { Empty } from '@/components/cms/ui'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export type Column<T> = { key: string; header: string; cell: (row: T) => React.ReactNode; className?: string; align?: 'right' }
@@ -25,11 +23,8 @@ type Props<T> = {
 }
 
 export default function DataTable<T>({ rows, columns, rowKey, pageSize = 10, resetKey, onRowClick, selected, onSelect, empty, hidePagination, isLoading }: Props<T>) {
-  const pagination = usePagination(rows, pageSize, resetKey)
-  const { page, setPage, pageCount } = pagination
-  const pageItems = hidePagination ? rows : pagination.pageItems
-  const total = hidePagination ? rows.length : pagination.total
-  const keys = pageItems.map(rowKey)
+  const total =  rows.length
+  const keys = rows.map(rowKey)
   const allOn = selected && keys.length > 0 && keys.every((k) => selected.includes(k))
   return (
     <div>
@@ -60,7 +55,7 @@ export default function DataTable<T>({ rows, columns, rowKey, pageSize = 10, res
                 </tr>
               ))
             ) : (
-              pageItems.map((r) => {
+              rows.map((r) => {
                 const k = rowKey(r)
                 return (
                   <tr key={k} onClick={onRowClick ? () => onRowClick(r) : undefined} className={cn('border-b border-border last:border-0 hover:bg-muted/40', onRowClick && 'cursor-pointer')}>
@@ -80,18 +75,6 @@ export default function DataTable<T>({ rows, columns, rowKey, pageSize = 10, res
         </table>
       </div>
       {total === 0 && !isLoading && (empty ?? <Empty title="No records found" description="Try changing your filters." />)}
-      {total > 0 && !hidePagination && (
-        <div className="flex items-center justify-between border-t border-border px-3 py-2 text-xs text-muted-foreground">
-          <span>
-            {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)} of {total}
-          </span>
-          <div className="flex items-center gap-1">
-            <Btn size="icon" className="size-7" disabled={page <= 1} onClick={() => setPage(page - 1)} aria-label="Previous page"><ChevronLeft className="size-4" /></Btn>
-            <span className="px-2">Page {page} / {pageCount}</span>
-            <Btn size="icon" className="size-7" disabled={page >= pageCount} onClick={() => setPage(page + 1)} aria-label="Next page"><ChevronRight className="size-4" /></Btn>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
