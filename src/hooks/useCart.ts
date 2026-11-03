@@ -12,8 +12,6 @@ export default function useCart(pagination?: PaginationQuery) {
   const session = authClient.useSession();
   const user = session.data?.user;
   const customer = user?.role === "customer" && user.emailVerified;
-  const account = useCartApi(pagination);
-  const { query, busy, run } = account;
   const mode = !clientReady || session.isPending
     ? "resolving"
     : session.error
@@ -21,7 +19,9 @@ export default function useCart(pagination?: PaginationQuery) {
       : user
         ? customer ? "account" : "restricted"
         : "guest";
-  const identityKey = mode === "resolving" ? mode : user?.id ?? mode;
+  const enabled = mode === "account" || mode === "guest";
+  const { query, busy, run } = useCartApi(pagination, enabled);
+  const identityKey = user?.id ?? "guest";
   const [local, setLocal] = useState<{
     identity: string;
     error: unknown;
@@ -71,6 +71,7 @@ export default function useCart(pagination?: PaginationQuery) {
   }, [blocked, identityKey, mode]);
 
   const reload = async () => {
+    if (!enabled || query.isUninitialized) return;
     try {
       await query.refetch().unwrap();
       setError(null);

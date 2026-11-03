@@ -50,10 +50,10 @@ export default function ComboInfo({ p }: { p: Product }) {
       <span className="mb-1 block font-medium">Size for {item.product.name} - {item.color.name}{item.quantity > 1 ? ` (${item.quantity} pieces, same size)` : ""}</span>
       <select className="h-11 w-full rounded border border-border bg-background px-3 text-foreground focus-visible:outline-2 focus-visible:outline-accent" value={choices[item.id] ?? ""} disabled={adding || cart.busy} onChange={(event) => setChoices((current) => ({ ...current, [item.id]: event.target.value }))}>
         <option value="">Choose size</option>
-        {item.variants.map((variant) => <option key={variant.id} value={variant.id} disabled={variant.maxQuantity < quantity}>{variant.size} - {variant.maxQuantity > 0 ? `${variant.maxQuantity} combo units available` : "Out of stock"}</option>)}
+        {item.variants.map((variant) => <option key={variant.id} value={variant.id} disabled={variant.maxQuantity < quantity}>{variant.size} - {variant.maxQuantity > 0 ? `Up to ${variant.maxQuantity} combo units available` : "Out of stock"}</option>)}
       </select>
     </label>)}</div>
-    <p role="status" className="my-3 text-sm">{p.inStock ? complete ? `${capacity} combo units available in these sizes` : "Choose sizes to see availability" : "Currently out of stock"}</p>
+    <p role="status" className="my-3 text-sm">{p.inStock ? complete ? `Up to ${capacity} combo units available in these sizes. Your bag may reduce this limit.` : "Choose sizes to see availability" : "Currently out of stock"}</p>
     <p className="mb-3 text-xs text-muted-foreground">Quantity adds more combo units. Edit quantities already in your bag there.</p>
     <PurchaseActions qty={quantity} liked={wishlist.includes(p.id)} onDec={() => setQuantity((q) => Math.max(1, q - 1))} onInc={() => setQuantity((q) => Math.min(capacity, q + 1))} onAdd={() => void add()} onWish={() => toggleWish(p.id)} canAdd={canAdd} canIncrease={quantity < capacity && !cart.busy} canDecrease={quantity > 1 && !cart.busy} adding={adding} isInCart={false} />
     {cart.error && <div role="alert" className="mt-3"><p className="text-destructive">{cart.error}</p><Button size="sm" variant="outline" onClick={() => void reload()}>Reload bag</Button></div>}

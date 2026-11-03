@@ -1,5 +1,7 @@
 import type { Combo, ComboComponent, CreateCombo, UpdateCombo } from "@/redux/apis/types/combo.types";
-import { comboDraftPricing } from "@/lib/combo-pricing";
+import { comboFormSchema } from "../_schemas/combo.schema";
+import { toDhakaInput, fromDhakaInput } from "./combo-dates";
+export { toDhakaInput, fromDhakaInput } from "./combo-dates";
 
 export type ComboDraft = {
   name: string; description: string; price: string; isActive: boolean;
@@ -7,30 +9,14 @@ export type ComboDraft = {
 };
 
 export const emptyComboDraft = (): ComboDraft => ({ name: "", description: "", price: "", isActive: true, startsAt: "", endsAt: "", items: [] });
-export const toDhakaInput = (iso: string | null) => iso ? new Date(Date.parse(iso) + 6 * 60 * 60 * 1000).toISOString().slice(0, 19) : "";
-export const fromDhakaInput = (value: string) => value ? new Date(`${value}+06:00`).toISOString() : null;
 export const comboDraft = (combo: Combo): ComboDraft => ({
   name: combo.name, description: combo.description ?? "", price: String(combo.price), isActive: combo.isActive,
   startsAt: toDhakaInput(combo.startsAt), endsAt: toDhakaInput(combo.endsAt), items: combo.items,
 });
 
 export function validateComboDraft(draft: ComboDraft): string | null {
-  if (!draft.name.trim() || draft.name.trim().length > 200) return "Name must contain 1 to 200 characters.";
-  if (draft.description.trim().length > 10000) return "Description must not exceed 10,000 characters.";
-  const price = Number(draft.price);
-  if (!Number.isInteger(price) || price < 1 || price > 2_147_483_647) return "Enter an integer price from 1 to 2,147,483,647 taka.";
-  if (draft.items.some((item) => !Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 3)) return "Each component quantity must be 1 to 3.";
-  const pieces = draft.items.reduce((sum, item) => sum + item.quantity, 0);
-  if (pieces !== 2 && pieces !== 3) return "A combo must contain two or three physical pieces.";
-  if (new Set(draft.items.map((item) => item.colorId)).size !== draft.items.length) return "Combine repeated product colors into one quantity.";
-  const { combinedPrice } = comboDraftPricing(draft.items, price);
-  if (!Number.isFinite(combinedPrice) || combinedPrice <= 0) return "Item prices are unavailable. Reload the selected products.";
-  if (price >= combinedPrice) return "Combo price must be lower than the combined current price of its items.";
-  try {
-    const start = fromDhakaInput(draft.startsAt), end = fromDhakaInput(draft.endsAt);
-    if (start && end && start >= end) return "Start must be before end.";
-  } catch { return "Enter valid schedule dates."; }
-  return null;
+  const result = comboFormSchema.safeParse(draft);
+  return result.success ? null : result.error.issues[0]?.message ?? "Invalid combo.";
 }
 
 export const comboPayload = (draft: ComboDraft): CreateCombo => ({
@@ -44,9 +30,12 @@ export function comboChanges(draft: ComboDraft, original: Combo): UpdateCombo {
   const next = comboPayload(draft);
   const previous = comboPayload(comboDraft(original));
   const changes: UpdateCombo = {};
-  for (const key of ["name", "description", "price", "isActive", "startsAt", "endsAt"] as const) {
-    if (next[key] !== previous[key]) Object.assign(changes, { [key]: next[key] });
-  }
+  if (next.name !== previous.name) changes.name = next.name;
+  if (next.description !== previous.description) changes.description = next.description;
+  if (next.price !== previous.price) changes.price = next.price;
+  if (next.isActive !== previous.isActive) changes.isActive = next.isActive;
+  if (next.startsAt !== previous.startsAt) changes.startsAt = next.startsAt;
+  if (next.endsAt !== previous.endsAt) changes.endsAt = next.endsAt;
   if (normalizedItems(next.items) !== normalizedItems(previous.items)) changes.items = next.items;
   return changes;
 }

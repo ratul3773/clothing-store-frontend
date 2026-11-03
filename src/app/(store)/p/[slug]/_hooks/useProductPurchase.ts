@@ -21,7 +21,7 @@ export default function useProductPurchase(p: Product) {
   const color = p.colors[ci] ?? { name: '', hex: '#d6d3d1', image: -1 }
   const variant = p.variants?.find((item) => item.colorName === color.name && item.size === size)
   const avail = size ? variant?.available ?? 0 : null
-  const existing = cart.lines.find((item) => item.variantId === variant?.id)
+  const existing = cart.lines.find((item) => item.type === 'VARIANT' && item.variantId === variant?.id)
   const draft = useQuantityDraft(`${cart.identityKey}:${variant?.id ?? `${p.id}:${ci}:${size}`}`, existing?.quantity ?? 1)
   const maxQuantity = existing ? existing.maxQuantity : avail ?? 0
   const quantity = existing ? draft.quantity : Math.min(draft.quantity, Math.max(1, maxQuantity))
@@ -41,7 +41,7 @@ export default function useProductPurchase(p: Product) {
     setAdding(true)
     try {
       const success = existing
-        ? await edit({ type: 'quantity', id: existing.id, quantity })
+        ? await edit({ type: 'quantity', id: existing.id, quantity, lineType: 'VARIANT' })
         : await edit({ type: 'add', variantId: variant.id, quantity })
       // Account hooks ignore completions from a superseded identity.
       if (success) { openCartDrawer(); toast.success(existing ? 'Cart updated' : 'Added to your bag') }

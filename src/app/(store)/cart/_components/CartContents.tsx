@@ -11,13 +11,16 @@ import { bdt } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import AlertDialogText from "@/components/common/Alert-Dialogue";
 import PaginationComponent from "@/components/common/Pagination";
+import type { CartItem } from "@/redux/apis/types/cart.types";
+import type { ComboSelection } from "@/redux/apis/types/combo.types";
 
 export default function CartContents({ drawer = false, onNavigate }: { drawer?: boolean; onNavigate?: () => void }) {
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const { cart, edit, setSelection, reload, retrySession } = useCart({ page, limit: itemsPerPage });
-  const update = useCallback((id: string, quantity: number) => edit({ type: "quantity", id, quantity }), [edit]);
-  const remove = useCallback((id: string) => edit({ type: "remove", id }), [edit]);
+  const update = useCallback((id: string, quantity: number, lineType: CartItem["type"]) => edit({ type: "quantity", id, quantity, lineType }), [edit]);
+  const remove = useCallback((id: string, lineType: CartItem["type"]) => edit({ type: "remove", id, lineType }), [edit]);
+  const updateSelections = useCallback((id: string, selections: ComboSelection[]) => edit({ type: "selections", id, selections }), [edit]);
   const selectAll = useRef<HTMLInputElement>(null);
   const disabled = !cart.ready || cart.loading || cart.busy;
   const showSkeleton = !cart.lines.length && (cart.mode === "resolving" || (
@@ -99,7 +102,7 @@ export default function CartContents({ drawer = false, onNavigate }: { drawer?: 
             </Button>
           </div>
           {cart.lines.map((item) =>
-          <CartLine key={`${cart.identityKey}:${item.id}`} item={item} disabled={disabled} onUpdate={update} onRemove={remove} onSelect={setSelection} />)}
+          <CartLine key={`${cart.identityKey}:${item.id}`} item={item} disabled={disabled} onUpdate={update} onRemove={remove} onSelections={updateSelections} onSelect={setSelection} />)}
           {!drawer && cart.meta && 
           <PaginationComponent
             showPageNumbers={!drawer}

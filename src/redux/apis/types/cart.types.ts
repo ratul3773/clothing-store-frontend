@@ -1,4 +1,4 @@
-export type CartItemStatus = "AVAILABLE" | "INSUFFICIENT_STOCK" | "OUT_OF_STOCK" | "UNAVAILABLE";
+export type CartItemStatus = "AVAILABLE" | "INSUFFICIENT_STOCK" | "OUT_OF_STOCK" | "UNAVAILABLE" | "SELECTION_REQUIRED";
 
 export type VariantCartItem = {
   type: "VARIANT";
@@ -15,10 +15,11 @@ export type VariantCartItem = {
 };
 
 export type ComboCartItem = Omit<VariantCartItem, "type" | "variantId" | "product" | "variant" | "regularPrice"> & {
-  type: "COMBO"; comboId: string; variantId: null; product: null; variant: null; regularPrice: null;
+  type: "COMBO"; comboId: string | null; variantId: null; product: null; variant: null; regularPrice: null;
   combo: import("./combo.types").Combo | null;
   selections: import("./combo.types").CartComboSelection[];
   requiresSelection: boolean;
+  selectionIssue?: "INCOMPLETE" | "INVALID" | null;
 };
 export type CartItem = VariantCartItem | ComboCartItem;
 
@@ -39,6 +40,7 @@ export type Cart = {
 export type CartIntent =
   | { type: "addCombo"; comboId: string; quantity: number; selections: import("./combo.types").ComboSelection[] }
   | { type: "add"; variantId: string; quantity: number }
-  | { type: "quantity"; id: string; quantity: number }
-  | { type: "remove"; id: string }
+  | { type: "quantity"; id: string; lineType: "VARIANT" | "COMBO"; quantity: number }
+  | { type: "selections"; id: string; selections: import("./combo.types").ComboSelection[] }
+  | { type: "remove"; id: string; lineType: "VARIANT" | "COMBO" }
   | { type: "clear" };

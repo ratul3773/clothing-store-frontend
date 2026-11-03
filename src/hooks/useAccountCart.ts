@@ -28,9 +28,10 @@ function enqueue<T>(task: () => Promise<T>) {
 
 const DEFAULT_PAGE: PaginationQuery = { page: 1, limit: 5 };
 
-export default function useAccountCart(pagination: PaginationQuery = DEFAULT_PAGE) {
+export default function useAccountCart(pagination: PaginationQuery = DEFAULT_PAGE, enabled = true) {
   const store = useStore<RootState>();
   const query = useGetCartQuery(pagination, {
+    skip: !enabled,
     pollingInterval: 0,
     refetchOnMountOrArgChange: false,
     refetchOnFocus: false,
@@ -47,6 +48,7 @@ export default function useAccountCart(pagination: PaginationQuery = DEFAULT_PAG
   const { refetch } = query;
 
   const run = useCallback((intent: CartIntent) => enqueue(async () => {
+    if (!enabled) return false;
     const state = store.getState();
     const cached = cartApi.endpoints.getCart.select(pagination)(state);
     if (hasPendingCartMutation(state) || cached.status === "pending") return false;
@@ -59,6 +61,10 @@ export default function useAccountCart(pagination: PaginationQuery = DEFAULT_PAG
       const existing = cart.items.find((item) => intent.type === "add" ? item.type === "VARIANT" && item.variantId === intent.variantId : item.type === "COMBO" && item.comboId === intent.comboId && item.selections.length === intent.selections.length && intent.selections.every((choice) => item.selections.some((saved) => saved.comboItemId === choice.comboItemId && saved.variantId === choice.variantId)));
       if (existing && intent.quantity > Number.MAX_SAFE_INTEGER - existing.quantity)
         throw new Error("The requested quantity is too large.");
+      // Existing combo capacity belongs to these exact saved sizes; it must not
+      // be borrowed from a different configuration of the same combo.
+      if (existing && existing.quantity + intent.quantity > existing.maxQuantity)
+        throw new Error("The requested quantity is not available.");
     }
     if (intent.type === "quantity") {
       const item = cart.items.find((line) => line.id === intent.id);
@@ -71,11 +77,15 @@ export default function useAccountCart(pagination: PaginationQuery = DEFAULT_PAG
 
     const common = { version: cart.version };
     const line = "id" in intent ? cart.items.find((item) => item.id === intent.id) : undefined;
-    if ((intent.type === "quantity" || intent.type === "remove") && !line) throw new Error("This item was removed. Reload your bag.");
+    if ((intent.type === "quantity" || intent.type === "remove" || intent.type === "selections") && !line) throw new Error("This item was removed. Reload your bag.");
+    if ((intent.type === "quantity" || intent.type === "remove") && line?.type !== intent.lineType) throw new Error("This item changed. Reload your bag.");
+    if (intent.type === "selections" && line?.type !== "COMBO") throw new Error("Only combo lines have size selections.");
     const request = intent.type === "addCombo"
       ? addCombo({ ...common, comboId: intent.comboId, quantity: intent.quantity, selections: intent.selections })
       : intent.type === "add"
       ? add({ ...common, variantId: intent.variantId, quantity: intent.quantity })
+      : intent.type === "selections"
+        ? updateCombo({ ...common, id: intent.id, selections: intent.selections })
       : intent.type === "quantity"
         ? (line?.type === "COMBO" ? updateCombo : update)({ ...common, id: intent.id, quantity: intent.quantity })
         : intent.type === "remove"
@@ -91,7 +101,7 @@ export default function useAccountCart(pagination: PaginationQuery = DEFAULT_PAG
       }
       throw error;
     }
-  }), [store, pagination, add, update, remove, addCombo, updateCombo, removeCombo, clear, refetch]);
+  }), [enabled, store, pagination, add, update, remove, addCombo, updateCombo, removeCombo, clear, refetch]);
 
   return { query, busy, run };
 }
