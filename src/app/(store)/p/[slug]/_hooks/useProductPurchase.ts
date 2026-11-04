@@ -5,7 +5,6 @@ import { toast } from 'sonner'
 import { useStore } from '@/components/providers/StoreProvider'
 import useCart from '@/hooks/useCart'
 import useQuantityDraft from '@/hooks/useQuantityDraft'
-import { openCartDrawer } from '@/lib/cart-ui'
 import type { Product } from '@/data/catalog'
 
 const stockOf = (product: Product, color: string, size: string) => product.variants?.find((variant) => variant.colorName === color && variant.size === size)?.available ?? 0
@@ -16,7 +15,6 @@ export default function useProductPurchase(p: Product) {
   const [ci, setCi] = useState(0)
   const [size, setSize] = useState<string | null>(null)
   const [shake, setShake] = useState(0)
-  const [adding, setAdding] = useState(false)
   const addingRef = useRef(false)
   const color = p.colors[ci] ?? { name: '', hex: '#d6d3d1', image: -1 }
   const variant = p.variants?.find((item) => item.colorName === color.name && item.size === size)
@@ -38,19 +36,18 @@ export default function useProductPurchase(p: Product) {
     if (!size) { setShake((value) => value + 1); toast.error('Choose a size first'); return false }
     if (!variant || !changed || !validQuantity || !cart.ready || cart.loading || cart.busy || addingRef.current) return false
     addingRef.current = true
-    setAdding(true)
+    // setAdding(true)
     try {
       const success = existing
         ? await edit({ type: 'quantity', id: existing.id, quantity, lineType: 'VARIANT' })
         : await edit({ type: 'add', variantId: variant.id, quantity })
       // Account hooks ignore completions from a superseded identity.
-      if (success) { openCartDrawer(); toast.success(existing ? 'Cart updated' : 'Added to your bag') }
       return success
-    } finally { addingRef.current = false; setAdding(false) }
+    } finally { addingRef.current = false; }
   }
 
-  return { ci, setCi, color, size, setSize: selectSize, qty: quantity, avail, shake, selectColor, selectSize, decQty, incQty, add, liked: wishlist.includes(p.id), toggleWish: () => toggleWish(p.id), stockOf, adding, error: cart.error, reload,
+  return { ci, setCi, color, size, setSize: selectSize, qty: quantity, avail, shake, selectColor, selectSize, decQty, incQty, add, liked: wishlist.includes(p.id), toggleWish: () => toggleWish(p.id), stockOf, adding:cart.busy, error: cart.error, reload,
     isInCart: !!existing,
-    canAdd: cart.ready && !cart.loading && !cart.busy && !adding && changed && (!!size ? !!variant && validQuantity : !!p.variants?.length),
+    canAdd: cart.ready && !cart.loading && !cart.busy && changed && (!!size ? !!variant && validQuantity : !!p.variants?.length),
     canIncrease: maxQuantity > quantity && !cart.busy, canDecrease: quantity > 1 && !cart.busy }
 }

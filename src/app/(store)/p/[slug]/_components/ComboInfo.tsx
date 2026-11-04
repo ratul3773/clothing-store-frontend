@@ -17,10 +17,9 @@ import SizePicker from "./SizePicker";
 
 export default function ComboInfo({ p }: { p: Product }) {
   const { cart, edit, reload } = useCart();
-  const { wishlist, toggleWish,toast } = useStore();
+  const { wishlist, toggleWish } = useStore();
   const [quantity, setQuantity] = useState(1);
   const [choices, setChoices] = useState<Record<string, string>>({});
-  const [adding, setAdding] = useState(false);
   const pending = useRef(false);
   const items = p.items ?? [];
   const selections: ComboSelection[] = items.flatMap((item) =>
@@ -47,12 +46,10 @@ export default function ComboInfo({ p }: { p: Product }) {
     quantity <= capacity &&
     cart.ready &&
     !cart.loading &&
-    !cart.busy &&
-    !adding;
+    !cart.busy;
   const add = async () => {
     if (!canAdd || pending.current || !p.comboId) return;
     pending.current = true;
-    setAdding(true);
     try {
       if (
         await edit({
@@ -62,13 +59,10 @@ export default function ComboInfo({ p }: { p: Product }) {
           selections,
         })
       ) {
-        toast("Combo added to your bag");
         setQuantity(1);
-        openCartDrawer();
       }
     } finally {
       pending.current = false;
-      setAdding(false);
     }
   };
   return (
@@ -85,7 +79,7 @@ export default function ComboInfo({ p }: { p: Product }) {
         {items.map((item) => {
           const selected = item.variants.find((variant) => variant.id === choices[item.id]);
           return (
-          <fieldset key={item.id} className="min-w-0 rounded border border-border p-3" disabled={adding || cart.busy}>
+          <fieldset key={item.id} className="min-w-0 rounded border border-border p-3" disabled={cart.busy}>
             <legend className="px-1 text-sm font-medium">
               Size for {item.product.name} - {item.color.name}
               {item.quantity > 1 ? ` (${item.quantity} pieces, same size)` : ""}
@@ -94,7 +88,7 @@ export default function ComboInfo({ p }: { p: Product }) {
               sizes={item.variants.map((variant) => variant.size)}
               selected={selected?.size ?? null}
               avail={selected?.maxQuantity ?? null}
-              disabled={adding || cart.busy}
+              disabled={cart.busy}
               minimumQuantity={quantity}
               showStockCounts
               stockUnit="combo units"
@@ -134,7 +128,7 @@ export default function ComboInfo({ p }: { p: Product }) {
         canAdd={canAdd}
         canIncrease={quantity < capacity && !cart.busy}
         canDecrease={quantity > 1 && !cart.busy}
-        adding={adding}
+        adding={cart.busy}
         isInCart={false}
       />
       {cart.error && (

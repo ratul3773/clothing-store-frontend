@@ -2,8 +2,8 @@
 
 import { useCallback } from "react";
 import { useStore } from "react-redux";
-import { toast } from "sonner";
 import type { RootState } from "@/redux/store";
+import { useStore as Store } from "@/components/providers/StoreProvider";
 import {
   useAddCartComboMutation,
   useUpdateCartComboMutation,
@@ -21,6 +21,7 @@ import {
 import type { CartIntent } from "@/redux/apis/types/cart.types";
 import type { PaginationQuery } from "@/redux/api.utils";
 import { cartErrorStatus } from "@/lib/cart-view";
+import { openCartDrawer } from "@/lib/cart-ui";
 
 let mutationQueue = Promise.resolve();
 
@@ -39,6 +40,7 @@ export default function useAccountCart(
   pagination: PaginationQuery = DEFAULT_PAGE,
   enabled = true,
 ) {
+  const { toast } = Store();
   const store = useStore<RootState>();
   const query = useGetCartQuery(pagination, {
     skip: !enabled,
@@ -171,8 +173,23 @@ export default function useAccountCart(
                       id: intent.id,
                     })
                   : clear(common);
+
+        const toastMessage =
+          intent.type === "addCombo" || intent.type === "add"
+            ? "Added to your bag"
+            : intent.type === "quantity"
+              ? "Cart updated"
+              : intent.type === "remove"
+                ? "Removed item from your bag"
+                : intent.type === "clear"
+                ? "Whole bag is cleared"
+                : "Bag updated";
         try {
           await request.unwrap();
+          toast(toastMessage);
+          if(intent.type === "addCombo" || intent.type === "add") {
+            openCartDrawer();
+          }
         } catch (error) {
           const status = cartErrorStatus(error);
           if (
