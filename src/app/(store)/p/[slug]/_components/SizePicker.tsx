@@ -69,9 +69,9 @@ export default function SizePicker({
               aria-pressed={selected === s}
               onClick={() => onSelect(s)}
               className={cn(
-                "relative h-10 w-auto min-w-10 px-3 font-semibold transition [&>span]:static",
+                "relative h-10 w-auto min-w-12 font-semibold transition [&>span]:static",
                 showStockCounts &&
-                  "h-auto min-w-20 py-2 [&>span]:flex-col [&>span]:gap-1",
+                  "h-auto min-w-12 py-2 [&>span]:flex-col [&>span]:gap-1",
                 selected === s
                   ? "border-foreground bg-foreground text-background"
                   : "border-foreground/30 hover:-translate-y-0.5 hover:border-foreground",

@@ -1,3 +1,5 @@
+import { ComboSelection } from "./combo.types";
+
 export type CartItemStatus = "AVAILABLE" | "INSUFFICIENT_STOCK" | "OUT_OF_STOCK" | "UNAVAILABLE" | "SELECTION_REQUIRED";
 
 export type VariantCartItem = {
@@ -38,9 +40,8 @@ export type Cart = {
 };
 
 export type CartIntent =
-  | { type: "addCombo"; comboId: string; quantity: number; selections: import("./combo.types").ComboSelection[] }
+  | { type: "addCombo"; comboId: string; quantity: number; selections: ComboSelection[] }
   | { type: "add"; variantId: string; quantity: number }
   | { type: "quantity"; id: string; lineType: "VARIANT" | "COMBO"; quantity: number }
-  | { type: "selections"; id: string; selections: import("./combo.types").ComboSelection[] }
   | { type: "remove"; id: string; lineType: "VARIANT" | "COMBO" }
   | { type: "clear" };

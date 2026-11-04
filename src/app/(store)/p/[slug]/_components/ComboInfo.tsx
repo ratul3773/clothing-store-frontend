@@ -17,7 +17,7 @@ import SizePicker from "./SizePicker";
 
 export default function ComboInfo({ p }: { p: Product }) {
   const { cart, edit, reload } = useCart();
-  const { wishlist, toggleWish } = useStore();
+  const { wishlist, toggleWish,toast } = useStore();
   const [quantity, setQuantity] = useState(1);
   const [choices, setChoices] = useState<Record<string, string>>({});
   const [adding, setAdding] = useState(false);
@@ -62,7 +62,7 @@ export default function ComboInfo({ p }: { p: Product }) {
           selections,
         })
       ) {
-        toast.success("Combo added to your bag");
+        toast("Combo added to your bag");
         setQuantity(1);
         openCartDrawer();
       }

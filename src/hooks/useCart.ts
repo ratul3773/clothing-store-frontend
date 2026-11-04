@@ -92,7 +92,7 @@ export default function useCart(pagination?: PaginationQuery) {
     identityKey,
     userId: customer ? user?.id ?? null : null,
     lines,
-    loading: query.isFetching,
+    loading: query.isLoading,
     ready: !blocked && mode !== "resolving" && !!query.currentData && !error,
     busy,
     error: error ? cartErrorMessage(error) : "",
