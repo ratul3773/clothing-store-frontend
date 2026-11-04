@@ -5,6 +5,7 @@ import { fromDhakaInput } from "../_utils/combo-dates";
 const componentSchema = z.object({
   id: z.string().min(1),
   colorId: z.string().min(1),
+  variantIds: z.array(z.string().min(1)).min(1, "Select at least one variant, or choose all variants.").nullable().optional(),
   quantity: z
     .number({ error: "Enter a component quantity." })
     .int()
@@ -30,6 +31,9 @@ const componentSchema = z.object({
       maxQuantity: z.number(),
     }),
   ),
+}).superRefine((item, context) => {
+  if (item.variantIds && (new Set(item.variantIds).size !== item.variantIds.length || item.variantIds.some((id) => !item.variants.some((variant) => variant.id === id))))
+    context.addIssue({ code: "custom", path: ["variantIds"], message: "Select variants belonging to this product color." });
 });
 const schedule = z.string().refine((value) => {
   if (!value) return true;

@@ -58,8 +58,8 @@ export default function ComboItemsList({
       )}
       {!items.length && (
         <p className="text-sm text-muted-foreground">
-          Select products and colors below. Sizes are chosen by the customer. A
-          combo needs two or three physical pieces.
+          Select products and colors below, then choose the variants customers can
+          pick from. A combo needs two or three physical pieces.
         </p>
       )}
       <ul className="space-y-3 [&_button]:transition-none">
@@ -103,7 +103,9 @@ export default function ComboItemsList({
               render={({ field, fieldState }) => {
                 const maxStock = Math.max(
                   0,
-                  ...item.variants.map((variant) => variant.available),
+                  ...item.variants
+                    .filter((variant) => !items[index]?.variantIds || items[index].variantIds?.includes(variant.id))
+                    .map((variant) => variant.available),
                 );
                 const maxQuantity = Math.min(
                   3,
@@ -168,6 +170,53 @@ export default function ComboItemsList({
             >
               <Trash2 className="size-4 text-destructive" />
             </Btn>
+            <Controller
+              control={form.control}
+              name={`items.${index}.variantIds`}
+              render={({ field, fieldState }) => (
+                <fieldset disabled={busy} className="w-full min-w-0 space-y-2 border-t border-border pt-3">
+                  <legend className="sr-only">Allowed variants for {item.product.name} {item.color.name}</legend>
+                  <p className="text-xs font-medium">Allowed variants</p>
+                  <div className="flex flex-wrap gap-2">
+                    <Btn
+                      size="sm"
+                      variant={field.value == null ? "primary" : "outline"}
+                      aria-pressed={field.value == null}
+                      onClick={() => field.onChange(null)}
+                    >
+                      All variants
+                    </Btn>
+                    <Btn size="sm" onClick={() => field.onChange([])}>
+                      Clear selection
+                    </Btn>
+                    {item.variants.map((variant) => {
+                      const selected = field.value == null || field.value.includes(variant.id);
+                      return (
+                        <Btn
+                          key={variant.id}
+                          size="sm"
+                          variant={selected ? "primary" : "outline"}
+                          aria-pressed={selected}
+                          aria-label={`${variant.size} for ${item.product.name} ${item.color.name}`}
+                          onClick={() => {
+                            const current = field.value ?? item.variants.map((entry) => entry.id);
+                            field.onChange(selected ? current.filter((id) => id !== variant.id) : [...current, variant.id]);
+                          }}
+                        >
+                          {variant.size}
+                        </Btn>
+                      );
+                    })}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {field.value == null
+                      ? "Customers can choose any active variant, including variants added later."
+                      : `${field.value.length} variant${field.value.length === 1 ? "" : "s"} selected. Customers choose from these variants only.`}
+                  </p>
+                  {fieldState.error && <p role="alert" className="text-xs text-destructive">{fieldState.error.message}</p>}
+                </fieldset>
+              )}
+            />
           </li>
         ))}
       </ul>

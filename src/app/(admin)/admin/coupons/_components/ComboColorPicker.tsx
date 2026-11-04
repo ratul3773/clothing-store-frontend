@@ -50,8 +50,7 @@ export default function ComboColorPicker({
       <div>
         <h3 className="text-sm font-semibold">Add products to your combo</h3>
         <p className="mt-1 text-xs text-muted-foreground">
-          Select a product, then add a color. Customers choose their size at
-          checkout.
+          Select a product, then add a color. Choose its allowed variants in your combo above.
         </p>
       </div>
       <div className="relative">
@@ -370,6 +369,7 @@ function buildComponent(
     id: color.id,
     colorId: color.id,
     quantity: 1,
+    variantIds: null,
     product: {
       id: product.id,
       name: product.name,

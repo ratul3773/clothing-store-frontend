@@ -51,7 +51,7 @@ export const comboPayload = (draft: ComboDraft): CreateCombo => ({
   isActive: draft.isActive,
   startsAt: fromDhakaInput(draft.startsAt),
   endsAt: fromDhakaInput(draft.endsAt),
-  items: draft.items.map(({ colorId, quantity }) => ({ colorId, quantity })),
+  items: draft.items.map(({ colorId, quantity, variantIds }) => ({ colorId, quantity, variantIds: variantIds ? [...variantIds].sort() : null })),
 });
 
 const normalizedItems = (items: CreateCombo["items"]) =>
