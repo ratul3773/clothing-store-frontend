@@ -63,7 +63,7 @@ export const categoryApi = baseApi.injectEndpoints({
       invalidatesTags: (_result, _error, { id }) => [
         categoryTag(id),
         "Categories",
-        "Products",
+        "Products", "Combos", "Combo", "Cart",
       ],
     }),
 
@@ -76,7 +76,7 @@ export const categoryApi = baseApi.injectEndpoints({
       invalidatesTags: (_result, _error, id) => [
         categoryTag(id),
         "Categories",
-        "Products",
+        "Products", "Combos", "Combo", "Cart",
       ],
     }),
 

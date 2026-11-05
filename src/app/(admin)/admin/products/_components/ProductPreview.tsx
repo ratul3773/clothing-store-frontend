@@ -1,9 +1,12 @@
 "use client";
 
-import Image from 'next/image'
+import Image from "next/image";
 import { Badge, Card, CardHeader } from "@/components/cms/ui";
 import { bdt } from "@/lib/utils";
-import type { Badge as BadgeValue, ProductStatus } from "@/redux/apis/types/product.types";
+import type {
+  Badge as BadgeValue,
+  ProductStatus,
+} from "@/redux/apis/types/product.types";
 
 import { BADGE_TONES, STATUS_TONES } from "../_constants/products.constants";
 import { statusLabel, toNumber } from "../_utils/products.utils";
@@ -37,7 +40,13 @@ export default function ProductPreview({
       <div className="space-y-3 p-4">
         <div className="relative aspect-[4/5] overflow-hidden rounded border border-border bg-muted">
           {primary ? (
-            <Image fill sizes="(max-width: 1024px) 100vw, 320px" src={primary} alt="" className="size-full object-cover" />
+            <Image
+              fill
+              sizes="(max-width: 1024px) 100vw, 320px"
+              src={primary}
+              alt=""
+              className="size-full object-cover"
+            />
           ) : (
             <div className="flex size-full items-center justify-center text-xs text-muted-foreground">
               No image yet
@@ -64,14 +73,22 @@ export default function ProductPreview({
                 key={`${image}-${index}`}
                 className="size-10 shrink-0 overflow-hidden rounded border border-border bg-muted"
               >
-                <Image width={40} height={40} src={image} alt="" className="size-full object-cover" />
+                <Image
+                  width={40}
+                  height={40}
+                  src={image}
+                  alt=""
+                  className="size-full object-cover"
+                />
               </div>
             ))}
           </div>
         )}
 
         <div>
-          <p className="truncate text-sm font-medium">{name || "Product name"}</p>
+          <p className="truncate text-sm font-medium">
+            {name || "Product name"}
+          </p>
           <p className="text-sm font-semibold tabular-nums">
             {Number.isFinite(value) && value > 0 ? bdt(value) : "৳—"}
           </p>

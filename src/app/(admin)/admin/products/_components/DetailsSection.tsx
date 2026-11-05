@@ -10,7 +10,7 @@ import {
   SelectField,
   TextareaField,
   TextField,
-} from "../../_components/form-controls";
+} from "../../../../../components/common/form-controls";
 
 export default function DetailsSection({
   form,

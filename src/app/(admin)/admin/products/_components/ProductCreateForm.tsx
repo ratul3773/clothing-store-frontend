@@ -2,7 +2,6 @@
 
 import { Save } from "lucide-react";
 
-
 import { Btn, Card, CardHeader, PageHeader, Switch } from "@/components/cms/ui";
 import BasicSection from "./BasicSection";
 import DetailsSection from "./DetailsSection";
@@ -11,7 +10,6 @@ import PricingSection from "./PricingSection";
 import ProductPreview from "./ProductPreview";
 import VariantsCreateSection from "./VariantsCreateSection";
 import { useProduct } from "../_hooks/useCreateProduct";
-
 
 export default function ProductCreateForm() {
   const {
@@ -99,15 +97,16 @@ export default function ProductCreateForm() {
                   label="Publish after saving"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Publishing requires an active category, at least one colour and
-                  variant, and at least one image. Leave this off to save a draft.
+                  Publishing requires an active category, at least one colour
+                  and variant, and at least one image. Leave this off to save a
+                  draft.
                 </p>
                 <div className="rounded border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
                   {colors.length} colour{colors.length === 1 ? "" : "s"} ·{" "}
                   {sizes.length} size{sizes.length === 1 ? "" : "s"} ·{" "}
                   {colors.length * sizes.length} variant
-                  {colors.length * sizes.length === 1 ? "" : "s"} · {files.length}{" "}
-                  image{files.length === 1 ? "" : "s"}
+                  {colors.length * sizes.length === 1 ? "" : "s"} ·{" "}
+                  {files.length} image{files.length === 1 ? "" : "s"}
                 </div>
               </div>
             </Card>

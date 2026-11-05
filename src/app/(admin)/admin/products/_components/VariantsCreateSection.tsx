@@ -3,7 +3,14 @@
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 
-import { Badge, Btn, Card, CardHeader, Field, Input } from "@/components/cms/ui";
+import {
+  Badge,
+  Btn,
+  Card,
+  CardHeader,
+  Field,
+  Input,
+} from "@/components/cms/ui";
 
 import { SIZE_PRESETS } from "../_constants/products.constants";
 import {
@@ -58,7 +65,9 @@ export default function VariantsCreateSection({
 
   const setColor = (key: string, patch: Partial<CreateColorDraft>) => {
     onColorsChange(
-      colors.map((color) => (color.key === key ? { ...color, ...patch } : color)),
+      colors.map((color) =>
+        color.key === key ? { ...color, ...patch } : color,
+      ),
     );
   };
 
@@ -123,9 +132,15 @@ export default function VariantsCreateSection({
                     />
                     <input
                       type="color"
-                      value={/^#[0-9a-fA-F]{6}$/.test(color.hex) ? color.hex : "#000000"}
+                      value={
+                        /^#[0-9a-fA-F]{6}$/.test(color.hex)
+                          ? color.hex
+                          : "#000000"
+                      }
                       onChange={(event) =>
-                        setColor(color.key, { hex: event.target.value.toUpperCase() })
+                        setColor(color.key, {
+                          hex: event.target.value.toUpperCase(),
+                        })
                       }
                       aria-label={`Choose colour ${index + 1}`}
                       className="mt-1 h-6 w-7 cursor-pointer rounded border border-border bg-card p-0"
@@ -200,7 +215,9 @@ export default function VariantsCreateSection({
             </div>
 
             <div className="mt-3">
-              <p className="mb-1 text-xs text-muted-foreground">Quick presets</p>
+              <p className="mb-1 text-xs text-muted-foreground">
+                Quick presets
+              </p>
               <div className="flex flex-wrap gap-1.5">
                 {SIZE_PRESETS.map((preset) => (
                   <Btn
@@ -211,7 +228,8 @@ export default function VariantsCreateSection({
                       for (const size of preset.sizes) {
                         if (
                           !merged.some(
-                            (entry) => entry.toLowerCase() === size.toLowerCase(),
+                            (entry) =>
+                              entry.toLowerCase() === size.toLowerCase(),
                           )
                         ) {
                           merged.push(size);
@@ -261,7 +279,10 @@ export default function VariantsCreateSection({
                 <tr className="border-b border-border text-xs text-muted-foreground">
                   <th className="px-2 py-2 font-medium">Colour</th>
                   {sizes.map((size) => (
-                    <th key={size} className="px-2 py-2 text-center font-medium">
+                    <th
+                      key={size}
+                      className="px-2 py-2 text-center font-medium"
+                    >
                       {size}
                     </th>
                   ))}
@@ -278,7 +299,10 @@ export default function VariantsCreateSection({
                   }, 0);
 
                   return (
-                    <tr key={color.key} className="border-b border-border last:border-0">
+                    <tr
+                      key={color.key}
+                      className="border-b border-border last:border-0"
+                    >
                       <td className="px-2 py-2">
                         <span className="flex items-center gap-1.5">
                           <span
@@ -309,7 +333,9 @@ export default function VariantsCreateSection({
                         {total > 0 ? (
                           <Badge tone="gray">{total}</Badge>
                         ) : (
-                          <span className="text-xs text-muted-foreground">0</span>
+                          <span className="text-xs text-muted-foreground">
+                            0
+                          </span>
                         )}
                       </td>
                     </tr>

@@ -26,6 +26,7 @@ UI shared by two or more routes goes into `src/components/common`; shared hooks,
 
 ## Reuse before adding code
 
+- Use React Hook Form for every form, including modal forms. Keep field values, validation errors, dirty state, and submission state in React Hook Form rather than parallel custom state. Use the existing Zod resolver pattern for validation and reuse `src/app/(admin)/admin/_components/form-controls.tsx` for admin fields. Use `useFieldArray` for dynamic field collections and preserve existing API caching and mutation behavior when refactoring forms.
 - Search `src/components/common`, `src/components/ui`, `src/hooks`, `src/lib`, and `src/redux/api.utils.ts` before implementing shared behavior. Read the component/helper and a compatible caller before using or changing it.
 - Reuse shared `Button`, `Input`, dialogs, `Skeleton`, controls, and pagination instead of creating feature-local equivalents. Use design tokens from `globals.css` and existing formatting helpers such as `bdt` and `cn`.
 - Keep components as default exports and feature code colocated. Do not add duplicate types, wrapper hooks, utilities, or folders when the existing abstraction already supports the requirement.

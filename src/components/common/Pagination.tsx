@@ -1,3 +1,5 @@
+"use client";
+
 import { Pick } from "../ui/controls";
 import type { PageMeta } from "@/redux/api.utils";
 import {
@@ -9,8 +11,10 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "../ui/pagination";
+import { Select } from "../cms/ui";
 
 interface PaginationProps {
+  mode?: "animated" | "normal";
   paginationInfo: PageMeta;
   onPageChange: (page: number) => void;
   onItemsPerPageChange?: (itemsPerPage: number) => void;
@@ -71,6 +75,7 @@ function generatePageNumbers(currentPage: number, totalPages: number): Array<num
   };
 
 export default function PaginationComponent({
+  mode = "animated",
   paginationInfo,
   onPageChange,
   onItemsPerPageChange,
@@ -78,17 +83,20 @@ export default function PaginationComponent({
   className = "",
   itemsLabel = "items",
   showFirstLast = false,
-  showPageNumbers = true,
+  showPageNumbers,
   showSummary = true,
   firstLabel = "First",
   lastLabel = "Last",
 }: PaginationProps) {
+  const isAdmin = mode === "normal";
+  const displayPageNumbers = showPageNumbers ?? !isAdmin;
   const { page: currentPage, totalPage: totalPages, limit: itemsPerPage, total: totalItems } = paginationInfo;
   const showingStart = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
   const showingEnd = Math.min(currentPage * itemsPerPage, totalItems);
 
    const handlePageChange = (page: number) => {
-    window.scrollTo({ 
+    if (page === currentPage || page < 1 || page > totalPages) return;
+    if (!isAdmin) window.scrollTo({ 
       top: 0, 
       behavior: 'smooth' 
     });
@@ -97,22 +105,31 @@ export default function PaginationComponent({
 
   const handleItemsPerPageChange = (limit: number) => {
     onItemsPerPageChange?.(limit);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!isAdmin) window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const pageNumbers = generatePageNumbers(currentPage, totalPages);
+  const pageNumbers = displayPageNumbers ? generatePageNumbers(currentPage, totalPages) : [];
 
   return (
     <div className={`flex w-full flex-col gap-4 mt-6 sm:mt-8 mb-2 sm:flex-row lg:items-center lg:justify-between ${className}`}>
       {showSummary && (onItemsPerPageChange ? (
-        <div className="flex w-full flex-wrap items-center justify-start gap-2 text-sm text-gray-700">
+        <div className="flex w-full flex-wrap px-2 items-center justify-start gap-2 text-sm text-gray-700">
           <span>Showing</span>
-          <Pick 
+          {isAdmin ? (
+            <Select
+              aria-label="Items per page"
+              value={itemsPerPage}
+              onChange={(event) => handleItemsPerPageChange(Number(event.target.value))}
+              className="h-8 w-15 rounded-md border border-border bg-background px-2 text-sm text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+            >
+              {itemsPerPageOptions.map((option) => <option key={option} value={option}>{option}</option>)}
+            </Select>
+          ) : <Pick 
           value={itemsPerPage.toString()} 
           onChange={(value) => handleItemsPerPageChange(Number(value))}
           options={itemsPerPageOptions.map((option) => ({ value: option.toString(), label: option.toString() }))}
           label="Items per page"
-          />
+          />}
           <span className="break-words">
             {showingStart && showingEnd
               ? `${showingStart} to ${showingEnd} of ${totalItems} ${itemsLabel}`
@@ -134,6 +151,7 @@ export default function PaginationComponent({
             {showFirstLast && (
               <PaginationItem>
                 <PaginationLink
+                  mode={mode}
                   href="#"
                   onClick={(event) => {
                     event.preventDefault();
@@ -151,6 +169,7 @@ export default function PaginationComponent({
 
             <PaginationItem>
               <PaginationPrevious
+                mode={mode}
                 href="#"
                 onClick={(event) => {
                   event.preventDefault();
@@ -163,7 +182,7 @@ export default function PaginationComponent({
               />
             </PaginationItem>
 
-            {showPageNumbers && pageNumbers.map((page, index) =>
+            {displayPageNumbers && pageNumbers.map((page, index) =>
               page === "ellipsis" ? (
                 <PaginationItem key={`ellipsis-${index}`}>
                   <PaginationEllipsis />
@@ -171,6 +190,7 @@ export default function PaginationComponent({
               ) : (
                 <PaginationItem key={page}>
                   <PaginationLink
+                    mode={mode}
                     href="#"
                     isActive={page === currentPage}
                     onClick={(event) => {
@@ -184,8 +204,17 @@ export default function PaginationComponent({
               )
             )}
 
+            {isAdmin && !displayPageNumbers && (
+              <PaginationItem>
+                <span className="px-2 text-xs tabular-nums text-muted-foreground" aria-live="polite">
+                  Page {currentPage} / {totalPages}
+                </span>
+              </PaginationItem>
+            )}
+
             <PaginationItem>
               <PaginationNext
+                mode={mode}
                 href="#"
                 onClick={(event) => {
                   event.preventDefault();
@@ -201,6 +230,7 @@ export default function PaginationComponent({
               {showFirstLast && (
                 <PaginationItem>
                   <PaginationLink
+                    mode={mode}
                     href="#"
                     onClick={(event) => {
                       event.preventDefault();

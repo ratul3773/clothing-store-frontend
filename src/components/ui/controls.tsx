@@ -7,8 +7,11 @@ import * as Switch from '@radix-ui/react-switch'
 import * as Tooltip from '@radix-ui/react-tooltip'
 import * as Select from '@radix-ui/react-select'
 import * as Radio from '@radix-ui/react-radio-group'
-import { Check, ChevronDown } from 'lucide-react'
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import { Check, ChevronDown, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import Link from 'next/link'
+import { useLogout } from '@/hooks/useLogout'
 
 export function Check1({ checked, onChange, label }: { checked: boolean; onChange: (b: boolean) => void; label: string }) {
   return (
@@ -142,5 +145,53 @@ export function Choice({ value, onChange, options, className }: { value: string;
         </Radio.Item>
       ))}
     </Radio.Root>
+  )
+}
+
+export function Menu({ trigger,options }: { trigger: React.ReactNode; options: { href: string; icon: React.ReactNode, label: string }[] }) {
+  const { 
+    handleSignOut,
+    isSigningOut,
+  } = useLogout()
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild>
+        {trigger}
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content align="end" sideOffset={8} collisionPadding={12} className="z-[120] min-w-[var(--radix-dropdown-menu-trigger-width)] max-h-[var(--radix-dropdown-menu-content-available-height)] overflow-y-auto rounded-[3px] bg-card p-1 text-card-foreground shadow-xl animate-[fadein_.2s_ease]">
+          {/* {children} */}
+          {options.map((option) => (
+            <DropdownMenu.Item key={option.href} 
+            className={cn('flex cursor-pointer items-center gap-2 rounded-[2px] px-3 py-2 text-sm outline-none data-[highlighted]:bg-foreground data-[highlighted]:text-background data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0')}
+            asChild
+            >
+              <Link href={option.href} className="flex items-center gap-2">
+                {option.icon}
+                {option.label}
+              </Link>
+            </DropdownMenu.Item>
+          ))}
+          <DropdownMenu.Separator className="my-1 h-px bg-background" />
+          <DropdownMenu.Item
+            className={cn('flex cursor-pointer items-center gap-2 rounded-[2px] px-3 py-2 text-sm text-destructive outline-none data-[highlighted]:bg-destructive/5 data-[highlighted]:text- data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0')}
+            disabled={isSigningOut}
+            onClick={handleSignOut}
+          >
+            <LogOut size={16} />
+            Sign out
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  )
+}
+
+export function MenuItem({ className, ...props }: React.ComponentProps<typeof DropdownMenu.Item>) {
+  return (
+    <DropdownMenu.Item
+      className={cn('flex cursor-pointer items-center gap-2 rounded-[2px] px-3 py-2 text-sm outline-none data-[highlighted]:bg-foreground data-[highlighted]:text-background data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0', className)}
+      {...props}
+    />
   )
 }

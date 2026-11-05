@@ -17,10 +17,7 @@ import type {
   ProductOffer,
 } from "@/redux/apis/types/product.types";
 
-import {
-  formatDate,
-  offerStateTone,
-} from "../_utils/products.utils";
+import { formatDate, offerStateTone } from "../_utils/products.utils";
 import OfferDialog from "./OfferDialog";
 
 export default function OffersManager({ product }: { product: AdminProduct }) {
@@ -28,9 +25,11 @@ export default function OffersManager({ product }: { product: AdminProduct }) {
   const [updateOffer, updateState] = useUpdateOfferMutation();
   const [deactivateOffer, deactivateState] = useDeactivateOfferMutation();
 
-  const [dialog, setDialog] = useState<{ open: boolean; offer?: ProductOffer }>({
-    open: false,
-  });
+  const [dialog, setDialog] = useState<{ open: boolean; offer?: ProductOffer }>(
+    {
+      open: false,
+    },
+  );
   const [target, setTarget] = useState<ProductOffer | null>(null);
 
   const offers = [...product.offers].sort(
@@ -96,12 +95,17 @@ export default function OffersManager({ product }: { product: AdminProduct }) {
             </thead>
             <tbody>
               {offers.map((offer) => (
-                <tr key={offer.id} className="border-b border-border last:border-0">
+                <tr
+                  key={offer.id}
+                  className="border-b border-border last:border-0"
+                >
                   <td className="px-3 py-2 font-medium tabular-nums">
                     {bdt(offer.offerPrice)}
                   </td>
                   <td className="px-3 py-2">
-                    <Badge tone={offerStateTone(offer.state)}>{offer.state}</Badge>
+                    <Badge tone={offerStateTone(offer.state)}>
+                      {offer.state}
+                    </Badge>
                   </td>
                   <td className="px-3 py-2 text-xs text-muted-foreground">
                     {formatDate(offer.startsAt)}

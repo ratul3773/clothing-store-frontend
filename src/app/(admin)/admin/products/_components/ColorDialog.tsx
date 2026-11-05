@@ -5,7 +5,7 @@ import Modal from "@/components/cms/Modal";
 import { Btn } from "@/components/cms/ui";
 
 import type { ProductColor } from "@/redux/apis/types/product.types";
-import { TextField } from "../../_components/form-controls";
+import { TextField } from "../../../../../components/common/form-controls";
 import { useColor } from "../_hooks/useColor";
 
 type Props = {

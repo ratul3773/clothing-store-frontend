@@ -31,7 +31,7 @@ import {
   SwitchField,
   TextareaField,
   TextField,
-} from "../../_components/form-controls";
+} from "@/components/common/form-controls";
 import Image from "next/image";
 
 type Props = {
@@ -41,19 +41,14 @@ type Props = {
   editing?: Category;
 };
 
-const nullable = (value: string) =>
-  value.trim() === "" ? null : value.trim();
+const nullable = (value: string) => (value.trim() === "" ? null : value.trim());
 
 export default function CategoryModal(props: Props) {
   if (!props.open) return null;
   return <CategoryModalContent key={props.editing?.id ?? "new"} {...props} />;
 }
 
-function CategoryModalContent({
-  onOpenChange,
-  categories,
-  editing,
-}: Props) {
+function CategoryModalContent({ onOpenChange, categories, editing }: Props) {
   const { toast, toastError } = useStore();
   const inputRef = useRef<HTMLInputElement>(null);
   const [createCategory, createState] = useCreateCategoryMutation();
@@ -61,21 +56,21 @@ function CategoryModalContent({
   const [uploadImage, uploadState] = useUploadCategoryImageMutation();
   const [removeImage, removeState] = useRemoveCategoryImageMutation();
 
-const [selectedImage, setSelectedImage] = useState<File | null>(null);
-const [imagePreview, setImagePreview] = useState<string | null>(null);
-const [imageRemoved, setImageRemoved] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageRemoved, setImageRemoved] = useState(false);
 
-useEffect(() => {
-  if (!selectedImage) {
-    setImagePreview(null);
-    return;
-  }
+  useEffect(() => {
+    if (!selectedImage) {
+      setImagePreview(null);
+      return;
+    }
 
-  const url = URL.createObjectURL(selectedImage);
-  setImagePreview(url);
+    const url = URL.createObjectURL(selectedImage);
+    setImagePreview(url);
 
-  return () => URL.revokeObjectURL(url);
-}, [selectedImage]);
+    return () => URL.revokeObjectURL(url);
+  }, [selectedImage]);
   const forbiddenParentIds = useMemo(() => {
     if (!editing) return new Set<string>();
     const ids = categoryDescendantIds(categories, editing.id);
@@ -110,61 +105,59 @@ useEffect(() => {
   const hasImage = Boolean(selectedImage || existingImageUrl);
 
   const onSubmit = form.handleSubmit(async (values) => {
-  const sortOrder =
-    values.sortOrder.trim() === "" ? undefined : Number(values.sortOrder);
+    const sortOrder =
+      values.sortOrder.trim() === "" ? undefined : Number(values.sortOrder);
 
-  const payload = {
-    name: values.name.trim(),
-    parentId: values.parentId === "" ? null : values.parentId,
-    description: nullable(values.description),
-    isActive: values.isActive,
-    seoTitle: nullable(values.seoTitle),
-    seoDescription: nullable(values.seoDescription),
-    ...(sortOrder !== undefined ? { sortOrder } : {}),
-  };
+    const payload = {
+      name: values.name.trim(),
+      parentId: values.parentId === "" ? null : values.parentId,
+      description: nullable(values.description),
+      isActive: values.isActive,
+      seoTitle: nullable(values.seoTitle),
+      seoDescription: nullable(values.seoDescription),
+      ...(sortOrder !== undefined ? { sortOrder } : {}),
+    };
 
-  try {
-    if (editing) {
-      await updateCategory({ id: editing.id, data: payload }).unwrap();
+    try {
+      if (editing) {
+        await updateCategory({ id: editing.id, data: payload }).unwrap();
 
-      if (selectedImage) {
-        if(values.parentId) {
-          setSelectedImage(null);
+        if (selectedImage) {
+          if (values.parentId) {
+            setSelectedImage(null);
+          } else {
+            await uploadImage({
+              categoryId: editing.id,
+              file: selectedImage,
+            }).unwrap();
+          }
         }
-      else{
-        await uploadImage({
-          categoryId: editing.id,
-          file: selectedImage,
-        }).unwrap();
-      }
-    }
 
-      toast("Category updated.");
-    } else {
-      const created = await createCategory(payload).unwrap();
+        toast("Category updated.");
+      } else {
+        const created = await createCategory(payload).unwrap();
 
-      if (selectedImage) {
-        if(values.parentId) {
-          setSelectedImage(null);
+        if (selectedImage) {
+          if (values.parentId) {
+            setSelectedImage(null);
+          } else {
+            await uploadImage({
+              categoryId: created.id,
+              file: selectedImage,
+            }).unwrap();
+
+            toast("Category created with image.");
+          }
+        } else {
+          toast("Category created.");
         }
-        else {
-        await uploadImage({
-          categoryId: created.id,
-          file: selectedImage,
-        }).unwrap();
+      }
 
-        toast("Category created with image.");
-      }
-     } else {
-        toast("Category created.");
-      }
+      onOpenChange(false);
+    } catch (error) {
+      toastError(apiErrorMessage(error, "The category could not be saved."));
     }
-
-    onOpenChange(false);
-  } catch (error) {
-    toastError(apiErrorMessage(error, "The category could not be saved."));
-  }
-});
+  });
 
   return (
     <Modal
@@ -184,11 +177,7 @@ useEffect(() => {
             variant="primary"
             disabled={saving || (imageRequired && !hasImage)}
           >
-            {saving
-              ? "Saving…"
-              : editing
-                ? "Save category"
-                : "Create category"}
+            {saving ? "Saving…" : editing ? "Save category" : "Create category"}
           </Btn>
         </>
       }
@@ -252,103 +241,110 @@ useEffect(() => {
           />
         </div>
 
-        {!parentId && (<div className="rounded border border-border p-3">
-          <p className="mb-2 text-xs font-medium text-foreground/80">
-             Category image {imageRequired && <span className="text-destructive">*</span>}
-          </p>
+        {!parentId && (
+          <div className="rounded border border-border p-3">
+            <p className="mb-2 text-xs font-medium text-foreground/80">
+              Category image{" "}
+              {imageRequired && <span className="text-destructive">*</span>}
+            </p>
 
-          <div className="flex items-center gap-3">
-            <div className="size-20 shrink-0 overflow-hidden rounded border border-border bg-muted">
-              {imagePreview || existingImageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <Image
-                   src={imagePreview ?? existingImageUrl ?? ""}
-                  width={80}
-                  height={80}
-                  alt="Category preview"
-                  className="size-full object-cover"
-                />
-              ) : null}
-            </div>
+            <div className="flex items-center gap-3">
+              <div className="size-20 shrink-0 overflow-hidden rounded border border-border bg-muted">
+                {imagePreview || existingImageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <Image
+                    src={imagePreview ?? existingImageUrl ?? ""}
+                    width={80}
+                    height={80}
+                    alt="Category preview"
+                    className="size-full object-cover"
+                  />
+                ) : null}
+              </div>
 
-            <div className="flex flex-wrap gap-2">
-              <Btn
-                size="sm"
-                onClick={() => inputRef.current?.click()}
-                disabled={uploadState.isLoading || saving}
-              >
-                <ImagePlus className="size-3.5" />
-                 {(selectedImage || existingImageUrl) ? "Change image" : "Choose image"}
-              </Btn>
-
-              {selectedImage && (
+              <div className="flex flex-wrap gap-2">
                 <Btn
                   size="sm"
-                  variant="dangerOutline"
-                  onClick={() => setSelectedImage(null)}
-                  disabled={saving || uploadState.isLoading}
+                  onClick={() => inputRef.current?.click()}
+                  disabled={uploadState.isLoading || saving}
                 >
-                  <Trash2 className="size-3.5" />
+                  <ImagePlus className="size-3.5" />
+                  {selectedImage || existingImageUrl
+                    ? "Change image"
+                    : "Choose image"}
                 </Btn>
-              )}
 
-              {editing && existingImageUrl && !selectedImage && (
-                <Btn
-                  size="sm"
-                  variant="dangerOutline"
-                  disabled={uploadState.isLoading || removeState.isLoading}
-                  onClick={async () => {
-                    try {
-                       await removeImage(editing.id).unwrap();
-                       setImageRemoved(true);
-                       toast("Category image removed.");
-                    } catch (error) {
-                      toast(
-                        apiErrorMessage(
-                          error,
-                          "The category image could not be removed.",
-                        ),
-                      );
-                    }
-                  }}
-                >
-                  <Trash2 className="size-3.5" />
-                </Btn>
-              )}
+                {selectedImage && (
+                  <Btn
+                    size="sm"
+                    variant="dangerOutline"
+                    onClick={() => setSelectedImage(null)}
+                    disabled={saving || uploadState.isLoading}
+                  >
+                    <Trash2 className="size-3.5" />
+                  </Btn>
+                )}
 
-              {imageRequired ? (
-                 <p className="mt-2 text-xs text-muted-foreground">
-                   An image is required for top-level categories. JPEG, PNG, WebP, or AVIF · max 5 MB.
-                 </p>
-               ) : (
-                 <p className="mt-2 text-xs text-muted-foreground">
-                   Optional for subcategories. JPEG, PNG, WebP, or AVIF · max 5 MB.
-                 </p>
-               )}
+                {editing && existingImageUrl && !selectedImage && (
+                  <Btn
+                    size="sm"
+                    variant="dangerOutline"
+                    disabled={uploadState.isLoading || removeState.isLoading}
+                    onClick={async () => {
+                      try {
+                        await removeImage(editing.id).unwrap();
+                        setImageRemoved(true);
+                        toast("Category image removed.");
+                      } catch (error) {
+                        toast(
+                          apiErrorMessage(
+                            error,
+                            "The category image could not be removed.",
+                          ),
+                        );
+                      }
+                    }}
+                  >
+                    <Trash2 className="size-3.5" />
+                  </Btn>
+                )}
+
+                {imageRequired ? (
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    An image is required for top-level categories. JPEG, PNG,
+                    WebP, or AVIF · max 5 MB.
+                  </p>
+                ) : (
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Optional for subcategories. JPEG, PNG, WebP, or AVIF · max 5
+                    MB.
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
 
-          <input
-            ref={inputRef}
-            type="file"
-            accept={IMAGE_ACCEPT}
-            className="hidden"
-            onChange={(event) => {
-              const file = event.target.files?.[0];
+            <input
+              ref={inputRef}
+              type="file"
+              accept={IMAGE_ACCEPT}
+              className="hidden"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
 
-              if (file) {
-                const problem = validateImageFile(file);
+                if (file) {
+                  const problem = validateImageFile(file);
 
-                if (problem) {
-                  toastError(problem);
-                } else {
-                  setSelectedImage(file);
+                  if (problem) {
+                    toastError(problem);
+                  } else {
+                    setSelectedImage(file);
+                  }
                 }
-              }
-              event.target.value = "";
-            }}
-          />
-        </div>)}
+                event.target.value = "";
+              }}
+            />
+          </div>
+        )}
       </form>
     </Modal>
   );

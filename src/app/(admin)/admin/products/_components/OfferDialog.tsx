@@ -24,7 +24,7 @@ import {
   dateInputToISOOrNull,
   formatDateTimeInput,
 } from "../_utils/products.utils";
-import { SwitchField, TextField } from "../../_components/form-controls";
+import { SwitchField, TextField } from "../../../../../components/common/form-controls";
 
 type Props = {
   productId: string;

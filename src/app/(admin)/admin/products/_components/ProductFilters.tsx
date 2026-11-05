@@ -7,7 +7,10 @@ import { useGetAdminCategoriesQuery } from "@/redux/apis/category.api";
 import { toCategoryRows } from "@/redux/apis/types/category.types";
 
 import { SORT_OPTIONS, STATUS_OPTIONS } from "../_constants/products.constants";
-import { defaultProductFilters, type ProductFilters as Filters } from "../_types/products.types";
+import {
+  defaultProductFilters,
+  type ProductFilters as Filters,
+} from "../_types/products.types";
 
 type Props = {
   value: Filters;

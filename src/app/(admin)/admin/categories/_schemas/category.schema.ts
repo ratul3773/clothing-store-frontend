@@ -28,7 +28,9 @@ export const categoryFormSchema = (forbiddenParentIds?: Set<string>) =>
         .max(5000, "Description must be 5000 characters or fewer"),
       sortOrder: optionalSortOrder,
       isActive: z.boolean(),
-      seoTitle: z.string().max(200, "SEO title must be 200 characters or fewer"),
+      seoTitle: z
+        .string()
+        .max(200, "SEO title must be 200 characters or fewer"),
       seoDescription: z
         .string()
         .max(500, "SEO description must be 500 characters or fewer"),

@@ -19,9 +19,11 @@
 tests
 docs
 AGENTS.md
+playwright.config.ts
 
 # next.js
 /.next/
+/.next-playwright/
 /out/
 
 # production

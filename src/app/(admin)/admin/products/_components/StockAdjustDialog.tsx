@@ -25,7 +25,11 @@ import {
   type StockAdjustmentFormValues,
 } from "../_schemas/product.schema";
 import { formatDate, variantName } from "../_utils/products.utils";
-import { SelectField, TextareaField, TextField } from "../../_components/form-controls";
+import {
+  SelectField,
+  TextareaField,
+  TextField,
+} from "../../../../../components/common/form-controls";
 import { TextShimmerWave } from "@/components/animation/text-shimmer";
 import { Swirling } from "@/components/animation/swirling";
 
@@ -87,7 +91,11 @@ export default function StockAdjustDialog({
     }
 
     try {
-      await adjustStock({ productId, variantId: variant.id, data: payload }).unwrap();
+      await adjustStock({
+        productId,
+        variantId: variant.id,
+        data: payload,
+      }).unwrap();
       toast("Stock updated.");
       form.reset(emptyValues);
       onOpenChange(false);
@@ -191,12 +199,12 @@ export default function StockAdjustDialog({
       ) : (
         <div>
           {historyLoading && !history ? (
-              <div className="py-5 text-center">
-                <Swirling className="size-12 text-accent mx-auto mb-1" />
-                <TextShimmerWave className="text-primary label-mono">
-                  Loading stock movements...
-                </TextShimmerWave>
-              </div>
+            <div className="py-5 text-center">
+              <Swirling className="size-12 text-accent mx-auto mb-1" />
+              <TextShimmerWave className="text-primary label-mono">
+                Loading stock movements...
+              </TextShimmerWave>
+            </div>
           ) : !history || history.items.length === 0 ? (
             <Empty
               title="No stock movements"
@@ -209,7 +217,9 @@ export default function StockAdjustDialog({
                   <tr className="border-b border-border bg-muted/50 text-xs text-muted-foreground">
                     <th className="px-3 py-2 font-medium">Type</th>
                     <th className="px-3 py-2 text-right font-medium">Change</th>
-                    <th className="px-3 py-2 text-right font-medium">On hand</th>
+                    <th className="px-3 py-2 text-right font-medium">
+                      On hand
+                    </th>
                     <th className="px-3 py-2 font-medium">Note</th>
                     <th className="px-3 py-2 font-medium">When</th>
                   </tr>
@@ -258,7 +268,9 @@ export default function StockAdjustDialog({
                 <Btn
                   size="sm"
                   disabled={history.meta.page <= 1}
-                  onClick={() => setHistoryPage((page) => Math.max(1, page - 1))}
+                  onClick={() =>
+                    setHistoryPage((page) => Math.max(1, page - 1))
+                  }
                 >
                   Previous
                 </Btn>

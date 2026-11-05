@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { PenLine } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Pagination } from '@/components/ui/pagination'
+import Pagination from '@/components/common/Pagination'
 import ReviewCard from '@/components/common/ReviewCard'
 import { useStore } from '@/components/providers/StoreProvider'
 import usePagination from '@/lib/usePagination'
@@ -35,7 +35,7 @@ export default function ReviewsTab({ delivered, form }: { delivered: Order[]; fo
           ),
         )}
       </div>
-      <Pagination page={pg.page} pageCount={pg.pageCount} onChange={pg.setPage} id="pg-reviews" />
+      <Pagination paginationInfo={{ page: pg.page, limit: PAGE_SIZE, total: pg.total, totalPage: pg.pageCount }} onPageChange={pg.setPage} />
     </div>
   )
 }

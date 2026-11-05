@@ -2,10 +2,20 @@ import { flashSales, isFlashLive, settings } from '@/data/site'
 
 export type Color = { name: string; hex: string; image: number }
 export type Product = {
+  type?: 'PRODUCT' | 'COMBO'
+  comboId?: string
+  combinedPrice?: number
+  savings?: number
+  discountPercentage?: number
+  items?: import('@/redux/apis/types/combo.types').ComboComponent[]
+  inStock?: boolean
+  lowStock?: boolean
+  maxQuantity?: number
+  isExchangeEligible?: boolean | null
   id: string
   slug: string
   name: string
-  category: string
+  category: string | null
   status: 'active' | 'draft'
   custom?: boolean
   sub: string
@@ -142,14 +152,14 @@ export const products: Product[] = [
 export const bySlug = (s?: string) => products.find((p) => p.slug === s)
 export const byId = (id: string) => products.find((p) => p.id === id)!
 export const activeFlash = (p: Product, now?: number) =>
-  now === undefined ? undefined : flashSales.find((f) => isFlashLive(f, now) && f.productIds.includes(p.id))
+  p.type === 'COMBO' || now === undefined ? undefined : flashSales.find((f) => isFlashLive(f, now) && f.productIds.includes(p.id))
 export const priceOf = (p: Product, now?: number) => {
   const base = p.offer ?? p.price
   const f = activeFlash(p, now)
   return f ? Math.round(base * (1 - f.discountPct / 100)) : base
 }
 export const stockOf = (p: Product, color: string, size: string) => p.stock[`${color}|${size}`] ?? 0
-export const totalStock = (p: Product) => Object.values(p.stock).reduce((a, b) => a + b, 0)
+export const totalStock = (p: Product) => p.type === 'COMBO' ? p.maxQuantity ?? 0 : Object.values(p.stock).reduce((a, b) => a + b, 0)
 
 export const sizeChart: Record<string, { size: string; a: string; b: string; c: string }[]> = {
   shirts: [

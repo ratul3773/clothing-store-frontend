@@ -78,15 +78,15 @@ export default function Header({ profileButton }: { profileButton: React.ReactNo
         </div>
       )}
       <div className="border-b border-border bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-340 items-center gap-6 px-5 lg:px-10">
+        <div className="mx-auto flex min-h-16 max-w-340 flex-wrap items-center gap-2 px-5 py-2 sm:h-16 sm:flex-nowrap sm:gap-6 sm:py-0 lg:px-10">
           <Button type="button" variant="ghost" size="icon" shape="pill" className="lg:hidden" aria-label="Menu" aria-expanded={menu} onClick={() => setMenu((m) => !m)}>
             {menu ? <X size={22} /> : <Menu size={22} />}
           </Button>
           <Link href="/" className="font-display leading-none">
             <BrandName name={settings.store.name} />
           </Link>
-          <div className="ml-6"><NavMenu /></div>
-          <div className="ml-auto flex items-center gap-1">
+          <div className="ml-6 hidden lg:block"><NavMenu /></div>
+          <div className="ml-auto flex w-full flex-wrap items-center justify-end gap-1 sm:w-auto sm:flex-nowrap">
             <form onSubmit={handleSubmit} className="flex items-center">
               <motion.input
                 ref={searchInputRef}

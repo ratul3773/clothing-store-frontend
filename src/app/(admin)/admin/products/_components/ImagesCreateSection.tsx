@@ -1,16 +1,13 @@
 "use client";
 
-import Image from 'next/image'
+import Image from "next/image";
 import { useEffect, useMemo, useRef } from "react";
 import { ImagePlus, X } from "lucide-react";
 
 import { Btn, Card, CardHeader } from "@/components/cms/ui";
 import { useStore } from "@/components/providers/StoreProvider";
 
-import {
-  IMAGE_ACCEPT,
-  MAX_IMAGES,
-} from "../_constants/products.constants";
+import { IMAGE_ACCEPT, MAX_IMAGES } from "../_constants/products.constants";
 import { validateImageFile } from "../_utils/products.utils";
 
 type Props = {
@@ -96,7 +93,9 @@ export default function ImagesCreateSection({ files, onChange, error }: Props) {
                 key={`${preview.file.name}-${preview.file.lastModified}-${index}`}
                 className="group relative aspect-square overflow-hidden rounded border border-border bg-muted"
               >
-                <Image fill sizes="(max-width: 640px) 50vw, 160px"
+                <Image
+                  fill
+                  sizes="(max-width: 640px) 50vw, 160px"
                   src={preview.url}
                   alt={preview.file.name}
                   className="size-full object-cover"

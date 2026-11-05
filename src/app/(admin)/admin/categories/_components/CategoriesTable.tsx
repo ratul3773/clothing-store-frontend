@@ -1,6 +1,6 @@
 "use client";
 
-import Image from 'next/image'
+import Image from "next/image";
 import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 
@@ -23,7 +23,14 @@ type Props = {
   isLoading?: boolean;
 };
 
-export default function CategoriesTable({ rows, selected, onSelect, onCreate, onEdit, isLoading }: Props) {
+export default function CategoriesTable({
+  rows,
+  selected,
+  onSelect,
+  onCreate,
+  onEdit,
+  isLoading,
+}: Props) {
   const { toast, toastError } = useStore();
   const [deleteCategory, deleteState] = useDeleteCategoryMutation();
   const [target, setTarget] = useState<CategoryRow | null>(null);
@@ -51,7 +58,7 @@ export default function CategoriesTable({ rows, selected, onSelect, onCreate, on
         <div
           className={cn(
             "flex items-center gap-2",
-            selected === category.id && "text-primary font-medium"
+            selected === category.id && "text-primary font-medium",
           )}
           style={{ paddingLeft: category.depth * 16 }}
         >
@@ -60,7 +67,9 @@ export default function CategoriesTable({ rows, selected, onSelect, onCreate, on
           )}
           <div className="size-8 shrink-0 overflow-hidden rounded border border-border bg-muted">
             {category.imageUrl ? (
-              <Image width={32} height={32}
+              <Image
+                width={32}
+                height={32}
                 src={category.imageUrl}
                 alt=""
                 className="size-full object-cover"
@@ -68,7 +77,9 @@ export default function CategoriesTable({ rows, selected, onSelect, onCreate, on
             ) : null}
           </div>
           <div className="min-w-0">
-            <p className={cn("truncate", category.depth === 0 && "font-medium")}>
+            <p
+              className={cn("truncate", category.depth === 0 && "font-medium")}
+            >
               {category.name}
             </p>
             <p className="truncate text-xs text-muted-foreground">

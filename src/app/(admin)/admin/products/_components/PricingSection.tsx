@@ -7,7 +7,7 @@ import { bdt } from "@/lib/utils";
 
 import type { ProductCoreFormValues } from "../_schemas/product.schema";
 import { toNumber } from "../_utils/products.utils";
-import { TextField } from "../../_components/form-controls";
+import { TextField } from "../../../../../components/common/form-controls";
 
 export default function PricingSection({
   form,

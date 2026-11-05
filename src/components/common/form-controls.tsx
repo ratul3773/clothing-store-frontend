@@ -6,7 +6,12 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
-import { Controller, type FieldPath, type FieldValues, type UseFormReturn } from "react-hook-form";
+import {
+  Controller,
+  type FieldPath,
+  type FieldValues,
+  type UseFormReturn,
+} from "react-hook-form";
 
 import { Field, Input, Select, Switch, Textarea } from "@/components/cms/ui";
 import { cn } from "@/lib/utils";
@@ -35,7 +40,10 @@ export function TextField<T extends FieldValues>({
   className,
   ...input
 }: BaseProps<T> &
-  Omit<InputHTMLAttributes<HTMLInputElement>, "name" | "form" | "value" | "defaultValue">) {
+  Omit<
+    InputHTMLAttributes<HTMLInputElement>,
+    "name" | "form" | "value" | "defaultValue"
+  >) {
   const error = useFieldError(form, name);
   return (
     <Field label={label} hint={hint} error={error} className={className}>
@@ -65,7 +73,10 @@ export function TextareaField<T extends FieldValues>({
   className,
   ...textarea
 }: BaseProps<T> &
-  Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "name" | "form" | "value" | "defaultValue">) {
+  Omit<
+    TextareaHTMLAttributes<HTMLTextAreaElement>,
+    "name" | "form" | "value" | "defaultValue"
+  >) {
   const error = useFieldError(form, name);
   return (
     <Field label={label} hint={hint} error={error} className={className}>
@@ -100,7 +111,10 @@ export function SelectField<T extends FieldValues>({
   onValueChange,
   ...select
 }: BaseProps<T> &
-  Omit<SelectHTMLAttributes<HTMLSelectElement>, "name" | "form" | "value" | "defaultValue"> & {
+  Omit<
+    SelectHTMLAttributes<HTMLSelectElement>,
+    "name" | "form" | "value" | "defaultValue"
+  > & {
     options: SelectOption[];
     placeholder?: string;
     onValueChange?: (value: string) => void;
@@ -125,7 +139,11 @@ export function SelectField<T extends FieldValues>({
           >
             {placeholder && <option value="">{placeholder}</option>}
             {options.map((option) => (
-              <option key={option.value} value={option.value} disabled={option.disabled}>
+              <option
+                key={option.value}
+                value={option.value}
+                disabled={option.disabled}
+              >
                 {option.label}
               </option>
             ))}
@@ -151,11 +169,19 @@ export function SwitchField<T extends FieldValues>({
         control={form.control}
         name={name}
         render={({ field }) => (
-          <Switch checked={Boolean(field.value)} onChange={field.onChange} label={label} />
+          <Switch
+            checked={Boolean(field.value)}
+            onChange={field.onChange}
+            label={label}
+          />
         )}
       />
-      {description && <span className="text-xs text-muted-foreground">{description}</span>}
-      {hint && !description && <span className="text-xs text-muted-foreground">{hint}</span>}
+      {description && (
+        <span className="text-xs text-muted-foreground">{description}</span>
+      )}
+      {hint && !description && (
+        <span className="text-xs text-muted-foreground">{hint}</span>
+      )}
       {error && <span className="text-xs text-red-600">{error}</span>}
     </div>
   );

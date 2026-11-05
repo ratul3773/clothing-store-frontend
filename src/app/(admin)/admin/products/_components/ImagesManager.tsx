@@ -1,6 +1,6 @@
 "use client";
 
-import Image from 'next/image'
+import Image from "next/image";
 import {
   ArrowDown,
   ArrowUp,
@@ -13,9 +13,7 @@ import {
 import AlertDialogText from "@/components/common/Alert-Dialogue";
 import { Badge, Btn, Card, CardHeader } from "@/components/cms/ui";
 
-import type {
-  AdminProduct,
-} from "@/redux/apis/types/product.types";
+import type { AdminProduct } from "@/redux/apis/types/product.types";
 
 import { IMAGE_ACCEPT, MAX_IMAGES } from "../_constants/products.constants";
 import ImageMetaDialog from "./ImageMetaDialog";
@@ -37,7 +35,7 @@ export default function ImagesManager({ product }: { product: AdminProduct }) {
     metaImage,
     setMetaImage,
     busyImageId,
-    deleteState
+    deleteState,
   } = useImage(product);
 
   return (
@@ -74,7 +72,9 @@ export default function ImagesManager({ product }: { product: AdminProduct }) {
           >
             <ImagePlus className="size-5" />
             <span>Add the first image</span>
-            <span className="text-xs">At least one image is required to publish.</span>
+            <span className="text-xs">
+              At least one image is required to publish.
+            </span>
           </button>
         ) : (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
@@ -88,16 +88,15 @@ export default function ImagesManager({ product }: { product: AdminProduct }) {
                   className="group overflow-hidden rounded border border-border bg-card"
                 >
                   <div className="relative aspect-square bg-muted">
-                    <Image fill sizes="(max-width: 640px) 50vw, 240px"
+                    <Image
+                      fill
+                      sizes="(max-width: 640px) 50vw, 240px"
                       src={image.url}
                       alt={image.alt ?? ""}
                       className="size-full object-cover"
                     />
                     {image.isPrimary && (
-                      <Badge
-                        tone="green"
-                        className="absolute left-1.5 top-1.5"
-                      >
+                      <Badge tone="green" className="absolute left-1.5 top-1.5">
                         Primary
                       </Badge>
                     )}
@@ -129,61 +128,68 @@ export default function ImagesManager({ product }: { product: AdminProduct }) {
                             >
                               <ArrowUp className="size-3.5" />
                             </Btn>
-                          } />
+                          }
+                        />
                         <Tip
                           label="Move image to the bottom"
                           children={
-                        <Btn
-                          size="icon"
-                          variant="ghost"
-                          className="size-6"
-                          disabled={busy || index === sorted.length - 1}
-                          onClick={() => void move(index, index + 1)}
-                          aria-label="Move image later"
-                        >
-                          <ArrowDown className="size-3.5" />
-                        </Btn>
-                      }/>
-                      <Tip
-                        label="Set as primary image"
-                        children={
-                          <Btn
-                            size="icon"
-                            variant="ghost"
-                            className="size-6"
-                            disabled={busy || image.isPrimary}
-                            onClick={() => void makePrimary(image)}
-                            aria-label="Set as primary image"
-                          >
-                            <Star className="size-3.5" />
-                          </Btn>}
+                            <Btn
+                              size="icon"
+                              variant="ghost"
+                              className="size-6"
+                              disabled={busy || index === sorted.length - 1}
+                              onClick={() => void move(index, index + 1)}
+                              aria-label="Move image later"
+                            >
+                              <ArrowDown className="size-3.5" />
+                            </Btn>
+                          }
+                        />
+                        <Tip
+                          label="Set as primary image"
+                          children={
+                            <Btn
+                              size="icon"
+                              variant="ghost"
+                              className="size-6"
+                              disabled={busy || image.isPrimary}
+                              onClick={() => void makePrimary(image)}
+                              aria-label="Set as primary image"
+                            >
+                              <Star className="size-3.5" />
+                            </Btn>
+                          }
                         />
                         <Tip
                           label="Edit"
                           children={
-                        <Btn
-                          size="icon"
-                          variant="ghost"
-                          className="size-6"
-                          disabled={busy}
-                          onClick={() => setMetaImage(image)}
-                          aria-label="Edit image details"
-                        >
-                          <Pencil className="size-3.5" />
-                        </Btn>}/>
+                            <Btn
+                              size="icon"
+                              variant="ghost"
+                              className="size-6"
+                              disabled={busy}
+                              onClick={() => setMetaImage(image)}
+                              aria-label="Edit image details"
+                            >
+                              <Pencil className="size-3.5" />
+                            </Btn>
+                          }
+                        />
                         <Tip
                           label="Delete"
                           children={
-                        <Btn
-                          size="icon"
-                          variant="ghost"
-                          className="size-6 text-destructive"
-                          disabled={busy}
-                          onClick={() => setDeleteTarget(image)}
-                          aria-label="Delete image"
-                        >
-                          <Trash2 className="size-3.5" />
-                        </Btn>}/>
+                            <Btn
+                              size="icon"
+                              variant="ghost"
+                              className="size-6 text-destructive"
+                              disabled={busy}
+                              onClick={() => setDeleteTarget(image)}
+                              aria-label="Delete image"
+                            >
+                              <Trash2 className="size-3.5" />
+                            </Btn>
+                          }
+                        />
                       </div>
                     </div>
                   </div>
