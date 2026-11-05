@@ -79,7 +79,7 @@ export default function ProductGallery({
           ))}
         </div>
       )}
-      <div className="relative aspect-[4/5] overflow-hidden rounded-[3px] bg-muted">
+      <div className="relative aspect-[4/5] w-[90%] self-start overflow-hidden rounded-[3px] bg-muted">
         <AnimatePresence mode="popLayout">
           <MotionImage
             fill
@@ -88,10 +88,10 @@ export default function ProductGallery({
             key={main}
             src={main}
             alt={color.name ? `${p.name} in ${color.name}` : p.name}
-            initial={{ clipPath: "inset(0 0 100% 0)", scale: 1.1 }}
-            animate={{ clipPath: "inset(0 0 0% 0)", scale: 1 }}
-            exit={{ opacity: 0.99 }}
-            transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+            initial={{ clipPath: "inset(0 0 50% 0)" }}
+            animate={{ clipPath: "inset(0 0 0% 0)" }}
+            exit={{ clipPath: "inset(0 0 50% 0)" }}
+            // transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
             className="absolute inset-0 h-full w-full object-cover"
           />
         </AnimatePresence>

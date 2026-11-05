@@ -63,8 +63,8 @@ export default function PurchaseActions({
         <Button size="lg" disabled={!canAdd} onClick={onAdd}>
           {adding ? (
             <div className="flex items-center gap-2">
-            <FadeArc className="size-5" />
-             {isInCart ? "Updating..." : "Adding..."}
+              <FadeArc className="size-5" />
+              {isInCart ? "Updating..." : "Adding..."}
             </div>
           ) : isInCart ? (
             "Update cart"

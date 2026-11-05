@@ -74,36 +74,56 @@ export default function ComboInfo({ p }: { p: Product }) {
         {p.items?.reduce((sum, item) => sum + item.quantity, 0)} pieces.
       </p>
       <ComboComponents items={items} />
-      <p className="mb-3 text-xs text-muted-foreground">Availability per size is shown in full combo units, accounting for repeated pieces.</p>
+      <p className="mb-3 text-xs text-muted-foreground">
+        Availability per size is shown in full combo units, accounting for
+        repeated pieces.
+      </p>
       <div className="space-y-4" aria-label="Combo size selections">
         {items.map((item) => {
-          const selected = item.variants.find((variant) => variant.id === choices[item.id]);
+          const selected = item.variants.find(
+            (variant) => variant.id === choices[item.id],
+          );
           return (
-          <fieldset key={item.id} className="min-w-0 rounded border border-border p-3" disabled={cart.busy}>
-            <legend className="px-1 text-sm font-medium">
-              Size for {item.product.name} - {item.color.name}
-              {item.quantity > 1 ? ` (${item.quantity} pieces, same size)` : ""}
-            </legend>
-            <SizePicker
-              sizes={item.variants.map((variant) => variant.size)}
-              selected={selected?.size ?? null}
-              avail={selected?.maxQuantity ?? null}
+            <fieldset
+              key={item.id}
+              className="min-w-0 rounded border border-border p-3"
               disabled={cart.busy}
-              minimumQuantity={quantity}
-              showStockCounts
-              stockUnit="combo units"
-              stockFor={(size) => item.variants.find((variant) => variant.size === size)?.maxQuantity ?? 0}
-              onSelect={(size) => {
-                const variant = item.variants.find((variant) => variant.size === size);
-                if (!variant) return;
-                 setChoices((current) => ({
-                   ...current,
-                   [item.id]: variant.id,
-                 }));
-              }}
-            />
-            {!item.variants.length && <p className="text-sm text-muted-foreground">No sizes available for this piece.</p>}
-          </fieldset>
+            >
+              <legend className="px-1 text-sm font-medium">
+                Size for {item.product.name} - {item.color.name}
+                {item.quantity > 1
+                  ? ` (${item.quantity} pieces, same size)`
+                  : ""}
+              </legend>
+              <SizePicker
+                sizes={item.variants.map((variant) => variant.size)}
+                selected={selected?.size ?? null}
+                avail={selected?.maxQuantity ?? null}
+                disabled={cart.busy}
+                minimumQuantity={quantity}
+                showStockCounts
+                stockUnit="combo units"
+                stockFor={(size) =>
+                  item.variants.find((variant) => variant.size === size)
+                    ?.maxQuantity ?? 0
+                }
+                onSelect={(size) => {
+                  const variant = item.variants.find(
+                    (variant) => variant.size === size,
+                  );
+                  if (!variant) return;
+                  setChoices((current) => ({
+                    ...current,
+                    [item.id]: variant.id,
+                  }));
+                }}
+              />
+              {!item.variants.length && (
+                <p className="text-sm text-muted-foreground">
+                  No sizes available for this piece.
+                </p>
+              )}
+            </fieldset>
           );
         })}
       </div>
