@@ -1,45 +1,158 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useStore, type Address } from '@/components/providers/StoreProvider'
-import { isAddressValid } from '@/app/(store)/account/_schemas/account.schema'
-import { blankAddress, demoAddresses } from '@/app/(store)/account/_utils/account.utils'
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { apiErrorMessage } from "@/redux/api.utils";
+import {
+  useAddAddressMutation,
+  useDeleteAddressMutation,
+  useGetAddressesQuery,
+  useUpdateAddressMutation,
+} from "@/redux/apis/address.api";
+import type { Address } from "@/redux/apis/types/address.types";
+import {
+  addressFormSchema,
+  type AddressFormValues,
+} from "../_schemas/address.schema";
+
+const emptyValues: AddressFormValues = {
+  label: "",
+  recipientName: "",
+  recipientPhone: "",
+  district: "",
+  area: "",
+  addressLine: "",
+  postalCode: "",
+  zone: "INSIDE_DHAKA",
+  isDefault: false,
+};
+
+const toFormValues = (address: Address): AddressFormValues => ({
+  label: address.label ?? "",
+  recipientName: address.recipientName,
+  recipientPhone: address.recipientPhone,
+  district: address.district,
+  area: address.area,
+  addressLine: address.addressLine,
+  postalCode: address.postalCode ?? "",
+  zone: address.zone,
+  isDefault: address.isDefault,
+});
 
 export default function useAddressBook() {
-  const { user, setUser, toast } = useStore()
-  const u = user!
-  const list: Address[] = u.addresses ?? demoAddresses(u)
-  const [form, setForm] = useState<Address | null>(null)
-  const [del, setDel] = useState<Address | null>(null)
+  const [editing, setEditing] = useState<Address | null>(null);
+  const [open, setOpen] = useState(false);
+  const [deleting, setDeleting] = useState<Address | null>(null);
+  const [addAddress, addState] = useAddAddressMutation();
+  const [updateAddress, updateState] = useUpdateAddressMutation();
+  const [deleteAddress, deleteState] = useDeleteAddressMutation();
+  const {
+    data: list = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useGetAddressesQuery();
+  const [error, setError] = useState<string>("An error occurred while managing your addresses.");
 
-  const commit = (next: Address[]) => setUser({ ...u, addresses: next })
-  const valid = isAddressValid(form)
+  const form = useForm<AddressFormValues>({
+    resolver: zodResolver(addressFormSchema),
+    defaultValues: emptyValues,
+    mode: "onChange",
+  });
 
-  const save = () => {
-    if (!form || !valid) return
-    const a = { ...form, label: form.label.trim(), name: form.name.trim(), phone: form.phone.trim(), line: form.line.trim(), city: form.city.trim() }
-    let next: Address[]
-    if (a.id) next = list.map((x) => (x.id === a.id ? a : x))
-    else next = [...list, { ...a, id: 'a' + Date.now() }]
-    if (a.isDefault || next.length === 1) {
-      const target = a.id || next[next.length - 1].id
-      next = next.map((x) => ({ ...x, isDefault: x.id === target }))
+  const closeForm = () => {
+    setError("");
+    setOpen(false);
+    setEditing(null);
+    form.reset(emptyValues);
+  };
+
+  const startNew = () => {
+    setError("");
+    setEditing(null);
+    form.reset(emptyValues);
+    setOpen(true);
+  };
+
+  const startEdit = (address: Address) => {
+    setError("");
+    setEditing(address);
+    form.reset(toFormValues(address));
+    setOpen(true);
+  };
+
+  const save = form.handleSubmit(async (values) => {
+    setError("");
+    const payload = {
+      ...values,
+      label: values.label || null,
+      postalCode: values.postalCode || null,
+    };
+
+    try {
+      if (editing) {
+        await updateAddress({ id: editing.id, data: payload }).unwrap();
+        toast.success("Address updated");
+      } else {
+        await addAddress(payload).unwrap();
+        toast.success("Address added");
+      }
+      closeForm();
+    } catch (error) {
+      setError(apiErrorMessage(error, "Could not save address"));
+      toast.error(apiErrorMessage(error, "Could not save address"));
     }
-    commit(next)
-    toast(a.id ? 'Address updated' : 'Address added')
-    setForm(null)
-  }
+  });
 
-  const remove = (a: Address) => {
-    let next = list.filter((x) => x.id !== a.id)
-    if (a.isDefault && next.length) next = next.map((x, i) => ({ ...x, isDefault: i === 0 }))
-    commit(next)
-    setDel(null)
-    toast('Address deleted')
-  }
+  const remove = async () => {
+    setError("");
+    if (!deleting) return;
+    try {
+      await deleteAddress(deleting.id).unwrap();
+      toast.success("Address deleted");
+      setDeleting(null);
+    } catch (error) {
+      setError(apiErrorMessage(error, "Could not delete address"));
+      toast.error(apiErrorMessage(error, "Could not delete address"));
+    }
+  };
 
-  const makeDefault = (a: Address) => { commit(list.map((x) => ({ ...x, isDefault: x.id === a.id }))); toast('Default address changed') }
-  const startNew = () => setForm(blankAddress(u.name, u.phone))
+  const makeDefault = async (address: Address) => {
+    setError("");
+    if (address.isDefault) return;
+    try {
+      await updateAddress({
+        id: address.id,
+        data: { isDefault: true },
+      }).unwrap();
+      toast.success("Default address updated");
+    } catch (error) {
+      setError(apiErrorMessage(error, "Could not set default address"));
+      toast.error(apiErrorMessage(error, "Could not set default address"));
+    }
+  };
 
-  return { list, form, setForm, del, setDel, valid, save, remove, makeDefault, startNew }
+  return {
+    list,
+    isLoading,
+    isError,
+    refetch,
+    form,
+    open,
+    editing,
+    startNew,
+    startEdit,
+    closeForm,
+    save,
+    isSaving: addState.isLoading || updateState.isLoading,
+    deleting,
+    setDeleting,
+    remove,
+    isDeleting: deleteState.isLoading,
+    makeDefault,
+    error,
+    setError,
+  };
 }
