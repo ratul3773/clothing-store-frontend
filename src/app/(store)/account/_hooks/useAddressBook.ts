@@ -54,6 +54,7 @@ export default function useAddressBook() {
     isError,
     refetch,
   } = useGetAddressesQuery();
+  const [error, setError] = useState<string>("An error occurred while managing your addresses.");
 
   const form = useForm<AddressFormValues>({
     resolver: zodResolver(addressFormSchema),
@@ -62,24 +63,28 @@ export default function useAddressBook() {
   });
 
   const closeForm = () => {
+    setError("");
     setOpen(false);
     setEditing(null);
     form.reset(emptyValues);
   };
 
   const startNew = () => {
+    setError("");
     setEditing(null);
     form.reset(emptyValues);
     setOpen(true);
   };
 
   const startEdit = (address: Address) => {
+    setError("");
     setEditing(address);
     form.reset(toFormValues(address));
     setOpen(true);
   };
 
   const save = form.handleSubmit(async (values) => {
+    setError("");
     const payload = {
       ...values,
       label: values.label || null,
@@ -96,22 +101,26 @@ export default function useAddressBook() {
       }
       closeForm();
     } catch (error) {
+      setError(apiErrorMessage(error, "Could not save address"));
       toast.error(apiErrorMessage(error, "Could not save address"));
     }
   });
 
   const remove = async () => {
+    setError("");
     if (!deleting) return;
     try {
       await deleteAddress(deleting.id).unwrap();
       toast.success("Address deleted");
       setDeleting(null);
     } catch (error) {
+      setError(apiErrorMessage(error, "Could not delete address"));
       toast.error(apiErrorMessage(error, "Could not delete address"));
     }
   };
 
   const makeDefault = async (address: Address) => {
+    setError("");
     if (address.isDefault) return;
     try {
       await updateAddress({
@@ -120,6 +129,7 @@ export default function useAddressBook() {
       }).unwrap();
       toast.success("Default address updated");
     } catch (error) {
+      setError(apiErrorMessage(error, "Could not set default address"));
       toast.error(apiErrorMessage(error, "Could not set default address"));
     }
   };
@@ -142,5 +152,7 @@ export default function useAddressBook() {
     remove,
     isDeleting: deleteState.isLoading,
     makeDefault,
+    error,
+    setError,
   };
 }

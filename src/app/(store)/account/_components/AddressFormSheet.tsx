@@ -6,6 +6,9 @@ import { Sheet } from "@/components/ui/sheeet";
 
 import type { AddressFormValues } from "@/app/(store)/account/_schemas/address.schema";
 import { FormField } from "@/components/common/form-field";
+import { Globe, House, Landmark, MapPin, Milestone, Phone, User } from "lucide-react";
+import AlertText from "@/components/common/Alert";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 interface Props {
   open: boolean;
@@ -14,6 +17,8 @@ interface Props {
   editing: boolean;
   isSaving: boolean;
   onSubmit: () => void;
+  error?: string;
+  setError?: (error: string) => void;
 }
 
 const ZONE_OPTIONS = [
@@ -28,6 +33,8 @@ export default function AddressFormSheet({
   editing,
   isSaving,
   onSubmit,
+  error,
+  setError,
 }: Props) {
   return (
     <Sheet
@@ -37,7 +44,16 @@ export default function AddressFormSheet({
       description="Used for delivery at checkout."
       side="center"
     >
-      <form onSubmit={onSubmit} noValidate className="space-y-4 p-5">
+      {error && (
+        <div className="p-5">
+          <AlertText
+            title="Error"
+            description={error}
+            setSubmitError={setError}
+          />
+        </div>
+      )}
+      <form onSubmit={onSubmit} noValidate className="space-y-4 p-3">
         {/* <TextField
           form={form}
           name="label"
@@ -52,7 +68,6 @@ export default function AddressFormSheet({
           isInput
           label="Label (optional)"
           placeholder="Home, Office…"
-          // startIcon={}
         />
         {/* <TextField
           form={form}
@@ -69,6 +84,7 @@ export default function AddressFormSheet({
           placeholder="Recipient name"
           label="Recipient name"
           autoComplete="name"
+          startIcon={User}
         />
         <FormField
           form={form}
@@ -80,6 +96,7 @@ export default function AddressFormSheet({
           inputMode="tel"
           autoComplete="tel"
           placeholder="01XXX XXXXXX"
+          startIcon={Phone}
         />
         <FormField
           form={form}
@@ -89,6 +106,7 @@ export default function AddressFormSheet({
           isTextArea
           label="Address"
           placeholder="House, road, area"
+          startIcon={House}
         />
         <div className="grid gap-4 sm:grid-cols-2">
           <FormField
@@ -98,6 +116,8 @@ export default function AddressFormSheet({
             id="district"
             isInput
             label="District"
+            placeholder="e.g. Dhaka"
+            startIcon={Landmark}
           />
           <FormField
             form={form}
@@ -106,6 +126,8 @@ export default function AddressFormSheet({
             id="area"
             isInput
             label="Area / thana"
+            placeholder="e.g. Mirpur"
+            startIcon={MapPin}
           />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -116,6 +138,8 @@ export default function AddressFormSheet({
             id="postalCode"
             isInput
             label="Postal code (optional)"
+            placeholder="e.g. 1216"
+            startIcon={Milestone}
           />
           <FormField
             form={form}
@@ -132,16 +156,19 @@ export default function AddressFormSheet({
           isSwitch
           id="isDefault"
           label="Set as default address"
+          className="py-2"
         />
+        <div className="flex items-center justify-end">
         <Button
           type="submit"
-          className="w-full"
-          size="lg"
+          // className="w-full"
+          size="md"
           variant="accent"
           disabled={isSaving}
         >
-          {isSaving ? "Saving…" : editing ? "Save changes" : "Add address"}
+          {isSaving ? <><FadeArc className="size-4" /> Saving...</> : editing ? "Save changes" : "Add address"}
         </Button>
+        </div>
       </form>
     </Sheet>
   );

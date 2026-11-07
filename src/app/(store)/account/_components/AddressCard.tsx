@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import type { Address } from "@/redux/apis/types/address.types";
 import { cn } from "@/lib/utils";
 import { FadeArc } from "@/components/animation/fade-arc";
+import { Badge } from "@/components/ui/badge";
 
 interface Props {
   address: Address;
@@ -40,11 +41,7 @@ export default function AddressCard({
     >
       <div className="mb-3 flex items-start justify-between">
         <MapPin className="text-accent" />
-        {address.isDefault && (
-          <span className="label-mono rounded-full bg-accent px-2.5 py-1 text-accent-foreground">
-            Default
-          </span>
-        )}
+        {address.isDefault && <Badge variant="accent">Default</Badge>}
       </div>
       <p className="font-display text-lg sm:text-xl">
         {address.label ?? address.recipientName}
@@ -64,17 +61,21 @@ export default function AddressCard({
           <Pencil size={13} /> Edit
         </Button>
         {!address.isDefault && (
-          <Button 
-          size="sm" 
-          variant="ghost" 
-          onClick={onMakeDefault}
-          disabled={isLoading || isDeleting}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onMakeDefault}
+            disabled={isLoading || isDeleting}
+          >
             {isLoading ? (
-              <><FadeArc className="size-4" /> Updating...</>
+              <>
+                <FadeArc className="size-4" /> Updating...
+              </>
             ) : (
-              <><Star size={13} /> Make default</>
+              <>
+                <Star size={13} /> Make default
+              </>
             )}
-            
           </Button>
         )}
         <Button
@@ -85,9 +86,13 @@ export default function AddressCard({
           disabled={isLoading || isDeleting}
         >
           {isDeleting ? (
-            <><FadeArc className="size-4" /> Deleting...</>
+            <>
+              <FadeArc className="size-4" /> Deleting...
+            </>
           ) : (
-            <><Trash2 size={13} /> Delete</>
+            <>
+              <Trash2 size={13} /> Delete
+            </>
           )}
         </Button>
       </div>

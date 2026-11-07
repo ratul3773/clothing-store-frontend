@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { useStore } from '@/components/providers/StoreProvider'
 import { useLogout } from '@/hooks/useLogout'
 import AlertText from '@/components/common/Alert'
+import { FadeArc } from '@/components/animation/fade-arc'
 
 export default function AccountHeader({ name }: { name: string }) {
   const { handleSignOut,isSigningOut,error } = useLogout()
@@ -25,7 +26,7 @@ export default function AccountHeader({ name }: { name: string }) {
       onClick={handleSignOut} 
       disabled={isSigningOut}>
         <LogOut size={14} /> 
-        {isSigningOut ? 'Signing out...' : 'Sign out'}
+        {isSigningOut ? <><FadeArc className="size-4" /> Signing out...</> : 'Sign out'}
         </Button>
     </div>
     </>

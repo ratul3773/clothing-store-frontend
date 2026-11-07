@@ -4,11 +4,10 @@ import { AnimatePresence } from "motion/react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import AddressCard from "@/app/(store)/account/_components/AddressCard";
-import AddressFormSheet from "@/app/(store)/account/_components/AddressFormSheet";
-import useAddressBook from "@/app/(store)/account/_hooks/useAddressBook";
+import AddressCard from "../_components/AddressCard";
+import AddressFormSheet from "../_components/AddressFormSheet";
+import useAddressBook from "../_hooks/useAddressBook";
 import AlertDialogText from "@/components/common/Alert-Dialogue";
-
 export default function AddressesTab() {
   const book = useAddressBook();
 
@@ -72,6 +71,8 @@ export default function AddressesTab() {
         editing={!!book.editing}
         isSaving={book.isSaving}
         onSubmit={book.save}
+        error={book.error}
+        setError={book.setError}
       />
 
       <AlertDialogText

@@ -63,7 +63,7 @@ export function FormField<T extends FieldValues>({
 
           <div className="relative">
             {StartIcon && (
-              <StartIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <StartIcon className={`pointer-events-none absolute left-3 ${isTextArea ? "top-4/14" : "top-1/2"} size-4 -translate-y-1/2 text-muted-foreground`} />
             )}
             {isSelect && options && (
               <Pick
@@ -100,7 +100,6 @@ export function FormField<T extends FieldValues>({
                 className={cn(
                   StartIcon && "pl-10",
                   endAction && "pr-12",
-                  "h-16",
                   className,
                 )}
               />
