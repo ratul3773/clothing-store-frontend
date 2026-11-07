@@ -8,7 +8,25 @@ export const baseApi = createApi({
     credentials: "include",
   }),
 
-  tagTypes: ["Combos", "Combo", "Auth", "Products", "Product" ,"Categories", "Category", "Variant","Catalog", "Image", "Offer", "Inventory", "Order", "Customer", "Message", "Cart"] as const,
+  tagTypes: [
+    "Combos",
+    "Combo",
+    "Auth",
+    "Products",
+    "Product",
+    "Categories",
+    "Category",
+    "Variant",
+    "Catalog",
+    "Image",
+    "Offer",
+    "Inventory",
+    "Order",
+    "Customer",
+    "Message",
+    "Cart",
+    "Address",
+  ] as const,
 
   endpoints: () => ({}),
 });

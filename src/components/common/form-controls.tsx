@@ -24,14 +24,6 @@ type BaseProps<T extends FieldValues> = {
   className?: string;
 };
 
-function useFieldError<T extends FieldValues>(
-  form: UseFormReturn<T>,
-  name: FieldPath<T>,
-): string | undefined {
-  const message = form.getFieldState(name, form.formState).error?.message;
-  return typeof message === "string" ? message : undefined;
-}
-
 export function TextField<T extends FieldValues>({
   form,
   name,
@@ -44,13 +36,17 @@ export function TextField<T extends FieldValues>({
     InputHTMLAttributes<HTMLInputElement>,
     "name" | "form" | "value" | "defaultValue"
   >) {
-  const error = useFieldError(form, name);
   return (
-    <Field label={label} hint={hint} error={error} className={className}>
-      <Controller
-        control={form.control}
-        name={name}
-        render={({ field }) => (
+    <Controller
+      control={form.control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <Field
+          label={label}
+          hint={hint}
+          error={fieldState.error?.message}
+          className={className}
+        >
           <Input
             {...input}
             name={field.name}
@@ -59,9 +55,9 @@ export function TextField<T extends FieldValues>({
             onBlur={field.onBlur}
             onChange={(event) => field.onChange(event.target.value)}
           />
-        )}
-      />
-    </Field>
+        </Field>
+      )}
+    />
   );
 }
 
@@ -77,13 +73,17 @@ export function TextareaField<T extends FieldValues>({
     TextareaHTMLAttributes<HTMLTextAreaElement>,
     "name" | "form" | "value" | "defaultValue"
   >) {
-  const error = useFieldError(form, name);
   return (
-    <Field label={label} hint={hint} error={error} className={className}>
-      <Controller
-        control={form.control}
-        name={name}
-        render={({ field }) => (
+    <Controller
+      control={form.control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <Field
+          label={label}
+          hint={hint}
+          error={fieldState.error?.message}
+          className={className}
+        >
           <Textarea
             {...textarea}
             name={field.name}
@@ -92,9 +92,9 @@ export function TextareaField<T extends FieldValues>({
             onBlur={field.onBlur}
             onChange={(event) => field.onChange(event.target.value)}
           />
-        )}
-      />
-    </Field>
+        </Field>
+      )}
+    />
   );
 }
 
@@ -119,13 +119,17 @@ export function SelectField<T extends FieldValues>({
     placeholder?: string;
     onValueChange?: (value: string) => void;
   }) {
-  const error = useFieldError(form, name);
   return (
-    <Field label={label} hint={hint} error={error} className={className}>
-      <Controller
-        control={form.control}
-        name={name}
-        render={({ field }) => (
+    <Controller
+      control={form.control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <Field
+          label={label}
+          hint={hint}
+          error={fieldState.error?.message}
+          className={className}
+        >
           <Select
             {...select}
             name={field.name}
@@ -148,9 +152,9 @@ export function SelectField<T extends FieldValues>({
               </option>
             ))}
           </Select>
-        )}
-      />
-    </Field>
+        </Field>
+      )}
+    />
   );
 }
 
@@ -162,27 +166,30 @@ export function SwitchField<T extends FieldValues>({
   className,
   description,
 }: BaseProps<T> & { description?: ReactNode }) {
-  const error = useFieldError(form, name);
   return (
-    <div className={cn("flex flex-col gap-1", className)}>
-      <Controller
-        control={form.control}
-        name={name}
-        render={({ field }) => (
+    <Controller
+      control={form.control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <div className={cn("flex flex-col gap-1", className)}>
           <Switch
             checked={Boolean(field.value)}
             onChange={field.onChange}
             label={label}
           />
-        )}
-      />
-      {description && (
-        <span className="text-xs text-muted-foreground">{description}</span>
+          {description && (
+            <span className="text-xs text-muted-foreground">{description}</span>
+          )}
+          {hint && !description && (
+            <span className="text-xs text-muted-foreground">{hint}</span>
+          )}
+          {fieldState.error?.message && (
+            <span className="text-xs text-red-600">
+              {fieldState.error.message}
+            </span>
+          )}
+        </div>
       )}
-      {hint && !description && (
-        <span className="text-xs text-muted-foreground">{hint}</span>
-      )}
-      {error && <span className="text-xs text-red-600">{error}</span>}
-    </div>
+    />
   );
 }

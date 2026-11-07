@@ -1,33 +1,148 @@
-'use client'
+"use client";
 
-import { Button } from '@/components/ui/button'
-import { Sheet } from '@/components/ui/sheeet'
-import { Field, inputCls } from '@/components/common/FormField'
-import type { Address } from '@/components/providers/StoreProvider'
-import { cn } from '@/lib/utils'
+import type { UseFormReturn } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Sheet } from "@/components/ui/sheeet";
+
+import type { AddressFormValues } from "@/app/(store)/account/_schemas/address.schema";
+import { FormField } from "@/components/common/form-field";
 
 interface Props {
-  form: Address | null
-  setForm: (a: Address | null) => void
-  valid: boolean
-  onSave: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  form: UseFormReturn<AddressFormValues>;
+  editing: boolean;
+  isSaving: boolean;
+  onSubmit: () => void;
 }
 
-export default function AddressFormSheet({ form, setForm, valid, onSave }: Props) {
-  const set = (k: keyof Address) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm({ ...form!, [k]: e.target.value })
+const ZONE_OPTIONS = [
+  { value: "INSIDE_DHAKA", label: "Inside Dhaka" },
+  { value: "OUTSIDE_DHAKA", label: "Outside Dhaka" },
+];
+
+export default function AddressFormSheet({
+  open,
+  onOpenChange,
+  form,
+  editing,
+  isSaving,
+  onSubmit,
+}: Props) {
   return (
-    <Sheet open={!!form} onOpenChange={(b) => !b && setForm(null)} title={form?.id ? 'Edit address' : 'Add address'} description="Used for delivery at checkout." side="center">
-      {form && (
-        <div className="space-y-4 p-5">
-          <Field label="Label"><input className={inputCls} value={form.label} onChange={set('label')} placeholder="Home, Office…" /></Field>
-          <Field label="Recipient name"><input className={inputCls} value={form.name} onChange={set('name')} /></Field>
-          <Field label="Mobile number"><input className={inputCls} inputMode="tel" value={form.phone} onChange={set('phone')} placeholder="01XXX XXXXXX" /></Field>
-          <Field label="Address"><textarea className={cn(inputCls, 'h-24 resize-none py-3')} value={form.line} onChange={set('line')} placeholder="House, road, area" /></Field>
-          <Field label="City / district"><input className={inputCls} value={form.city} onChange={set('city')} /></Field>
-          <label className="flex cursor-pointer items-center gap-3 text-sm"><input type="checkbox" className="h-4 w-4 accent-[#e4442b]" checked={form.isDefault} onChange={(e) => setForm({ ...form, isDefault: e.target.checked })} /> Set as default address</label>
-          <Button className="w-full" size="lg" variant="accent" disabled={!valid} onClick={onSave}>{form.id ? 'Save changes' : 'Add address'}</Button>
+    <Sheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={editing ? "Edit address" : "Add address"}
+      description="Used for delivery at checkout."
+      side="center"
+    >
+      <form onSubmit={onSubmit} noValidate className="space-y-4 p-5">
+        {/* <TextField
+          form={form}
+          name="label"
+          label="Label (optional)"
+          placeholder="Home, Office…"
+        /> */}
+        <FormField
+          form={form}
+          name="label"
+          type="text"
+          id="label"
+          isInput
+          label="Label (optional)"
+          placeholder="Home, Office…"
+          // startIcon={}
+        />
+        {/* <TextField
+          form={form}
+          name="recipientName"
+          label="Recipient name"
+          autoComplete="name"
+        /> */}
+        <FormField
+          form={form}
+          name="recipientName"
+          type="text"
+          id="recipientName"
+          isInput
+          placeholder="Recipient name"
+          label="Recipient name"
+          autoComplete="name"
+        />
+        <FormField
+          form={form}
+          name="recipientPhone"
+          type="tel"
+          id="recipientPhone"
+          isInput
+          label="Mobile number"
+          inputMode="tel"
+          autoComplete="tel"
+          placeholder="01XXX XXXXXX"
+        />
+        <FormField
+          form={form}
+          name="addressLine"
+          type="text"
+          id="addressLine"
+          isTextArea
+          label="Address"
+          placeholder="House, road, area"
+        />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <FormField
+            form={form}
+            name="district"
+            type="text"
+            id="district"
+            isInput
+            label="District"
+          />
+          <FormField
+            form={form}
+            name="area"
+            type="text"
+            id="area"
+            isInput
+            label="Area / thana"
+          />
         </div>
-      )}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <FormField
+            form={form}
+            name="postalCode"
+            type="text"
+            id="postalCode"
+            isInput
+            label="Postal code (optional)"
+          />
+          <FormField
+            form={form}
+            name="zone"
+            isSelect
+            id="zone"
+            options={ZONE_OPTIONS}
+            label="Delivery zone"
+          />
+        </div>
+        <FormField
+          form={form}
+          name="isDefault"
+          isSwitch
+          id="isDefault"
+          label="Set as default address"
+        />
+        <Button
+          type="submit"
+          className="w-full"
+          size="lg"
+          variant="accent"
+          disabled={isSaving}
+        >
+          {isSaving ? "Saving…" : editing ? "Save changes" : "Add address"}
+        </Button>
+      </form>
     </Sheet>
-  )
+  );
 }

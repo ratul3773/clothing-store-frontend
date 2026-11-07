@@ -85,7 +85,7 @@ export function Tip({ label, children }: { label: string; children: React.ReactN
   )
 }
 
-export function Pick({ value, onChange, options, className, label }: { value: string; onChange: (v: string) => void; options: { value: string; label: string }[]; className?: string; label: string }) {
+export function Pick({ value, onChange, options, className, label }: { value: string; onChange: (v: string) => void; options: { value: string; label: string }[]; className?: string; label?: string }) {
   return (
     <Select.Root value={value} onValueChange={onChange}>
       <Select.Trigger

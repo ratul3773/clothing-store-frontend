@@ -1,13 +1,10 @@
-import type { Address } from '@/components/providers/StoreProvider'
-
 export const isEmailValid = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)
 
-export const isMobileValid = (v: string) => /^01\d[\d\s]{8,}$/.test(v.trim())
+export const isMobileValid = (v: string) => {
+  return (/^01\d[\d\s]{8,}$/.test(v.trim()) || /^(\+8801\d[\d\s]{8,}|8801\d[\d\s]{8,})$/.test(v.trim()))
+}
 
 export const isProfileValid = (name: string, phone: string) => name.trim().length > 1 && isMobileValid(phone)
-
-export const isAddressValid = (a: Address | null) =>
-  !!a && !!a.label.trim() && !!a.name.trim() && isMobileValid(a.phone) && !!a.line.trim() && !!a.city.trim()
 
 export const passwordRules = (p: string) => [
   ['8+ characters', p.length >= 8],
