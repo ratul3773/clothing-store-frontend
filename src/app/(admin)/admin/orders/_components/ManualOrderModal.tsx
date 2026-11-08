@@ -36,6 +36,7 @@ import {
   type ManualOrderFormValues,
 } from "../_schemas/manual-order.schema";
 import ManualOrderLines from "./ManualOrderLines";
+import { CmsButton } from "@/components/ui/button";
 
 export default function ManualOrderModal({
   owner,
@@ -53,7 +54,10 @@ export default function ManualOrderModal({
   const [reviewError, setReviewError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const dispatch = useAppDispatch();
-  const policy = useGetOrderDeliveryPolicyQuery(undefined, { skip: !open, refetchOnMountOrArgChange: true });
+  const policy = useGetOrderDeliveryPolicyQuery(undefined, {
+    skip: !open,
+    refetchOnMountOrArgChange: true,
+  });
   const form = useForm<ManualOrderFormValues>({
     resolver: zodResolver(manualOrderFormSchema),
     defaultValues: {
@@ -94,12 +98,30 @@ export default function ManualOrderModal({
   const parsed = manualOrderFormSchema.safeParse(values);
   const draft = parsed.success ? manualOrderPayload(parsed.data) : null;
   const lines = draft ? manualOrderLines(draft.lines, catalogs) : [];
-  const complete = !!draft && lines.length === draft.lines.length && lines.every((line, index) =>
-    line.components.length === (draft.lines[index].type === "COMBO" ? draft.lines[index].selections.length : 1));
-  const totals = draft && policy.currentData && complete ? orderTotals(
-    lines.reduce((sum, line) => sum + line.quantity * line.unitPrice, 0), values.address?.zone ?? "INSIDE_DHAKA",
-    policy.currentData, draft.discount, draft.deliveryOverride) : null;
-  const summary: OrderDisplay | null = totals && parsed.success ? { ...parsed.data.address, ...totals, lines } : null;
+  const complete =
+    !!draft &&
+    lines.length === draft.lines.length &&
+    lines.every(
+      (line, index) =>
+        line.components.length ===
+        (draft.lines[index].type === "COMBO"
+          ? draft.lines[index].selections.length
+          : 1),
+    );
+  const totals =
+    draft && policy.currentData && complete
+      ? orderTotals(
+          lines.reduce((sum, line) => sum + line.quantity * line.unitPrice, 0),
+          values.address?.zone ?? "INSIDE_DHAKA",
+          policy.currentData,
+          draft.discount,
+          draft.deliveryOverride,
+        )
+      : null;
+  const summary: OrderDisplay | null =
+    totals && parsed.success
+      ? { ...parsed.data.address, ...totals, lines }
+      : null;
   const customerOptions = [
     ...new Map(
       [
@@ -110,23 +132,45 @@ export default function ManualOrderModal({
   ];
   const create = (event?: React.BaseSyntheticEvent) =>
     form.handleSubmit(async (values) => {
-      if (locked || attempt.conflict || policy.isFetching || policy.error) return;
+      if (locked || attempt.conflict || policy.isFetching || policy.error)
+        return;
       setReviewError("");
-      if (!totals) { setReviewError("Selected products or sizes are unavailable. Remove or reselect them before creating the order."); return; }
-      if (totals.discount > totals.subtotal) { setReviewError("Discount cannot exceed subtotal"); return; }
+      if (!totals) {
+        setReviewError(
+          "Selected products or sizes are unavailable. Remove or reselect them before creating the order.",
+        );
+        return;
+      }
+      if (totals.discount > totals.subtotal) {
+        setReviewError("Discount cannot exceed subtotal");
+        return;
+      }
       await attempt.submit({ ...manualOrderPayload(values), expected: totals });
     })(event);
   const refreshPrices = async () => {
     setRefreshing(true);
     try {
-      const ids = [...new Set(form.getValues("lines").map((line) => line.catalogId))];
-      const result = ids.length ? await dispatch(productApi.endpoints.getProducts.initiate(
-        { ids, page: 1, limit: ids.length }, { subscribe: false, forceRefetch: true })).unwrap() : { items: [] };
+      const ids = [
+        ...new Set(form.getValues("lines").map((line) => line.catalogId)),
+      ];
+      const result = ids.length
+        ? await dispatch(
+            productApi.endpoints.getProducts.initiate(
+              { ids, page: 1, limit: ids.length },
+              { subscribe: false, forceRefetch: true },
+            ),
+          ).unwrap()
+        : { items: [] };
       await policy.refetch().unwrap();
-      setCatalogs(Object.fromEntries(result.items.map((item) => [item.id, item])));
+      setCatalogs(
+        Object.fromEntries(result.items.map((item) => [item.id, item])),
+      );
       attempt.clearConflict();
-    } catch (error) { setReviewError(apiErrorMessage(error)); }
-    finally { setRefreshing(false); }
+    } catch (error) {
+      setReviewError(apiErrorMessage(error));
+    } finally {
+      setRefreshing(false);
+    }
   };
   return (
     <Modal
@@ -134,33 +178,52 @@ export default function ManualOrderModal({
       onOpenChange={(value) => {
         if (!attempt.pending) onOpenChange(value);
       }}
-      variant="drawer"
+      variant="dialog"
+      size="xl"
       title="Create manual order"
       description="Record a COD order taken by phone, chat, or in person."
-      errorMsg={attempt.error || reviewError || (policy.error ? apiErrorMessage(policy.error) : "")}
+      errorMsg={
+        attempt.error ||
+        reviewError ||
+        (policy.error ? apiErrorMessage(policy.error) : "")
+      }
       footer={
         <>
-          <Btn disabled={attempt.pending} onClick={() => onOpenChange(false)}>
+          <CmsButton
+            variant="outline"
+            disabled={attempt.pending}
+            onClick={() => onOpenChange(false)}
+          >
             Close
-          </Btn>
+          </CmsButton>
           {attempt.attempt ? (
-            <Btn
-              variant="primary"
+            <CmsButton
               disabled={attempt.pending}
               onClick={() => void attempt.submit()}
             >
               {attempt.pending ? "Confirming…" : "Retry original order"}
-            </Btn>
+            </CmsButton>
           ) : (
             <>
-              {(attempt.conflict || policy.error) && <Btn disabled={locked} onClick={() => void refreshPrices()}>Refresh prices and availability</Btn>}
-                <Btn
-                  variant="primary"
-                  disabled={locked || attempt.conflict || policy.isFetching || !!policy.error || !policy.currentData}
-                  onClick={() => void create()}
-                >
-                  Create COD order
-                </Btn>
+              {(attempt.conflict || policy.error) && (
+                <CmsButton
+                  variant="outline"
+                  disabled={locked} onClick={() => void refreshPrices()}>
+                  Refresh prices and availability
+                </CmsButton>
+              )}
+              <CmsButton
+                disabled={
+                  locked ||
+                  attempt.conflict ||
+                  policy.isFetching ||
+                  !!policy.error ||
+                  !policy.currentData
+                }
+                onClick={() => void create()}
+              >
+                Create COD order
+              </CmsButton>
             </>
           )}
         </>
@@ -229,6 +292,7 @@ export default function ManualOrderModal({
                   isSelect={name === "zone"}
                   options={name === "zone" ? zoneOptions : undefined}
                   disabled={locked}
+                  isAdmin
                   type={name === "recipientPhone" ? "tel" : "text"}
                   className={
                     name === "addressLine" ? "sm:col-span-2" : undefined
@@ -243,6 +307,7 @@ export default function ManualOrderModal({
                 name="source"
                 label="Source"
                 isSelect
+                isAdmin
                 disabled={locked}
                 options={[
                   "ADMIN_MANUAL",
@@ -258,6 +323,7 @@ export default function ManualOrderModal({
                 name="status"
                 label="Initial status"
                 isSelect
+                isAdmin
                 disabled={locked}
                 options={["CONFIRMED", "PENDING_CONFIRMATION"].map((value) => ({
                   value,
@@ -271,6 +337,7 @@ export default function ManualOrderModal({
               name="catalogSearch"
               label="Find products or combos"
               isInput
+              isAdmin
               placeholder="Search catalog — at least 2 characters"
               disabled={locked}
             />
@@ -280,7 +347,7 @@ export default function ManualOrderModal({
             )}
             <div className="flex flex-wrap gap-2">
               {catalogQuery.currentData?.items.map((product) => (
-                <Btn
+                <CmsButton
                   key={product.id}
                   disabled={locked || array.fields.length >= 50}
                   onClick={() => {
@@ -306,7 +373,7 @@ export default function ManualOrderModal({
                 >
                   Add {product.name}
                   {product.type === "COMBO" ? " (combo)" : ""}
-                </Btn>
+                </CmsButton>
               ))}
             </div>
             <ManualOrderLines
@@ -325,6 +392,7 @@ export default function ManualOrderModal({
                 type="number"
                 min={0}
                 isInput
+                isAdmin
                 disabled={locked}
               />
               <FormField
@@ -335,6 +403,7 @@ export default function ManualOrderModal({
                 type="number"
                 min={0}
                 isInput
+                isAdmin
                 disabled={locked}
               />
             </div>
@@ -344,6 +413,7 @@ export default function ManualOrderModal({
               name="adjustmentReason"
               label="Pricing adjustment reason"
               isTextArea
+              isAdmin
               disabled={locked}
             />
             <FormField
@@ -352,6 +422,7 @@ export default function ManualOrderModal({
               name="note"
               label="Order note (visible on receipt)"
               isTextArea
+              isAdmin
               disabled={locked}
             />
             <p className="text-sm text-muted-foreground">

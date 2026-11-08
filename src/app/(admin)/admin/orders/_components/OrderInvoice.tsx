@@ -33,7 +33,7 @@ export default function OrderInvoice({ order }: { order: Order }) {
           </thead>
           <tbody>
             {order.items.map((i, n) => (
-              <tr key={n} className="border-b border-gray-300">
+              <tr key={n} className="border-b border-border">
                 <td className="py-1">{i.name} ({i.color} / {i.size})</td><td>{i.qty}</td><td className="text-right">{bdt(i.price)}</td><td className="text-right">{bdt(i.price * i.qty)}</td>
               </tr>
             ))}

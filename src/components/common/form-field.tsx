@@ -35,6 +35,7 @@ type FormFieldProps<T extends FieldValues> = Omit<
   isSelect?: boolean;
   isInput?: boolean;
   isTextArea?: boolean;
+  isAdmin?: boolean;
   onValueChange?: (value: string) => void;
 };
 export function FormField<T extends FieldValues>({
@@ -52,6 +53,7 @@ export function FormField<T extends FieldValues>({
   isSelect,
   isInput,
   isTextArea,
+  isAdmin,
   onValueChange,
   ...inputProps
 }: FormFieldProps<T>) {
@@ -77,6 +79,7 @@ export function FormField<T extends FieldValues>({
                 onBlur={field.onBlur}
                 triggerRef={field.ref}
                 options={options}
+                isAdmin={isAdmin}
                 className="w-full"
                 aria-invalid={fieldState.invalid}
               />
@@ -89,10 +92,10 @@ export function FormField<T extends FieldValues>({
               type={type}
               value={field.value ?? ""}
               aria-invalid={fieldState.invalid}
+              isAdmin={isAdmin}
               className={cn(
                 StartIcon && "pl-10",
                 endAction && "pr-12",
-                "h-10",
                 className,
               )}
             />}
@@ -105,6 +108,7 @@ export function FormField<T extends FieldValues>({
                 placeholder={inputProps.placeholder}
                 disabled={inputProps.disabled || field.disabled}
                 maxLength={inputProps.maxLength}
+                isAdmin={isAdmin}
                 rows={4}
                 className={cn(
                   StartIcon && "pl-10",

@@ -1,18 +1,21 @@
-import * as React from "react"
-import { cn } from "cn"
+import * as React from "react";
+import { cn } from "cn";
+export const cmsInput =
+  "h-10 w-full rounded-md border border-border bg-card px-2.5 text-[13px] text-foreground outline-none placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:bg-muted";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+function Input({ className,isAdmin, type, ...props }: React.ComponentProps<"input"> & { isAdmin?: boolean }) {
   return (
     <input
       type={type}
       data-slot="input"
       className={cn(
-        "h-12 w-full label-mono rounded-[3px] border border-foreground/20 focus:border-accent focus:ring-2 focus:ring-accent/30 bg-card px-4 text-sm outline-none transition placeholder:text-foreground/40 file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
-        className
+        isAdmin ? cmsInput :
+        "h-10 w-full label-mono rounded-[3px] border border-foreground/20 focus:border-accent focus:ring-2 focus:ring-accent/30 bg-card px-4 text-sm outline-none transition placeholder:text-foreground/40 file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
-export { Input }
+export { Input };
