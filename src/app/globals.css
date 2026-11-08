@@ -295,7 +295,7 @@ html:has(.cms) {
   scroll-behavior: auto;
 }
 
-html:has(.cms) :not(:where(
+/* html:has(.cms) :not(:where(
   [data-slot="skeleton"], [data-slot="skeleton"] *,
   .animate-pulse, .animate-pulse *,
   .animate-spin, .animate-spin *,
@@ -306,4 +306,4 @@ html:has(.cms) :not(:where(
     transition: none !important;
     scroll-behavior: auto !important;
   }
-}
+} */
