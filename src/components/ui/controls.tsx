@@ -85,17 +85,21 @@ export function Tip({ label, children }: { label: string; children: React.ReactN
   )
 }
 
-export function Pick({ value, onChange, options, className, label }: { value: string; onChange: (v: string) => void; options: { value: string; label: string }[]; className?: string; label?: string }) {
+export function Pick({ value, onChange, options, className, label, id, disabled, onBlur, triggerRef, ...aria }: { value: string; onChange: (v: string) => void; options: { value: string; label: string; disabled?: boolean }[]; className?: string; label?: string; id?: string; disabled?: boolean; onBlur?: () => void; triggerRef?: React.Ref<HTMLButtonElement>; "aria-invalid"?: boolean }) {
   return (
-    <Select.Root value={value} onValueChange={onChange}>
+    <Select.Root value={value} onValueChange={onChange} disabled={disabled}>
       <Select.Trigger
+        id={id}
+        ref={triggerRef}
+        onBlur={onBlur}
+        {...aria}
         aria-label={label}
         className={cn(
           'flex h-11 items-center justify-between gap-3 rounded-[3px] border border-foreground/50 bg-card px-4 text-sm transition hover:border-accent',
           className,
         )}
       >                                                          
-        <Select.Value />
+        <Select.Value placeholder={options.find((option) => !option.value)?.label} />
         <Select.Icon>
           <ChevronDown size={16} />
         </Select.Icon>
@@ -107,10 +111,11 @@ export function Pick({ value, onChange, options, className, label }: { value: st
           className="z-[120] min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-[3px] border border-foreground bg-card shadow-xl animate-[fadein_.2s_ease]"
         >
           <Select.Viewport className="p-1">
-            {options.map((o) => (
+            {options.filter((option) => option.value).map((o) => (
               <Select.Item
                 key={o.value}
                 value={o.value}
+                disabled={o.disabled}
                 className="flex cursor-pointer items-center justify-between rounded-[2px] px-3 py-2 text-sm outline-none data-[highlighted]:bg-foreground data-[highlighted]:text-background"
               >
                 <Select.ItemText>{o.label}</Select.ItemText>

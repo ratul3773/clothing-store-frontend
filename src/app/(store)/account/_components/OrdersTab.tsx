@@ -1,57 +1,88 @@
-'use client'
+"use client";
 
-import Image from 'next/image'
-import { Link2 } from 'lucide-react'
-import { Pagination } from '@/components/ui/pagination'
-import usePagination from '@/lib/usePagination'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { useStore } from '@/components/providers/StoreProvider'
-import useNow from '@/lib/useNow'
-import { statusLabel, type Order } from '@/data/orders'
-import { isExchangeEligible } from '@/app/(store)/account/_utils/account.utils'
-import { bdt } from '@/lib/utils'
+import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
+import { useGetOrdersQuery } from "@/redux/apis/order.api";
+import { apiErrorMessage } from "@/redux/api.utils";
+import Pagination from "@/components/common/Pagination";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import StatusBadge from "@/components/cms/StatusBadge";
+import { bdt } from "@/lib/utils";
 
-interface Props {
-  linked: Order[]
-  unlinked: Order[]
-  onExchange: (o: Order) => void
-}
-
-export default function OrdersTab({ linked, unlinked, onExchange }: Props) {
-  const { patchOrder, toast } = useStore()
-  const now = useNow(30_000)
-  const pg = usePagination(linked, 3)
+export default function OrdersTab() {
+  const session = authClient.useSession();
+  const user = session.data?.user;
+  const owner = user?.id ?? "";
+  const [pagination, setPagination] = useState({
+    owner: "",
+    page: 1,
+    limit: 5,
+  });
+  const { page, limit } =
+    pagination.owner === owner ? pagination : { page: 1, limit: 5 };
+  const setPage = (value: number) =>
+    setPagination({ owner, page: value, limit });
+  const query = useGetOrdersQuery(
+    { owner: user?.id ?? "", page, limit },
+    {
+      skip:
+        session.isPending ||
+        !!session.error ||
+        user?.role !== "customer" ||
+        !user.emailVerified,
+      refetchOnMountOrArgChange: true,
+    },
+  );
+  if (session.isPending || query.isLoading)
+    return <Skeleton className="h-56" />;
+  if (query.error || session.error)
+    return (
+      <div role="alert">
+        <p>{apiErrorMessage(query.error || session.error)}</p>
+        <Button onClick={() => void query.refetch()}>Retry orders</Button>
+      </div>
+    );
+  const data = query.currentData;
   return (
-    <>
-      {unlinked.length > 0 && (
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-[3px] border border-accent bg-accent/10 p-5">
-          <p className="flex items-center gap-3 text-sm"><Link2 size={18} className="text-accent" /> We found {unlinked.length} earlier guest order for your verified number.</p>
-          <Button variant="accent" size="sm" onClick={() => { unlinked.forEach((o) => patchOrder(o.id, { guest: false })); toast('Previous orders linked') }}>Link to my account</Button>
-        </div>
+    <div className="space-y-4" aria-busy={query.isFetching}>
+      {!data?.items.length && (
+        <p className="text-muted-foreground">
+          {query.isFetching
+            ? "Loading orders…"
+            : "You have no orders on this page."}
+        </p>
       )}
-      {pg.pageItems.map((o) => (
-        <div key={o.id} className="group rounded-[3px] border border-border bg-card/70 p-5 transition hover:border-foreground">
-          <div className="flex flex-wrap items-center gap-4">
-            <Image width={64} height={80} src={o.items[0].image} alt="" className="h-20 w-16 rounded-[2px] object-cover" />
-            <div className="min-w-40 flex-1">
-              <p className="label-mono text-muted-foreground">{o.id} · {new Date(o.createdAt).toLocaleDateString('en-GB')} · {o.source}</p>
-              <p className="font-semibold">{o.items.map((i) => i.name).join(', ')}</p>
-              <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-                <span>{bdt(o.total)}</span>
-                <Badge>{statusLabel(o.status)}</Badge>
-                {o.exchange && <><span>Exchange</span><Badge>{o.exchange.state[0] + o.exchange.state.slice(1).toLowerCase()}</Badge></>}
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button to={`/order?id=${o.id}`} size="sm" variant="outline">View</Button>
-              <Button size="sm" variant="ghost" disabled title="Reordering requires live order variants">Reorder coming soon</Button>
-              {now !== null && isExchangeEligible(o, now) && <Button size="sm" variant="accent" onClick={() => onExchange(o)}>Request exchange</Button>}
+      {data?.items.map((order) => (
+        <article
+          key={order.id}
+          className="flex flex-wrap items-center justify-between gap-4 rounded border border-border bg-card/70 p-5"
+        >
+          <div className="space-y-2">
+            <p className="font-semibold">{order.number}</p>
+            <p className="text-sm text-muted-foreground">
+              {new Date(order.createdAt).toLocaleDateString("en-GB")} ·{" "}
+              {order.recipientName}
+            </p>
+            <div className="flex gap-3">
+              <StatusBadge status={order.status} />
+              <span>{bdt(order.total)}</span>
             </div>
           </div>
-        </div>
+          <Button to={`/order?id=${order.id}`} variant="outline" size="sm">
+            View receipt
+          </Button>
+        </article>
       ))}
-      {/* <Pagination page={pg.page} pageCount={pg.pageCount} onChange={pg.setPage} id="pg-orders" /> */}
-    </>
-  )
+      {data?.meta && (
+        <Pagination
+          paginationInfo={data.meta}
+          onPageChange={setPage}
+          onItemsPerPageChange={(value) =>
+            setPagination({ owner, page: 1, limit: value })
+          }
+        />
+      )}
+    </div>
+  );
 }

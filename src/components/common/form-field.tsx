@@ -30,11 +30,12 @@ type FormFieldProps<T extends FieldValues> = Omit<
   description?: ReactNode;
   startIcon?: LucideIcon;
   endAction?: ReactNode;
-  options?: { value: string; label: string }[];
+  options?: { value: string; label: string; disabled?: boolean }[];
   isSwitch?: boolean;
   isSelect?: boolean;
   isInput?: boolean;
   isTextArea?: boolean;
+  onValueChange?: (value: string) => void;
 };
 export function FormField<T extends FieldValues>({
   form,
@@ -51,6 +52,7 @@ export function FormField<T extends FieldValues>({
   isSelect,
   isInput,
   isTextArea,
+  onValueChange,
   ...inputProps
 }: FormFieldProps<T>) {
   return (
@@ -67,9 +69,13 @@ export function FormField<T extends FieldValues>({
             )}
             {isSelect && options && (
               <Pick
-                value={field.value}
-                onChange={(v) => field.onChange(v)}
-                label="Select Zone"
+                value={field.value ?? ""}
+                onChange={(v) => { field.onChange(v); onValueChange?.(v); }}
+                id={id}
+                label={typeof label === "string" ? label : undefined}
+                disabled={inputProps.disabled || field.disabled}
+                onBlur={field.onBlur}
+                triggerRef={field.ref}
                 options={options}
                 className="w-full"
                 aria-invalid={fieldState.invalid}
@@ -97,6 +103,9 @@ export function FormField<T extends FieldValues>({
                 value={field.value ?? ""}
                 aria-invalid={fieldState.invalid}
                 placeholder={inputProps.placeholder}
+                disabled={inputProps.disabled || field.disabled}
+                maxLength={inputProps.maxLength}
+                rows={4}
                 className={cn(
                   StartIcon && "pl-10",
                   endAction && "pr-12",
@@ -109,7 +118,8 @@ export function FormField<T extends FieldValues>({
                 id={id}
                 checked={field.value}
                 onCheckedChange={field.onChange}
-                label="Set as default address"
+                disabled={inputProps.disabled || field.disabled}
+                label={typeof label === "string" ? label : undefined}
                 aria-invalid={fieldState.invalid}
               />
             )}

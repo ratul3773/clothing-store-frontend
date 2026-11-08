@@ -41,7 +41,6 @@ export default function AccountView({user}: {
   const mine = orders.filter((o) => stripSpaces(o.customer.phone) === phone)
   const linked = mine.filter((o) => !o.guest)
   const delivered = linked.filter((o) => o.status === 'DELIVERED')
-  const unlinked = mine.filter((o) => o.guest)
 
   return (
     <div className="">
@@ -52,7 +51,7 @@ export default function AccountView({user}: {
         value={tab} 
         layoutId="acc-tab" 
         items={[
-          { value: 'orders', label: 'Orders', count: linked.length },
+          { value: 'orders', label: 'Orders' },
           { value: 'wishlist', label: 'Wishlist', count: wishlist.length },
           { value: 'reviews', label: 'Reviews' },
           { value: 'addresses', label: 'Addresses' },
@@ -60,7 +59,7 @@ export default function AccountView({user}: {
           { value: 'settings', label: 'Settings' },
           { value: 'security', label: 'Security' }
         ]} />
-        <TabsContent value="orders" className={`space-y-4 ${NO_ANIM}`}><OrdersTab linked={linked} unlinked={unlinked} onExchange={x.open} /></TabsContent>
+        <TabsContent value="orders" className={`space-y-4 ${NO_ANIM}`}><OrdersTab /></TabsContent>
         <TabsContent value="wishlist" className={NO_ANIM}><WishlistTab /></TabsContent>
         <TabsContent value="reviews" className={NO_ANIM}><ReviewsTab delivered={delivered} form={rf} /></TabsContent>
         <TabsContent value="addresses" className={NO_ANIM}><AddressesTab /></TabsContent>

@@ -19,7 +19,7 @@
 tests
 docs
 AGENTS.md
-playwright.config.ts
+playwright.orders.config.ts
 
 # next.js
 /.next/

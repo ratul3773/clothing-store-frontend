@@ -2,6 +2,49 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+### COD orders
+
+Checkout, customer receipts/account orders, and admin orders use the backend through
+RTK Query. All connected form fields use `src/components/common/form-field.tsx`
+with React Hook Form and Zod. Dashboard analytics and the legacy customer directory
+remain demo features.
+
+Configure `NEXT_PUBLIC_API_URL` to the backend `/api/v1` URL and
+`NEXT_PUBLIC_BACKEND_URL` to its origin. Deploy the backend order migration and
+customer-search endpoint before enabling these screens against a live database.
+
+Checkout purchases only the selected saved cart lines. Review totals before placing
+a COD order. Uncertain submissions retain their original payload and idempotency key
+in session storage; retry that order before starting another. Browser session storage
+must be available for safe submission/recovery.
+
+Guest order IDs and private access codes are remembered in local storage, with a
+forget action on the receipt. Access codes travel in Authorization headers, never
+URLs or printed receipts. If persistent storage is blocked, save the code shown on
+the receipt before closing the tab. Account orders are scoped to the signed-in owner.
+
+Admin manual orders support normal variants and explicit combo sizes, optional
+customer linking and price-adjustment reasons. Summaries are computed from cart/catalog data and
+`GET /orders/delivery-policy`; placement alone validates stock and expected totals.
+New orders snapshot product images; deploy the order-images migration first. Older
+orders without image snapshots retain placeholders. Only supported
+status transitions are offered. Failed-delivery receipt inspection restores sellable
+pieces only. Courier assignment, exchanges, bulk actions, and manual paid toggles
+are not part of this backend flow.
+
+Verification:
+
+```bash
+bun test tests/order.test.ts tests/order-api.test.ts
+bun run test:order:browser
+bun run build
+```
+
+Browser tests use a local mock backend and a separate `.next-playwright` output.
+Install Playwright Chromium before running them, or set `PLAYWRIGHT_CHANNEL=msedge`
+to use an existing Edge installation. Tests never place orders in the application database.
+Production builds require network access for the existing Google Fonts.
+
 First, run the development server:
 
 ```bash
