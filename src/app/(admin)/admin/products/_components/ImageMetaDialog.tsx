@@ -1,25 +1,17 @@
 "use client";
 
-import Image from 'next/image'
-import { useEffect } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import useImageMetaDialog from "../_hooks/useImageMetaDialog";
+
+import Image from 'next/image';
 
 import Modal from "@/components/cms/Modal";
 import { Btn } from "@/components/cms/ui";
-import { useStore } from "@/components/providers/StoreProvider";
-import { apiErrorMessage } from "@/redux/api.utils";
-import { useUpdateImageMutation } from "@/redux/apis/product.api";
 import type {
   ProductColor,
   ProductImage,
 } from "@/redux/apis/types/product.types";
 
-import {
-  imageMetaSchema,
-  type ImageMetaFormValues,
-} from "../_schemas/product.schema";
-import { SelectField, TextField } from "../../../../../components/common/form-controls";
+import { FormField } from "@/components/common/form-field";
 
 type Props = {
   productId: string;
@@ -36,34 +28,11 @@ export default function ImageMetaDialog({
   open,
   onOpenChange,
 }: Props) {
-  const { toast, toastError } = useStore();
-  const [updateImage, updateState] = useUpdateImageMutation();
-
-  const form = useForm<ImageMetaFormValues>({
-    resolver: zodResolver(imageMetaSchema),
-    defaultValues: { alt: "", colorId: "" },
-  });
-
-  useEffect(() => {
-    if (!open) return;
-    form.reset({ alt: image.alt ?? "", colorId: image.colorId ?? "" });
-  }, [open, image, form]);
-
-  const onSubmit = form.handleSubmit(async (values) => {
-    try {
-      await updateImage({
-        productId,
-        imageId: image.id,
-        data: {
-          alt: values.alt.trim() === "" ? null : values.alt.trim(),
-          colorId: values.colorId === "" ? null : values.colorId,
-        },
-      }).unwrap();
-      toast("Image details updated.");
-      onOpenChange(false);
-    } catch (error) {
-      toastError(apiErrorMessage(error, "The image could not be updated."));
-    }
+  const { updateState, form, onSubmit } = useImageMetaDialog({
+    productId,
+    image,
+    open,
+    onOpenChange,
   });
 
   return (
@@ -95,22 +64,18 @@ export default function ImageMetaDialog({
             className="h-auto max-h-56 w-full object-cover"
           />
         </div>
-        <TextField
-          form={form}
+        <FormField isAdmin isInput id="alt" form={form}
           name="alt"
           label="Alt text"
-          placeholder="e.g. Navy oxford shirt, front view"
-        />
-        <SelectField
-          form={form}
+          placeholder="e.g. Navy oxford shirt, front view" />
+        <FormField isAdmin isSelect id="colorId" form={form}
           name="colorId"
           label="Colour"
           options={colors.map((color) => ({
             value: color.id,
             label: color.name,
           }))}
-          placeholder="No colour"
-        />
+          placeholder="No colour" />
       </form>
     </Modal>
   );

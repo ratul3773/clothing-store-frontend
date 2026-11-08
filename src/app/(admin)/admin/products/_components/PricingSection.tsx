@@ -1,13 +1,14 @@
 "use client";
+import { useWatch } from "react-hook-form";
 
 import type { UseFormReturn } from "react-hook-form";
 
 import { Card, CardHeader } from "@/components/cms/ui";
 import { bdt } from "@/lib/utils";
 
+import { FormField } from "@/components/common/form-field";
 import type { ProductCoreFormValues } from "../_schemas/product.schema";
 import { toNumber } from "../_utils/products.utils";
-import { TextField } from "../../../../../components/common/form-controls";
 
 export default function PricingSection({
   form,
@@ -16,7 +17,7 @@ export default function PricingSection({
   form: UseFormReturn<ProductCoreFormValues>;
   editing?: boolean;
 }) {
-  const price = toNumber(form.watch("regularPrice"));
+  const price = toNumber(useWatch({ control: form.control, name: "regularPrice" }));
 
   return (
     <Card>
@@ -29,18 +30,16 @@ export default function PricingSection({
         }
       />
       <div className="grid gap-4 p-4 sm:grid-cols-2">
-        <TextField
-          form={form}
+        <FormField isAdmin isInput id="regularPrice" form={form}
           name="regularPrice"
           label="Regular price (৳)"
           inputMode="numeric"
           placeholder="e.g. 2490"
-          hint={
+          description={
             Number.isFinite(price) && price > 0
               ? `Customers see ${bdt(price)}`
               : "Whole taka only — no decimals."
-          }
-        />
+          } />
       </div>
     </Card>
   );

@@ -1,10 +1,10 @@
 "use client";
 
+import useProductFilters, { type Props } from "../_hooks/useProductFilters";
+
 import { Search } from "lucide-react";
 
 import { Btn, Input, Select, Toolbar } from "@/components/cms/ui";
-import { useGetAdminCategoriesQuery } from "@/redux/apis/category.api";
-import { toCategoryRows } from "@/redux/apis/types/category.types";
 
 import { SORT_OPTIONS, STATUS_OPTIONS } from "../_constants/products.constants";
 import {
@@ -12,23 +12,8 @@ import {
   type ProductFilters as Filters,
 } from "../_types/products.types";
 
-type Props = {
-  value: Filters;
-  onChange: (next: Filters) => void;
-};
-
 export default function ProductFilters({ value, onChange }: Props) {
-  const { data: categories } = useGetAdminCategoriesQuery();
-  const rows = categories ? toCategoryRows(categories) : [];
-
-  const set = (patch: Partial<Filters>) => onChange({ ...value, ...patch });
-
-  const dirty =
-    value.q !== "" ||
-    value.categoryId !== "" ||
-    value.status !== "" ||
-    value.inStock !== "" ||
-    value.sort !== defaultProductFilters.sort;
+  const { rows, set, dirty } = useProductFilters({ value, onChange });
 
   return (
     <Toolbar>

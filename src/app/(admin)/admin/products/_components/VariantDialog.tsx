@@ -1,42 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import useCreateVariantDialog, { type Props } from "../_hooks/useCreateVariantDialog";
+import useEditVariantDialog from "../_hooks/useEditVariantDialog";
 
 import Modal from "@/components/cms/Modal";
 import { Btn } from "@/components/cms/ui";
-import { useStore } from "@/components/providers/StoreProvider";
-import { apiErrorMessage } from "@/redux/api.utils";
-import {
-  useCreateVariantMutation,
-  useUpdateVariantMutation,
-} from "@/redux/apis/product.api";
 import type {
-  AdminVariant,
-  ProductColor,
+  AdminVariant
 } from "@/redux/apis/types/product.types";
 
-import {
-  createVariantFormSchema,
-  updateVariantFormSchema,
-  type CreateVariantFormValues,
-  type UpdateVariantFormValues,
-} from "../_schemas/product.schema";
-import { parseOptionalInt } from "../_utils/products.utils";
-import {
-  SelectField,
-  SwitchField,
-  TextField,
-} from "@/components/common/form-controls";
-
-type Props = {
-  productId: string;
-  colors: ProductColor[];
-  variant?: AdminVariant;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-};
+import { FormField } from "@/components/common/form-field";
 
 export default function VariantDialog(props: Props) {
   return props.variant ? (
@@ -47,52 +20,7 @@ export default function VariantDialog(props: Props) {
 }
 
 function CreateVariantDialog({ productId, colors, open, onOpenChange }: Props) {
-  const { toast, toastError } = useStore();
-  const [createVariant, createState] = useCreateVariantMutation();
-
-  const form = useForm<CreateVariantFormValues>({
-    resolver: zodResolver(createVariantFormSchema),
-    defaultValues: {
-      colorId: "",
-      size: "",
-      sizeOrder: "",
-      onHand: "0",
-      lowStockThreshold: "3",
-      isActive: true,
-    },
-  });
-
-  useEffect(() => {
-    if (!open) return;
-    form.reset({
-      colorId: colors[0]?.id ?? "",
-      size: "",
-      sizeOrder: "",
-      onHand: "0",
-      lowStockThreshold: "3",
-      isActive: true,
-    });
-  }, [open, colors, form]);
-
-  const onSubmit = form.handleSubmit(async (values) => {
-    try {
-      await createVariant({
-        productId,
-        data: {
-          colorId: values.colorId,
-          size: values.size.trim(),
-          sizeOrder: parseOptionalInt(values.sizeOrder),
-          onHand: parseOptionalInt(values.onHand),
-          lowStockThreshold: parseOptionalInt(values.lowStockThreshold),
-          isActive: values.isActive,
-        },
-      }).unwrap();
-      toast("Variant added.");
-      onOpenChange(false);
-    } catch (error) {
-      toastError(apiErrorMessage(error, "The variant could not be created."));
-    }
-  });
+  const { createState, form, onSubmit } = useCreateVariantDialog({ productId, colors, open, onOpenChange });
 
   return (
     <Modal
@@ -120,53 +48,41 @@ function CreateVariantDialog({ productId, colors, open, onOpenChange }: Props) {
             Add a colour first.
           </p>
         ) : (
-          <SelectField
-            form={form}
+          <FormField isAdmin isSelect id="colorId" form={form}
             name="colorId"
             label="Colour"
             options={colors.map((color) => ({
               value: color.id,
               label: color.name,
             }))}
-            placeholder="Select a colour"
-          />
+            placeholder="Select a colour" />
         )}
         <div className="grid gap-4 sm:grid-cols-2">
-          <TextField
-            form={form}
+          <FormField isAdmin isInput id="size" form={form}
             name="size"
             label="Size"
-            placeholder="e.g. M"
-          />
-          <TextField
-            form={form}
+            placeholder="e.g. M" />
+          <FormField isAdmin isInput id="sizeOrder" form={form}
             name="sizeOrder"
             label="Size order"
             inputMode="numeric"
             placeholder="e.g. 2"
-            hint="Controls the size order in the store."
-          />
-          <TextField
-            form={form}
+            description="Controls the size order in the store." />
+          <FormField isAdmin isInput id="onHand" form={form}
             name="onHand"
             label="Opening stock"
             inputMode="numeric"
-            placeholder="0"
-          />
-          <TextField
-            form={form}
+            placeholder="0" />
+          <FormField isAdmin isInput id="lowStockThreshold" form={form}
             name="lowStockThreshold"
             label="Low stock threshold"
             inputMode="numeric"
-            placeholder="3"
-          />
+            placeholder="3" />
         </div>
-        <SwitchField
-          form={form}
+        <FormField isAdmin isSwitch id="isActive" form={form}
           name="isActive"
           label="Active"
-          description="Inactive variants are hidden from the storefront."
-        />
+          description="Inactive variants are hidden from the storefront." />
       </form>
     </Modal>
   );
@@ -178,47 +94,11 @@ function EditVariantDialog({
   open,
   onOpenChange,
 }: Props & { variant: AdminVariant }) {
-  const { toast, toastError } = useStore();
-  const [updateVariant, updateState] = useUpdateVariantMutation();
-
-  const form = useForm<UpdateVariantFormValues>({
-    resolver: zodResolver(updateVariantFormSchema),
-    defaultValues: {
-      size: "",
-      sizeOrder: "",
-      lowStockThreshold: "",
-      isActive: true,
-    },
-  });
-
-  useEffect(() => {
-    if (!open) return;
-    form.reset({
-      size: variant.size,
-      sizeOrder: variant.sizeOrder === 0 ? "" : String(variant.sizeOrder),
-      lowStockThreshold: String(variant.lowStockThreshold),
-      isActive: variant.isActive,
-    });
-  }, [open, variant, form]);
-
-  const onSubmit = form.handleSubmit(async (values) => {
-    try {
-      await updateVariant({
-        productId,
-        variantId: variant.id,
-        data: {
-          size: values.size.trim(),
-          sizeOrder: parseOptionalInt(values.sizeOrder),
-          lowStockThreshold: parseOptionalInt(values.lowStockThreshold),
-          isActive: values.isActive,
-          version: variant.version,
-        },
-      }).unwrap();
-      toast("Variant updated.");
-      onOpenChange(false);
-    } catch (error) {
-      toastError(apiErrorMessage(error, "The variant could not be updated."));
-    }
+  const { updateState, form, onSubmit } = useEditVariantDialog({
+    productId,
+    variant,
+    open,
+    onOpenChange,
   });
 
   return (
@@ -247,26 +127,22 @@ function EditVariantDialog({
           {variant.onHand}
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <TextField form={form} name="size" label="Size" />
-          <TextField
-            form={form}
+          <FormField isAdmin isInput id="size" form={form}
+            name="size"
+            label="Size" />
+          <FormField isAdmin isInput id="sizeOrder" form={form}
             name="sizeOrder"
             label="Size order"
-            inputMode="numeric"
-          />
-          <TextField
-            form={form}
+            inputMode="numeric" />
+          <FormField isAdmin isInput id="lowStockThreshold" form={form}
             name="lowStockThreshold"
             label="Low stock threshold"
-            inputMode="numeric"
-          />
+            inputMode="numeric" />
         </div>
-        <SwitchField
-          form={form}
+        <FormField isAdmin isSwitch id="isActive" form={form}
           name="isActive"
           label="Active"
-          description="Inactive variants are hidden from the storefront."
-        />
+          description="Inactive variants are hidden from the storefront." />
       </form>
     </Modal>
   );

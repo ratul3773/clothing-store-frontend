@@ -4,8 +4,8 @@
 import Modal from "@/components/cms/Modal";
 import { Btn } from "@/components/cms/ui";
 
+import { FormField } from "@/components/common/form-field";
 import type { ProductColor } from "@/redux/apis/types/product.types";
-import { TextField } from "../../../../../components/common/form-controls";
 import { useColor } from "../_hooks/useColor";
 
 type Props = {
@@ -22,20 +22,18 @@ export default function ColorDialog({
   onOpenChange,
 }: Props) {
 
-      const {
-        form,
-        hex,
-        onSubmit,
-        isSaving,
-        errorMsg,
-        setErrorMsg,
-      } = useColor(
-        productId,
-        color,
-        onOpenChange
-      );
-
-
+  const {
+    form,
+    hex,
+    onSubmit,
+    isSaving,
+    errorMsg,
+    setErrorMsg,
+  } = useColor(
+    productId,
+    color,
+    onOpenChange
+  );
 
   return (
     <Modal
@@ -61,20 +59,16 @@ export default function ColorDialog({
       }
     >
       <form id="color-form" onSubmit={onSubmit} className="space-y-4">
-        <TextField
-          form={form}
+        <FormField isAdmin isInput id="name" form={form}
           name="name"
           label="Colour name"
-          placeholder="e.g. Navy"
-        />
+          placeholder="e.g. Navy" />
 
-        <TextField
-          form={form}
+        <FormField isAdmin isInput id="hex" form={form}
           name="hex"
           label="Hex colour"
           placeholder="#1F2937"
-          hint="Optional. Choose a colour or enter its hex value."
-        />
+          description="Optional. Choose a colour or enter its hex value." />
 
         <div className="space-y-2">
           <label

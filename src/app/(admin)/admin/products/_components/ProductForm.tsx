@@ -1,13 +1,13 @@
 "use client";
 
-import { Btn, Card, Empty } from "@/components/cms/ui";
-import { useNavigate } from "@/lib/nav";
+import useProductEditor from "../_hooks/useProductEditor";
+
+import { Btn, Empty } from "@/components/cms/ui";
 import { apiErrorMessage } from "@/redux/api.utils";
-import { useGetAdminProductQuery } from "@/redux/apis/product.api";
 
 import ProductCreateForm from "./ProductCreateForm";
-import ProductEditForm from "./ProductEditForm";
 import ProductDetailSkeleton from "./ProductDetailSkeleton";
+import ProductEditForm from "./ProductEditForm";
 
 export default function ProductForm({ productId }: { productId?: string }) {
   if (!productId) return <ProductCreateForm />;
@@ -15,10 +15,7 @@ export default function ProductForm({ productId }: { productId?: string }) {
 }
 
 function ProductEditor({ productId }: { productId: string }) {
-  const go = useNavigate();
-  const { data, isLoading, isError, error, refetch } = useGetAdminProductQuery({
-    id: productId,
-  });
+  const { go, data, isLoading, isError, error, refetch } = useProductEditor({ productId });
 
   if (isLoading) {
     return <ProductDetailSkeleton />;

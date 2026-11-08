@@ -29,7 +29,7 @@ export type CreateColorDraft = {
 };
 
 export const stockMatrixKey = (colorKey: string, size: string) =>
-  `${colorKey}|${size}`;
+  `${colorKey}|${encodeURIComponent(size).replace(/\./g, "%2E")}`;
 
 export type DraftErrors = {
   colors?: string;

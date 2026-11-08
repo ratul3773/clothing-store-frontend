@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { stockMatrixKey } from "../_types/products.types";
 
 import {
   PRODUCT_BADGES,
@@ -63,9 +64,7 @@ export const productCoreSchema = z.object({
   careInstructions: z
     .string()
     .max(2000, "Care instructions must be 2000 characters or fewer"),
-  badges: z
-    .array(z.enum(PRODUCT_BADGES))
-    .max(5, "Choose at most 5 badges"),
+  badges: z.array(z.enum(PRODUCT_BADGES)).max(5, "Choose at most 5 badges"),
   isExchangeEligible: z.boolean(),
   seoTitle: z.string().max(200, "SEO title must be 200 characters or fewer"),
   seoDescription: z
@@ -112,6 +111,58 @@ export const createColorsSchema = z
       seen.add(key);
     });
   });
+
+export const productDraftSchema = z
+  .object({
+    colors: z.array(
+      z.object({ key: z.string(), name: z.string(), hex: z.string() }),
+    ),
+    sizes: z
+      .array(z.string())
+      .refine(
+        (sizes) => sizes.every((size) => size.length <= 20),
+        "Each size must be 20 characters or fewer.",
+      ),
+    stock: z.record(z.string(), z.string()),
+    threshold: optionalNonNegativeInt("Low stock threshold"),
+    sizeInput: z.string(),
+    publishNow: z.boolean(),
+  })
+  .superRefine((values, ctx) => {
+    if (values.colors.length * values.sizes.length > 200) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["colors"],
+        message:
+          "A product can have at most 200 variants. Remove some colours or sizes.",
+      });
+    }
+    const result = createColorsSchema.safeParse(values.colors);
+    if (!result.success) {
+      for (const issue of result.error.issues)
+        ctx.addIssue({
+          code: "custom",
+          path: ["colors", ...issue.path],
+          message: issue.message,
+        });
+    }
+    for (const color of values.colors) {
+      for (const size of values.sizes) {
+        const key = stockMatrixKey(color.key, size);
+        const stock = optionalNonNegativeInt("Opening stock").safeParse(
+          values.stock[key] ?? "",
+        );
+        if (!stock.success)
+          ctx.addIssue({
+            code: "custom",
+            path: ["stock", key],
+            message: stock.error.issues[0].message,
+          });
+      }
+    }
+  });
+
+export type ProductDraftFormValues = z.infer<typeof productDraftSchema>;
 
 /* ------------------------------------------------------------------ variants */
 
@@ -262,8 +313,7 @@ export const offerFormSchema = (regularPrice: number) =>
         )
         .refine(
           (value) =>
-            !Number.isFinite(regularPrice) ||
-            Number(value) < regularPrice,
+            !Number.isFinite(regularPrice) || Number(value) < regularPrice,
           "Offer price must be lower than the regular price",
         ),
       startsAt: z.string(),

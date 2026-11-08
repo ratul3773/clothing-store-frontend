@@ -1,38 +1,31 @@
 "use client";
 
+import { FormField } from "@/components/common/form-field";
 import { Save } from "lucide-react";
 
-import { Btn, Card, CardHeader, PageHeader, Switch } from "@/components/cms/ui";
+import { Btn, Card, CardHeader, PageHeader } from "@/components/cms/ui";
+import { useProduct } from "../_hooks/useCreateProduct";
 import BasicSection from "./BasicSection";
 import DetailsSection from "./DetailsSection";
 import ImagesCreateSection from "./ImagesCreateSection";
 import PricingSection from "./PricingSection";
 import ProductPreview from "./ProductPreview";
 import VariantsCreateSection from "./VariantsCreateSection";
-import { useProduct } from "../_hooks/useCreateProduct";
 
 export default function ProductCreateForm() {
   const {
     form,
+    draftForm,
     values,
-    draftErrors,
     previewImages,
     onSubmit,
     submitting,
     createState,
     go,
     colors,
-    setColors,
     sizes,
-    setSizes,
-    stock,
-    setStock,
-    threshold,
-    setThreshold,
     files,
     setFiles,
-    publishNow,
-    setPublishNow,
   } = useProduct();
 
   return (
@@ -65,17 +58,7 @@ export default function ProductCreateForm() {
             <BasicSection form={form} />
             <PricingSection form={form} />
             <DetailsSection form={form} />
-            <VariantsCreateSection
-              colors={colors}
-              onColorsChange={setColors}
-              sizes={sizes}
-              onSizesChange={setSizes}
-              stock={stock}
-              onStockChange={setStock}
-              threshold={threshold}
-              onThresholdChange={setThreshold}
-              errors={draftErrors}
-            />
+            <VariantsCreateSection form={draftForm} />
             <ImagesCreateSection files={files} onChange={setFiles} />
           </div>
 
@@ -91,11 +74,7 @@ export default function ProductCreateForm() {
             <Card>
               <CardHeader title="Saving" />
               <div className="space-y-3 p-4">
-                <Switch
-                  checked={publishNow}
-                  onChange={setPublishNow}
-                  label="Publish after saving"
-                />
+                <FormField form={draftForm} id="publish-now" name="publishNow" isAdmin isSwitch label="Publish after saving" />
                 <p className="text-xs text-muted-foreground">
                   Publishing requires an active category, at least one colour
                   and variant, and at least one image. Leave this off to save a

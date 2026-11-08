@@ -1,19 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertTriangle, Pencil, Save } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useState } from "react";
 
 import { Badge, Btn, Card, CardHeader, PageHeader } from "@/components/cms/ui";
-import { useStore } from "@/components/providers/StoreProvider";
-import { useNavigate } from "@/lib/nav";
-import { apiErrorMessage, isConflictError } from "@/redux/api.utils";
-import { useUpdateProductMutation } from "@/redux/apis/product.api";
 import type { AdminProduct } from "@/redux/apis/types/product.types";
 
 import { STATUS_TONES } from "../_constants/products.constants";
 
+import AlertText from "@/components/common/Alert";
+import { useEditProduct } from "../_hooks/useEditProduct";
 import {
   formatDate,
   statusLabel,
@@ -27,8 +23,7 @@ import PricingSection from "./PricingSection";
 import ProductPreview from "./ProductPreview";
 import ProductStatusActions from "./ProductStatusActions";
 import VariantsManager from "./VariantsManager";
-import { useEditProduct } from "../_hooks/useEditProduct";
-import AlertText from "@/components/common/Alert";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 type Props = {
   product: AdminProduct;
@@ -81,8 +76,7 @@ export default function ProductEditForm({ product, reload }: Props) {
                   variant="primary"
                   disabled={isSubmitting || !form.formState.isDirty}
                 >
-                  <Save className="size-4" />
-                  {isSubmitting ? "Saving…" : "Save changes"}
+                  {isSubmitting ?<> <FadeArc className="size-4"/>Saving…</>  : <><Save className="size-4" /> Save changes</>}
                 </Btn>
               </>
             )}
