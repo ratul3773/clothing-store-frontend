@@ -1,5 +1,6 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import {
   useFieldArray,
   useWatch,
@@ -7,7 +8,7 @@ import {
   type FieldArrayWithId,
 } from "react-hook-form";
 import { FormField } from "@/components/common/form-field";
-import { Btn } from "@/components/cms/ui";
+
 import { bdt } from "@/lib/utils";
 import type { PublicProduct } from "@/redux/apis/types/product.types";
 import type { ManualOrderFormValues } from "../_schemas/manual-order.schema";
@@ -79,9 +80,9 @@ function LineFields({
             </p>
           )}
         </div>
-        <Btn disabled={disabled} onClick={onRemove}>
+        <CmsButton variant="outline" disabled={disabled} onClick={onRemove}>
           Remove
-        </Btn>
+        </CmsButton>
       </div>
       {product?.type === "PRODUCT" && (
         <FormField

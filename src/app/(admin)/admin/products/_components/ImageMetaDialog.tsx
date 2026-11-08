@@ -1,11 +1,12 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useImageMetaDialog from "../_hooks/useImageMetaDialog";
 
 import Image from 'next/image';
 
 import Modal from "@/components/cms/Modal";
-import { Btn } from "@/components/cms/ui";
+
 import type {
   ProductColor,
   ProductImage,
@@ -44,15 +45,15 @@ export default function ImageMetaDialog({
       size="md"
       footer={
         <>
-          <Btn onClick={() => onOpenChange(false)}>Cancel</Btn>
-          <Btn
+          <CmsButton variant="outline" onClick={() => onOpenChange(false)}>Cancel</CmsButton>
+          <CmsButton
             type="submit"
             form="image-meta-form"
-            variant="primary"
+            variant="default"
             disabled={updateState.isLoading || !form.formState.isDirty}
           >
             {updateState.isLoading ? "Saving…" : "Save details"}
-          </Btn>
+          </CmsButton>
         </>
       }
     >

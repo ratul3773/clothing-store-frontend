@@ -1,4 +1,5 @@
 'use client'
+import { CmsButton } from "@/components/ui/button";
 import { useWatch } from "react-hook-form";
 
 import { FormField } from '@/components/common/form-field'
@@ -7,7 +8,7 @@ import { useForm } from 'react-hook-form'
 import { flashFormSchema } from '../_schemas/flash.schema'
 
 import Modal from '@/components/cms/Modal'
-import { Btn } from '@/components/cms/ui'
+
 import { useStore } from '@/components/providers/StoreProvider'
 import { byId } from '@/data/catalog'
 import { saveFlash, uid } from '@/data/cms'
@@ -65,7 +66,7 @@ function Inner({ onOpenChange, sale, now }: Props) {
       size="lg"
       title={sale ? 'Edit flash sale' : 'New flash sale'}
       description="Discount applies on top of the current offer price while the campaign is live."
-      footer={<><Btn onClick={() => onOpenChange(false)}>Cancel</Btn><Btn variant="primary" type="submit" form="flash-form">{sale ? 'Save changes' : 'Create campaign'}</Btn></>}
+      footer={<><CmsButton variant="outline" onClick={() => onOpenChange(false)}>Cancel</CmsButton><CmsButton variant="default" type="submit" form="flash-form">{sale ? 'Save changes' : 'Create campaign'}</CmsButton></>}
     >
       <form id="flash-form" onSubmit={submit} noValidate className="grid gap-4">
         <div className="grid gap-4 sm:grid-cols-[1fr_120px]">

@@ -1,9 +1,10 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import { AlertTriangle, Pencil, Save } from "lucide-react";
 import { useState } from "react";
 
-import { Badge, Btn, Card, CardHeader, PageHeader } from "@/components/cms/ui";
+import { Badge, Card, CardHeader, PageHeader } from "@/components/cms/ui";
 import type { AdminProduct } from "@/redux/apis/types/product.types";
 
 import { STATUS_TONES } from "../_constants/products.constants";
@@ -54,14 +55,14 @@ export default function ProductEditForm({ product, reload }: Props) {
         crumbs={["Catalog", "Products", product.name]}
         actions={
           <>
-            <Btn onClick={() => go("/admin/products")}>Back</Btn>
+            <CmsButton variant="outline" onClick={() => go("/admin/products")}>Back</CmsButton>
             {!editable ? (
-              <Btn variant="primary" onClick={() => setEditable(true)}>
+              <CmsButton variant="default" onClick={() => setEditable(true)}>
                 <Pencil className="size-4" /> Edit
-              </Btn>
+              </CmsButton>
             ) : (
               <>
-                <Btn
+                <CmsButton variant="outline"
                   onClick={() => {
                     form.reset(toCoreFormValues(product));
                     setEditable(false);
@@ -69,15 +70,15 @@ export default function ProductEditForm({ product, reload }: Props) {
                   disabled={isSubmitting}
                 >
                   Cancel
-                </Btn>
-                <Btn
+                </CmsButton>
+                <CmsButton
                   type="submit"
                   form="product-edit-form"
-                  variant="primary"
+                  variant="default"
                   disabled={isSubmitting || !form.formState.isDirty}
                 >
                   {isSubmitting ?<> <FadeArc className="size-4"/>Saving…</>  : <><Save className="size-4" /> Save changes</>}
-                </Btn>
+                </CmsButton>
               </>
             )}
             <ProductStatusActions
@@ -102,7 +103,7 @@ export default function ProductEditForm({ product, reload }: Props) {
         <div className="mb-4 flex flex-wrap items-center gap-2 rounded border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
           <AlertTriangle className="size-4 shrink-0" />
           <span className="flex-1">{conflict}</span>
-          <Btn
+          <CmsButton variant="outline"
             size="sm"
             onClick={async () => {
               try {
@@ -116,10 +117,10 @@ export default function ProductEditForm({ product, reload }: Props) {
             }}
           >
             Reload latest
-          </Btn>
-          <Btn size="sm" variant="ghost" onClick={() => setConflict(null)}>
+          </CmsButton>
+          <CmsButton size="sm" variant="ghost" onClick={() => setConflict(null)}>
             Dismiss
-          </Btn>
+          </CmsButton>
         </div>
       )}
 

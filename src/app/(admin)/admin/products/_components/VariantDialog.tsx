@@ -1,10 +1,11 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useCreateVariantDialog, { type Props } from "../_hooks/useCreateVariantDialog";
 import useEditVariantDialog from "../_hooks/useEditVariantDialog";
 
 import Modal from "@/components/cms/Modal";
-import { Btn } from "@/components/cms/ui";
+
 import type {
   AdminVariant
 } from "@/redux/apis/types/product.types";
@@ -30,15 +31,15 @@ function CreateVariantDialog({ productId, colors, open, onOpenChange }: Props) {
       description="Every colour / size pair is unique. The SKU is generated from the product code."
       footer={
         <>
-          <Btn onClick={() => onOpenChange(false)}>Cancel</Btn>
-          <Btn
+          <CmsButton variant="outline" onClick={() => onOpenChange(false)}>Cancel</CmsButton>
+          <CmsButton
             type="submit"
             form="variant-create-form"
-            variant="primary"
+            variant="default"
             disabled={createState.isLoading || !form.formState.isDirty}
           >
             {createState.isLoading ? "Saving…" : "Add variant"}
-          </Btn>
+          </CmsButton>
         </>
       }
     >
@@ -109,15 +110,15 @@ function EditVariantDialog({
       description={variant.sku}
       footer={
         <>
-          <Btn onClick={() => onOpenChange(false)}>Cancel</Btn>
-          <Btn
+          <CmsButton variant="outline" onClick={() => onOpenChange(false)}>Cancel</CmsButton>
+          <CmsButton
             type="submit"
             form="variant-edit-form"
-            variant="primary"
+            variant="default"
             disabled={updateState.isLoading || !form.formState.isDirty}
           >
             {updateState.isLoading ? "Saving…" : "Save variant"}
-          </Btn>
+          </CmsButton>
         </>
       }
     >

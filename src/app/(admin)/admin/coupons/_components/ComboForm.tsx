@@ -1,8 +1,9 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useComboForm from "../_hooks/useComboForm";
 
-import { Btn } from "@/components/cms/ui";
+
 import { apiErrorMessage } from "@/redux/api.utils";
 import type { ComboEditorProps } from "../_hooks/useComboSubmit";
 import ComboEditor from "./ComboEditor";
@@ -17,7 +18,7 @@ export default function ComboForm({ comboId, ...editorProps }: Props) {
     return (
       <div role="alert">
         <p>{apiErrorMessage(error)}</p>
-        <Btn onClick={() => void refetch()}>Retry combo</Btn>
+        <CmsButton variant="outline" onClick={() => void refetch()}>Retry combo</CmsButton>
       </div>
     );
   return <ComboEditor original={data ?? null} {...editorProps} />;

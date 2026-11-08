@@ -1,5 +1,6 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import Image from "next/image";
 import {
   ArrowDown,
@@ -11,7 +12,7 @@ import {
 } from "lucide-react";
 
 import AlertDialogText from "@/components/common/Alert-Dialogue";
-import { Badge, Btn, Card, CardHeader } from "@/components/cms/ui";
+import { Badge, Card, CardHeader } from "@/components/cms/ui";
 
 import type { AdminProduct } from "@/redux/apis/types/product.types";
 
@@ -44,14 +45,14 @@ export default function ImagesManager({ product }: { product: AdminProduct }) {
         title="Images"
         description={`${product.images.length} of ${MAX_IMAGES} images · JPEG, PNG, WebP, or AVIF · max 5 MB each.`}
         actions={
-          <Btn
+          <CmsButton variant="outline"
             size="sm"
             onClick={() => inputRef.current?.click()}
             disabled={busy || product.images.length >= MAX_IMAGES}
           >
             <ImagePlus className="size-3.5" />{" "}
             {uploadState.isLoading ? "Uploading…" : "Add image"}
-          </Btn>
+          </CmsButton>
         }
       />
       <input
@@ -118,7 +119,7 @@ export default function ImagesManager({ product }: { product: AdminProduct }) {
                         <Tip
                           label="Move image to the top"
                           children={
-                            <Btn
+                            <CmsButton
                               size="icon"
                               variant="ghost"
                               className="size-6"
@@ -127,13 +128,13 @@ export default function ImagesManager({ product }: { product: AdminProduct }) {
                               aria-label="Move image earlier"
                             >
                               <ArrowUp className="size-3.5" />
-                            </Btn>
+                            </CmsButton>
                           }
                         />
                         <Tip
                           label="Move image to the bottom"
                           children={
-                            <Btn
+                            <CmsButton
                               size="icon"
                               variant="ghost"
                               className="size-6"
@@ -142,13 +143,13 @@ export default function ImagesManager({ product }: { product: AdminProduct }) {
                               aria-label="Move image later"
                             >
                               <ArrowDown className="size-3.5" />
-                            </Btn>
+                            </CmsButton>
                           }
                         />
                         <Tip
                           label="Set as primary image"
                           children={
-                            <Btn
+                            <CmsButton
                               size="icon"
                               variant="ghost"
                               className="size-6"
@@ -157,13 +158,13 @@ export default function ImagesManager({ product }: { product: AdminProduct }) {
                               aria-label="Set as primary image"
                             >
                               <Star className="size-3.5" />
-                            </Btn>
+                            </CmsButton>
                           }
                         />
                         <Tip
                           label="Edit"
                           children={
-                            <Btn
+                            <CmsButton
                               size="icon"
                               variant="ghost"
                               className="size-6"
@@ -172,13 +173,13 @@ export default function ImagesManager({ product }: { product: AdminProduct }) {
                               aria-label="Edit image details"
                             >
                               <Pencil className="size-3.5" />
-                            </Btn>
+                            </CmsButton>
                           }
                         />
                         <Tip
                           label="Delete"
                           children={
-                            <Btn
+                            <CmsButton
                               size="icon"
                               variant="ghost"
                               className="size-6 text-destructive"
@@ -187,7 +188,7 @@ export default function ImagesManager({ product }: { product: AdminProduct }) {
                               aria-label="Delete image"
                             >
                               <Trash2 className="size-3.5" />
-                            </Btn>
+                            </CmsButton>
                           }
                         />
                       </div>

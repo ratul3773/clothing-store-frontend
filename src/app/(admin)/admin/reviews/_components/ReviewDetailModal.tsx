@@ -1,8 +1,9 @@
 'use client'
 
+import { CmsButton } from "@/components/ui/button";
 import { fmtDate, productOf, stars, statusOf } from '@/app/(admin)/admin/reviews/_utils/reviews.utils'
 import Modal from '@/components/cms/Modal'
-import { Badge, Btn } from '@/components/cms/ui'
+import { Badge } from '@/components/cms/ui';
 import AlertDialogText from '@/components/common/Alert-Dialogue'
 import { FormField } from '@/components/common/form-field'
 import { useStore } from '@/components/providers/StoreProvider'
@@ -43,11 +44,11 @@ function Inner({ id, onClose, replyToReview, patchReview, removeReview, toast }:
         description={`${p?.name ?? 'Unknown product'} · ${fmtDate(r.createdAt)}`}
         footer={
           <>
-            <Btn variant="dangerOutline" onClick={() => setConfirm(true)}><Trash2 className="size-4" />Delete</Btn>
-            <Btn onClick={() => { patchReview(r.id, { hidden: !r.hidden }); toast(r.hidden ? 'Review published' : 'Review hidden') }}>
+            <CmsButton variant="destructive" onClick={() => setConfirm(true)}><Trash2 className="size-4" />Delete</CmsButton>
+            <CmsButton variant="outline" onClick={() => { patchReview(r.id, { hidden: !r.hidden }); toast(r.hidden ? 'Review published' : 'Review hidden') }}>
               {r.hidden ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
               {r.hidden ? 'Show' : 'Hide'}
-            </Btn>
+            </CmsButton>
           </>
         }
       >
@@ -70,8 +71,8 @@ function Inner({ id, onClose, replyToReview, patchReview, removeReview, toast }:
             <FormField form={form} id="review-reply-text" name="reply" isAdmin isTextArea label="Public reply" placeholder="Write a reply visible on the product page" />
           </form>
           <div className="flex gap-2">
-            <Btn type="submit" form="review-reply" variant="primary">{r.reply ? 'Update reply' : 'Post reply'}</Btn>
-            {r.reply && <Btn onClick={() => { replyToReview(r.id, null); form.reset({ reply: '' }); toast('Reply removed') }}>Remove reply</Btn>}
+            <CmsButton type="submit" form="review-reply" variant="default">{r.reply ? 'Update reply' : 'Post reply'}</CmsButton>
+            {r.reply && <CmsButton variant="outline" onClick={() => { replyToReview(r.id, null); form.reset({ reply: '' }); toast('Reply removed') }}>Remove reply</CmsButton>}
           </div>
         </div>
       </Modal>

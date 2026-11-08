@@ -1,6 +1,7 @@
 'use client'
 
-import { Btn } from '@/components/cms/ui'
+import { CmsButton } from "@/components/ui/button";
+
 import { FormField } from '@/components/common/form-field'
 import { useStore } from '@/components/providers/StoreProvider'
 import { saveSettings } from '@/data/cms'
@@ -29,14 +30,14 @@ export default function AnnouncementSection() {
           <li key={field.id} className="flex items-center gap-2">
             <span className="w-5 text-right text-xs text-muted-foreground">{i + 1}</span>
             <FormField form={form} id={`announcement-${field.id}`} name={`messages.${i}.text`} isAdmin isInput label={`Message ${i + 1}`} className="flex-1" />
-            <Btn size="icon" variant="ghost" aria-label="Move up" disabled={i === 0} onClick={() => move(i, i - 1)}><ArrowUp className="size-4" /></Btn>
-            <Btn size="icon" variant="ghost" aria-label="Move down" disabled={i === fields.length - 1} onClick={() => move(i, i + 1)}><ArrowDown className="size-4" /></Btn>
-            <Btn size="icon" variant="ghost" aria-label="Remove" onClick={() => remove(i)}><Trash2 className="size-4 text-red-600" /></Btn>
+            <CmsButton size="icon" variant="ghost" aria-label="Move up" disabled={i === 0} onClick={() => move(i, i - 1)}><ArrowUp className="size-4" /></CmsButton>
+            <CmsButton size="icon" variant="ghost" aria-label="Move down" disabled={i === fields.length - 1} onClick={() => move(i, i + 1)}><ArrowDown className="size-4" /></CmsButton>
+            <CmsButton size="icon" variant="ghost" aria-label="Remove" onClick={() => remove(i)}><Trash2 className="size-4 text-red-600" /></CmsButton>
           </li>
         ))}
         {fields.length === 0 && <li className="text-xs text-muted-foreground">No messages. The announcement bar will be hidden or use defaults.</li>}
       </ul>
-      <div><Btn onClick={() => append({ text: '' })}><Plus className="size-4" />Add message</Btn></div>
+      <div><CmsButton variant="outline" onClick={() => append({ text: '' })}><Plus className="size-4" />Add message</CmsButton></div>
     </SectionShell>
   )
 }

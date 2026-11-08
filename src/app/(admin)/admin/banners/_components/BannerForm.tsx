@@ -1,4 +1,5 @@
 "use client";
+import { CmsButton } from "@/components/ui/button";
 import { useWatch } from "react-hook-form";
 
 import { FormField } from "@/components/common/form-field";
@@ -8,7 +9,7 @@ import { bannerFormSchema } from "../_schemas/banner.schema";
 
 import ImageField from "@/components/cms/ImageField";
 import Modal from "@/components/cms/Modal";
-import { Btn } from "@/components/cms/ui";
+
 import { useStore } from "@/components/providers/StoreProvider";
 import { saveBanner, uid } from "@/data/cms";
 import { banners, type Banner } from "@/data/site";
@@ -61,10 +62,10 @@ function Inner({ onOpenChange, banner }: Omit<Props, "open">) {
       title={banner ? "Edit banner" : "New banner"}
       footer={
         <>
-          <Btn onClick={() => onOpenChange(false)}>Cancel</Btn>
-          <Btn variant="primary" type="submit" form="banner-form">
+          <CmsButton variant="outline" onClick={() => onOpenChange(false)}>Cancel</CmsButton>
+          <CmsButton variant="default" type="submit" form="banner-form">
             Save
-          </Btn>
+          </CmsButton>
         </>
       }
     >

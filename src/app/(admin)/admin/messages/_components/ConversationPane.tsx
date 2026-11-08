@@ -1,7 +1,8 @@
 'use client'
 
+import { CmsButton } from "@/components/ui/button";
 import { fmtDateTime, statusTone } from '@/app/(admin)/admin/messages/_utils/messages.utils'
-import { Badge, Btn, Empty } from '@/components/cms/ui'
+import { Badge, Empty } from '@/components/cms/ui';
 import AlertDialogText from '@/components/common/Alert-Dialogue'
 import { FormField } from '@/components/common/form-field'
 import { useStore } from '@/components/providers/StoreProvider'
@@ -39,11 +40,11 @@ export default function ConversationPane({ message: m, onDeleted }: { message: M
         </div>
         <div className="flex gap-2">
           {m.status === 'resolved' ? (
-            <Btn onClick={() => { patchMessage(m.id, { status: 'open' }); toast('Conversation reopened') }}><RotateCcw className="size-4" />Reopen</Btn>
+            <CmsButton variant="outline" onClick={() => { patchMessage(m.id, { status: 'open' }); toast('Conversation reopened') }}><RotateCcw className="size-4" />Reopen</CmsButton>
           ) : (
-            <Btn onClick={() => { patchMessage(m.id, { status: 'resolved' }); toast('Marked as resolved') }}><CheckCircle2 className="size-4" />Mark resolved</Btn>
+            <CmsButton variant="outline" onClick={() => { patchMessage(m.id, { status: 'resolved' }); toast('Marked as resolved') }}><CheckCircle2 className="size-4" />Mark resolved</CmsButton>
           )}
-          <Btn variant="dangerOutline" onClick={() => setConfirm(true)}><Trash2 className="size-4" />Delete</Btn>
+          <CmsButton variant="destructive" onClick={() => setConfirm(true)}><Trash2 className="size-4" />Delete</CmsButton>
         </div>
       </div>
       <div className="flex-1 space-y-3 overflow-y-auto bg-muted/30 p-4">
@@ -60,7 +61,7 @@ export default function ConversationPane({ message: m, onDeleted }: { message: M
       </div>
       <form onSubmit={send} noValidate className="space-y-2 border-t border-border p-4">
         <FormField form={form} id="message-reply" name="text" isAdmin isTextArea label="Reply" placeholder="Type your reply" />
-        <Btn type="submit" variant="primary">Send reply</Btn>
+        <CmsButton type="submit" variant="default">Send reply</CmsButton>
       </form>
       <AlertDialogText mode="normal" open={confirm} onOpenChange={setConfirm} title="Delete message?" description="This conversation and its replies will be permanently removed." actionType="delete" onConfirm={() => { deleteMessage(m.id); toast('Message deleted'); onDeleted() }} />
     </div>

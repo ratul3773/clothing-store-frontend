@@ -1,8 +1,9 @@
 'use client'
+import { CmsButton } from "@/components/ui/button";
 import { useWatch } from "react-hook-form";
 
 import type { Customer } from '@/app/(admin)/admin/customers/_types/customer.types'
-import { Badge, Btn } from '@/components/cms/ui'
+import { Badge } from '@/components/cms/ui';
 import { FormField } from '@/components/common/form-field'
 import { useStore } from '@/components/providers/StoreProvider'
 import { patchCustomer } from '@/data/cms'
@@ -37,12 +38,12 @@ export default function CustomerNotes({ customer }: { customer: Customer }) {
         </div>
         <div className="flex gap-2">
           <FormField form={form} id="customer-tag" name="tag" label="Tags" isAdmin isInput placeholder="Add tag and press Enter" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag() } }} />
-          <Btn onClick={addTag}>Add</Btn>
+          <CmsButton variant="outline" onClick={addTag}>Add</CmsButton>
         </div>
       </div>
       <form onSubmit={form.handleSubmit(({ note }) => { patchCustomer(customer.key, { note: note.trim() }); form.reset({ tag: form.getValues('tag'), note: note.trim() }); toast('Note saved') })} noValidate className="space-y-4">
         <FormField form={form} id="customer-note" name="note" label="Internal note" description="Only visible to staff." isAdmin isTextArea />
-        <Btn type="submit" variant="primary" disabled={note === customer.note}>Save note</Btn>
+        <CmsButton type="submit" variant="default" disabled={note === customer.note}>Save note</CmsButton>
       </form>
     </div>
   )

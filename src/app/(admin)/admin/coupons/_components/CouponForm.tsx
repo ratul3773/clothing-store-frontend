@@ -1,4 +1,5 @@
 'use client'
+import { CmsButton } from "@/components/ui/button";
 import { useWatch } from "react-hook-form";
 
 import { FormField } from '@/components/common/form-field'
@@ -7,7 +8,7 @@ import { useForm } from 'react-hook-form'
 import { couponFormSchema } from '../_schemas/coupon.schema'
 
 import Modal from '@/components/cms/Modal'
-import { Btn } from '@/components/cms/ui'
+
 import { useStore } from '@/components/providers/StoreProvider'
 import { saveCoupon } from '@/data/cms'
 import { couponToDraft, draftToCoupon, emptyCoupon, type Coupon, type CouponDraft } from '../_utils/coupon.utils'
@@ -30,7 +31,7 @@ function Inner({ onOpenChange, coupon }: Omit<Props, 'open'>) {
   })
 
   return (
-    <Modal open onOpenChange={onOpenChange} title={coupon ? `Edit ${coupon.code}` : 'New coupon'} footer={<><Btn onClick={() => onOpenChange(false)}>Cancel</Btn><Btn variant="primary" type="submit" form="coupon-form">Save</Btn></>}>
+    <Modal open onOpenChange={onOpenChange} title={coupon ? `Edit ${coupon.code}` : 'New coupon'} footer={<><CmsButton variant="outline" onClick={() => onOpenChange(false)}>Cancel</CmsButton><CmsButton variant="default" type="submit" form="coupon-form">Save</CmsButton></>}>
       <form id="coupon-form" onSubmit={submit} noValidate className="grid gap-4">
         <FormField form={form} id="coupon-code" name="code" isAdmin isInput label="Code" className="font-mono uppercase" onValueChange={(value) => form.setValue('code', value.toUpperCase(), { shouldDirty: true })} />
         <div className="grid grid-cols-2 gap-4">

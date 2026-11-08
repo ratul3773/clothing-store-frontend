@@ -1,6 +1,7 @@
 "use client";
 
-import { Badge, Btn } from "@/components/cms/ui";
+import { CmsButton } from "@/components/ui/button";
+import { Badge } from "@/components/cms/ui";
 import { FormField } from "@/components/common/form-field";
 import { bdt } from "@/lib/utils";
 import { Minus, Plus, Trash2 } from "lucide-react";
@@ -115,7 +116,7 @@ export default function ComboItemsList({
               </div>
               <div className="space-y-1">
                 <div className="flex items-end gap-1">
-                  <Btn
+                  <CmsButton variant="outline"
                     size="icon"
                     disabled={
                       busy ||
@@ -126,9 +127,9 @@ export default function ComboItemsList({
                     onClick={() => setQuantity(quantity - 1)}
                   >
                     <Minus className="size-3.5" />
-                  </Btn>
+                  </CmsButton>
                   <FormField form={form} id={`combo-quantity-${item.id}`} name={`items.${index}.quantity`} label="Quantity" isAdmin isInput valueAsNumber type="number" className="w-16 text-center" min={1} max={Math.max(1, maxQuantity)} aria-label={`Quantity of ${item.product.name} ${item.color.name}`} />
-                  <Btn
+                  <CmsButton variant="outline"
                     size="icon"
                     disabled={
                       busy ||
@@ -139,10 +140,10 @@ export default function ComboItemsList({
                     onClick={() => setQuantity(quantity + 1)}
                   >
                     <Plus className="size-3.5" />
-                  </Btn>
+                  </CmsButton>
                 </div>
               </div>
-              <Btn
+              <CmsButton
                 variant="ghost"
                 size="icon"
                 disabled={busy}
@@ -150,7 +151,7 @@ export default function ComboItemsList({
                 onClick={() => remove(index)}
               >
                 <Trash2 className="size-4 text-destructive" />
-              </Btn>
+              </CmsButton>
               <Controller
                 control={form.control}
                 name={`items.${index}.variantIds`}
@@ -159,24 +160,24 @@ export default function ComboItemsList({
                     <legend className="sr-only">Allowed variants for {item.product.name} {item.color.name}</legend>
                     <p className="text-xs font-medium">Allowed variants</p>
                     <div className="flex flex-wrap gap-2">
-                      <Btn
+                      <CmsButton
                         size="sm"
-                        variant={field.value == null ? "primary" : "outline"}
+                        variant={field.value == null ? "default" : "outline"}
                         aria-pressed={field.value == null}
                         onClick={() => field.onChange(null)}
                       >
                         All variants
-                      </Btn>
-                      <Btn size="sm" onClick={() => field.onChange([])}>
+                      </CmsButton>
+                      <CmsButton variant="outline" size="sm" onClick={() => field.onChange([])}>
                         Clear selection
-                      </Btn>
+                      </CmsButton>
                       {item.variants.map((variant) => {
                         const selected = field.value == null || field.value.includes(variant.id);
                         return (
-                          <Btn
+                          <CmsButton
                             key={variant.id}
                             size="sm"
-                            variant={selected ? "primary" : "outline"}
+                            variant={selected ? "default" : "outline"}
                             aria-pressed={selected}
                             aria-label={`${variant.size} for ${item.product.name} ${item.color.name}`}
                             onClick={() => {
@@ -185,7 +186,7 @@ export default function ComboItemsList({
                             }}
                           >
                             {variant.size}
-                          </Btn>
+                          </CmsButton>
                         );
                       })}
                     </div>

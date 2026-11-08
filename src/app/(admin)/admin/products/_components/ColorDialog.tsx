@@ -1,8 +1,9 @@
 
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import Modal from "@/components/cms/Modal";
-import { Btn } from "@/components/cms/ui";
+
 
 import { FormField } from "@/components/common/form-field";
 import type { ProductColor } from "@/redux/apis/types/product.types";
@@ -46,15 +47,15 @@ export default function ColorDialog({
       size="md"
       footer={
         <>
-          <Btn onClick={() => onOpenChange(false)}>Cancel</Btn>
-          <Btn
+          <CmsButton variant="outline" onClick={() => onOpenChange(false)}>Cancel</CmsButton>
+          <CmsButton
             type="submit"
             form="color-form"
-            variant="primary"
+            variant="default"
             disabled={isSaving || !form.formState.isDirty}
           >
             {isSaving ? "Saving…" : "Save colour"}
-          </Btn>
+          </CmsButton>
         </>
       }
     >

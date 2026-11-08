@@ -1,5 +1,6 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useCategoriesTable from "../_hooks/useCategoriesTable";
 
 import { Pencil, Trash2 } from "lucide-react";
@@ -7,7 +8,7 @@ import Image from "next/image";
 
 import DataTable, { type Column } from "@/components/cms/DataTable";
 import TableSkeleton from "@/components/cms/TableSkeleton";
-import { Badge, Btn, Empty } from "@/components/cms/ui";
+import { Badge, Empty } from "@/components/cms/ui";
 import AlertDialogText from "@/components/common/Alert-Dialogue";
 import { cn } from "@/lib/utils";
 import type { CategoryRow } from "@/redux/apis/types/category.types";
@@ -108,10 +109,10 @@ export default function CategoriesTable({
       align: "right",
       cell: (category) => (
         <div className="flex items-center justify-end gap-1">
-          <Btn size="sm" onClick={() => onEdit(category)}>
+          <CmsButton variant="outline" size="sm" onClick={() => onEdit(category)}>
             <Pencil className="size-3.5" /> Edit
-          </Btn>
-          <Btn
+          </CmsButton>
+          <CmsButton
             size="icon"
             variant="ghost"
             className="size-7 text-red-600"
@@ -119,7 +120,7 @@ export default function CategoriesTable({
             aria-label={`Delete ${category.name}`}
           >
             <Trash2 className="size-3.5" />
-          </Btn>
+          </CmsButton>
         </div>
       ),
     },
@@ -139,9 +140,9 @@ export default function CategoriesTable({
             title="No categories yet"
             description="Categories organise products. Create a parent category first, then add children."
             action={
-              <Btn variant="primary" onClick={onCreate}>
+              <CmsButton variant="default" onClick={onCreate}>
                 New category
-              </Btn>
+              </CmsButton>
             }
           />
         }

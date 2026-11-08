@@ -1,8 +1,9 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useComboColorPicker from "../_hooks/useComboColorPicker";
 
-import { Badge, Btn } from "@/components/cms/ui";
+import { Badge } from "@/components/cms/ui";
 import { FormField } from "@/components/common/form-field";
 import Pagination from "@/components/common/Pagination";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -39,7 +40,7 @@ export default function ComboColorPicker({
       <div className="relative">
         <FormField form={form} id="combo-product-search" name="search" label="Search products" isAdmin isInput startIcon={Search} placeholder="Search by product name or code..." onValueChange={() => setPage(1)} />
         {search && (
-          <Btn
+          <CmsButton
             variant="ghost"
             size="icon"
             className="absolute bottom-0 right-0"
@@ -50,7 +51,7 @@ export default function ComboColorPicker({
             }}
           >
             <X className="size-3.5" />
-          </Btn>
+          </CmsButton>
         )}
       </div>
       {products.isFetching ? (
@@ -74,7 +75,7 @@ export default function ComboColorPicker({
       ) : products.isError ? (
         <div role="alert">
           Could not load products.{" "}
-          <Btn onClick={() => void products.refetch()}>Retry products</Btn>
+          <CmsButton variant="outline" onClick={() => void products.refetch()}>Retry products</CmsButton>
         </div>
       ) : (
         <>
@@ -189,7 +190,7 @@ export default function ComboColorPicker({
         ) : detail.isError ? (
           <div role="alert">
             Could not load colors.{" "}
-            <Btn onClick={() => void detail.refetch()}>Retry colors</Btn>
+            <CmsButton variant="outline" onClick={() => void detail.refetch()}>Retry colors</CmsButton>
           </div>
         ) : (
           product && (
@@ -201,14 +202,14 @@ export default function ComboColorPicker({
                     Add a color below. Repeated pieces share one selected size.
                   </p>
                 </div>
-                <Btn
+                <CmsButton
                   variant="ghost"
                   size="icon"
                   aria-label="Close product colors"
                   onClick={() => setProductId("")}
                 >
                   <X className="size-4" />
-                </Btn>
+                </CmsButton>
               </div>
               {!product.colors.length && (
                 <p className="text-sm text-muted-foreground">
@@ -307,16 +308,16 @@ export default function ComboColorPicker({
                           {reason}
                         </p>
                       )}
-                      <Btn
+                      <CmsButton
                         className="w-full"
-                        variant={quantity ? "outline" : "primary"}
+                        variant={quantity ? "outline" : "default"}
                         disabled={disabled || !!reason}
                         aria-label={`Add ${product.name} ${color.name}`}
                         onClick={() => onAdd(buildComponent(product, color))}
                       >
                         <Plus className="size-3.5" />
                         {quantity ? "Add another piece" : "Add to combo"}
-                      </Btn>
+                      </CmsButton>
                     </li>
                   );
                 })}

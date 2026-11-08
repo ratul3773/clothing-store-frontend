@@ -1,8 +1,9 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { Btn } from "@/components/cms/ui";
+
 import type { PageMeta } from "@/redux/api.utils";
 
 type Props = {
@@ -29,7 +30,7 @@ export default function ServerPagination({
         {from}–{to} of {meta.total}
       </span>
       <div className="flex items-center gap-1">
-        <Btn
+        <CmsButton variant="outline"
           size="icon"
           className="size-7"
           disabled={page <= 1 || loading}
@@ -37,11 +38,11 @@ export default function ServerPagination({
           aria-label="Previous page"
         >
           <ChevronLeft className="size-4" />
-        </Btn>
+        </CmsButton>
         <span className="px-2">
           Page {meta.page} / {Math.max(meta.totalPage, 1)}
         </span>
-        <Btn
+        <CmsButton variant="outline"
           size="icon"
           className="size-7"
           disabled={page >= meta.totalPage || loading}
@@ -49,7 +50,7 @@ export default function ServerPagination({
           aria-label="Next page"
         >
           <ChevronRight className="size-4" />
-        </Btn>
+        </CmsButton>
       </div>
     </div>
   );

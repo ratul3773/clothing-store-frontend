@@ -1,10 +1,11 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useProductStatusActions from "../_hooks/useProductStatusActions";
 
 import { Archive, RotateCcw, Send, Trash2, Undo2 } from "lucide-react";
 
-import { Btn } from "@/components/cms/ui";
+
 import AlertDialogText from "@/components/common/Alert-Dialogue";
 import type { AdminProduct } from "@/redux/apis/types/product.types";
 
@@ -35,20 +36,20 @@ export default function ProductStatusActions({
   return (
     <div className="flex flex-wrap items-center gap-2">
       {product.status === "DRAFT" && (
-        <Btn
+        <CmsButton
           size={size}
-          variant="primary"
+          variant="default"
           disabled={busy}
           onClick={() =>
             void run(() => publish(product.id).unwrap(), "Product published.")
           }
         >
           <Send className="size-3.5" /> Publish
-        </Btn>
+        </CmsButton>
       )}
 
       {product.status === "ACTIVE" && (
-        <Btn
+        <CmsButton variant="outline"
           size={size}
           disabled={busy}
           onClick={() =>
@@ -59,11 +60,11 @@ export default function ProductStatusActions({
           }
         >
           <Undo2 className="size-3.5" /> Unpublish
-        </Btn>
+        </CmsButton>
       )}
 
       {product.status === "ARCHIVED" ? (
-        <Btn
+        <CmsButton variant="outline"
           size={size}
           disabled={busy}
           onClick={() =>
@@ -74,9 +75,9 @@ export default function ProductStatusActions({
           }
         >
           <RotateCcw className="size-3.5" /> Restore
-        </Btn>
+        </CmsButton>
       ) : (
-        <Btn
+        <CmsButton variant="outline"
           size={size}
           disabled={busy}
           onClick={() =>
@@ -84,19 +85,19 @@ export default function ProductStatusActions({
           }
         >
           <Archive className="size-3.5" /> Archive
-        </Btn>
+        </CmsButton>
       )}
 
       {product.status === "DRAFT" && (
         <>
-          <Btn
+          <CmsButton
             size={size}
-            variant="dangerOutline"
+            variant="destructive"
             disabled={busy}
             onClick={() => setConfirmDelete(true)}
           >
             <Trash2 className="size-3.5" /> Delete
-          </Btn>
+          </CmsButton>
           <AlertDialogText
             open={confirmDelete}
             onOpenChange={setConfirmDelete}

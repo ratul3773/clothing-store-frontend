@@ -1,9 +1,10 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import { FormField } from "@/components/common/form-field";
 import { Save } from "lucide-react";
 
-import { Btn, Card, CardHeader, PageHeader } from "@/components/cms/ui";
+import { Card, CardHeader, PageHeader } from "@/components/cms/ui";
 import { useProduct } from "../_hooks/useCreateProduct";
 import BasicSection from "./BasicSection";
 import DetailsSection from "./DetailsSection";
@@ -36,18 +37,18 @@ export default function ProductCreateForm() {
         crumbs={["Catalog", "Products", "New"]}
         actions={
           <>
-            <Btn onClick={() => go("/admin/products")} disabled={submitting}>
+            <CmsButton variant="outline" onClick={() => go("/admin/products")} disabled={submitting}>
               Cancel
-            </Btn>
-            <Btn
+            </CmsButton>
+            <CmsButton
               type="submit"
               form="product-create-form"
-              variant="primary"
+              variant="default"
               disabled={submitting || createState.isLoading}
             >
               <Save className="size-4" />
               {submitting ? "Creating…" : "Create draft"}
-            </Btn>
+            </CmsButton>
           </>
         }
       />

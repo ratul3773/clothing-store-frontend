@@ -1,10 +1,11 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useProductList from "../_hooks/useProductList";
 
 import { Plus } from "lucide-react";
 
-import { Btn, Card, Empty, PageHeader } from "@/components/cms/ui";
+import { Card, Empty, PageHeader } from "@/components/cms/ui";
 import { apiErrorMessage } from "@/redux/api.utils";
 
 import Pagination from "@/components/common/Pagination";
@@ -39,9 +40,9 @@ export default function ProductList() {
         description="Create products, manage variants, images, offers, and stock."
         crumbs={["Catalog", "Products"]}
         actions={
-          <Btn variant="primary" onClick={createProduct}>
+          <CmsButton variant="default" onClick={createProduct}>
             <Plus className="size-4" /> New product
-          </Btn>
+          </CmsButton>
         }
       />
 
@@ -75,9 +76,9 @@ export default function ProductList() {
               "Check the API connection and try again.",
             )}
             action={
-              <Btn variant="primary" onClick={() => void refetch()}>
+              <CmsButton variant="default" onClick={() => void refetch()}>
                 Try again
-              </Btn>
+              </CmsButton>
             }
           />
         ) : tab === "products" ? (

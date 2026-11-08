@@ -1,46 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-const btnBase =
-  "inline-flex h-8 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-md border px-3 text-[13px] font-medium transition-colors disabled:pointer-events-none disabled:opacity-50";
-const variants = {
-  primary:
-    "border-primary bg-primary text-primary-foreground hover:bg-primary/90",
-  outline: "border-border bg-card text-foreground hover:bg-muted/10",
-  ghost: "border-transparent text-foreground hover:bg-muted",
-  danger: "border-red-600 bg-red-600 text-white hover:bg-red-700",
-  dangerOutline:
-    "border-red-200 bg-card text-red-600 hover:bg-red-50 dark:border-red-500/30 dark:hover:bg-red-500/10",
-};
-export type BtnVariant = keyof typeof variants;
-
-export const Btn = React.forwardRef<
-  HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement> & {
-    variant?: BtnVariant;
-    size?: "sm" | "md" | "icon";
-  }
->(
-  (
-    { variant = "outline", size = "md", className, type = "button", ...p },
-    ref,
-  ) => (
-    <button
-      ref={ref}
-      type={type}
-      className={cn(
-        btnBase,
-        variants[variant],
-        size === "sm" && "h-7 px-2 text-xs",
-        size === "icon" && "w-8 px-0",
-        className,
-      )}
-      {...p}
-    />
-  ),
-);
-Btn.displayName = "Btn";
-
 export const cmsInput =
   "h-8 w-full rounded-md border border-border bg-card px-2.5 text-[13px] text-foreground outline-none placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:bg-muted/30";
 

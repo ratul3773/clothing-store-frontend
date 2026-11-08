@@ -1,11 +1,12 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useCategoryModalForm, { type Props } from "../_hooks/useCategoryModalForm";
 
 import { ImagePlus, Trash2 } from "lucide-react";
 
 import Modal from "@/components/cms/Modal";
-import { Btn } from "@/components/cms/ui";
+
 import { IMAGE_ACCEPT, validateImageFile } from "@/lib/image";
 import { apiErrorMessage } from "@/redux/api.utils";
 
@@ -49,17 +50,17 @@ function CategoryModalContent({ onOpenChange, categories, editing }: Props) {
       size="lg"
       footer={
         <>
-          <Btn onClick={() => onOpenChange(false)} disabled={saving}>
+          <CmsButton variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>
             Cancel
-          </Btn>
-          <Btn
+          </CmsButton>
+          <CmsButton
             type="submit"
             form="category-form"
-            variant="primary"
+            variant="default"
             disabled={saving || (imageRequired && !hasImage)}
           >
             {saving ? "Saving…" : editing ? "Save category" : "Create category"}
-          </Btn>
+          </CmsButton>
         </>
       }
     >
@@ -129,7 +130,7 @@ function CategoryModalContent({ onOpenChange, categories, editing }: Props) {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <Btn
+                <CmsButton variant="outline"
                   size="sm"
                   onClick={() => inputRef.current?.click()}
                   disabled={uploadState.isLoading || saving}
@@ -138,23 +139,23 @@ function CategoryModalContent({ onOpenChange, categories, editing }: Props) {
                   {selectedImage || existingImageUrl
                     ? "Change image"
                     : "Choose image"}
-                </Btn>
+                </CmsButton>
 
                 {selectedImage && (
-                  <Btn
+                  <CmsButton
                     size="sm"
-                    variant="dangerOutline"
+                    variant="destructive"
                     onClick={() => setSelectedImage(null)}
                     disabled={saving || uploadState.isLoading}
                   >
                     <Trash2 className="size-3.5" />
-                  </Btn>
+                  </CmsButton>
                 )}
 
                 {editing && existingImageUrl && !selectedImage && (
-                  <Btn
+                  <CmsButton
                     size="sm"
-                    variant="dangerOutline"
+                    variant="destructive"
                     disabled={uploadState.isLoading || removeState.isLoading}
                     onClick={async () => {
                       try {
@@ -172,7 +173,7 @@ function CategoryModalContent({ onOpenChange, categories, editing }: Props) {
                     }}
                   >
                     <Trash2 className="size-3.5" />
-                  </Btn>
+                  </CmsButton>
                 )}
 
                 {imageRequired ? (

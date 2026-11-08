@@ -1,9 +1,10 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useOfferDialog, { type Props } from "../_hooks/useOfferDialog";
 
 import Modal from "@/components/cms/Modal";
-import { Btn } from "@/components/cms/ui";
+
 import { bdt } from "@/lib/utils";
 
 import { FormField } from "@/components/common/form-field";
@@ -31,11 +32,11 @@ export default function OfferDialog({
       description={`Regular price is ${bdt(regularPrice)}. Offer price must be lower.`}
       footer={
         <>
-          <Btn onClick={() => onOpenChange(false)}>Cancel</Btn>
-          <Btn
+          <CmsButton variant="outline" onClick={() => onOpenChange(false)}>Cancel</CmsButton>
+          <CmsButton
             type="submit"
             form="offer-form"
-            variant="primary"
+            variant="default"
             disabled={
               createState.isLoading ||
               updateState.isLoading ||
@@ -45,7 +46,7 @@ export default function OfferDialog({
             {createState.isLoading || updateState.isLoading
               ? "Saving…"
               : "Save offer"}
-          </Btn>
+          </CmsButton>
         </>
       }
     >

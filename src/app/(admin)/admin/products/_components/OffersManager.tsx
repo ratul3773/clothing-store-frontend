@@ -1,10 +1,11 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useOffersManager from "../_hooks/useOffersManager";
 
 import { Pencil, Plus, Power } from "lucide-react";
 
-import { Badge, Btn, Card, CardHeader, Empty } from "@/components/cms/ui";
+import { Badge, Card, CardHeader, Empty } from "@/components/cms/ui";
 import AlertDialogText from "@/components/common/Alert-Dialogue";
 import { bdt } from "@/lib/utils";
 import type {
@@ -33,9 +34,9 @@ export default function OffersManager({ product }: { product: AdminProduct }) {
         title="Offers"
         description="Offers must be lower than the regular price and cannot overlap other active offers."
         actions={
-          <Btn size="sm" onClick={() => setDialog({ open: true })}>
+          <CmsButton variant="outline" size="sm" onClick={() => setDialog({ open: true })}>
             <Plus className="size-3.5" /> Add offer
-          </Btn>
+          </CmsButton>
         }
       />
       {offers.length === 0 ? (
@@ -77,27 +78,27 @@ export default function OffersManager({ product }: { product: AdminProduct }) {
                   </td>
                   <td className="px-3 py-2">
                     <div className="flex items-center justify-end gap-1">
-                      <Btn
+                      <CmsButton variant="outline"
                         size="sm"
                         disabled={updateState.isLoading}
                         onClick={() => void toggleActive(offer)}
                       >
                         <Power className="size-3.5" />
                         {offer.isActive ? "Pause" : "Activate"}
-                      </Btn>
-                      <Btn
+                      </CmsButton>
+                      <CmsButton variant="outline"
                         size="sm"
                         onClick={() => setDialog({ open: true, offer })}
                       >
                         <Pencil className="size-3.5" /> Edit
-                      </Btn>
-                      <Btn
+                      </CmsButton>
+                      <CmsButton
                         size="sm"
-                        variant="dangerOutline"
+                        variant="destructive"
                         onClick={() => setTarget(offer)}
                       >
                         Deactivate
-                      </Btn>
+                      </CmsButton>
                     </div>
                   </td>
                 </tr>

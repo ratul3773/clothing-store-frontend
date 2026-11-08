@@ -1,10 +1,11 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useVariantsManager from "../_hooks/useVariantsManager";
 
 import { Pencil, Plus, Trash2, Warehouse } from "lucide-react";
 
-import { Badge, Btn, Card, CardHeader, Empty } from "@/components/cms/ui";
+import { Badge, Card, CardHeader, Empty } from "@/components/cms/ui";
 import AlertDialogText from "@/components/common/Alert-Dialogue";
 import type {
   AdminProduct
@@ -48,9 +49,9 @@ export default function VariantsManager({
           title="Colours"
           description="Colours group variants and can be attached to images."
           actions={
-            <Btn size="sm" onClick={() => setColorDialog({ open: true })}>
+            <CmsButton variant="outline" size="sm" onClick={() => setColorDialog({ open: true })}>
               <Plus className="size-3.5" /> Add colour
-            </Btn>
+            </CmsButton>
           }
         />
         <div className="p-4">
@@ -75,7 +76,7 @@ export default function VariantsManager({
                       {color.hex}
                     </span>
                   )}
-                  <Btn
+                  <CmsButton
                     size="icon"
                     variant="ghost"
                     className="size-6"
@@ -83,8 +84,8 @@ export default function VariantsManager({
                     aria-label={`Edit ${color.name}`}
                   >
                     <Pencil className="size-3.5" />
-                  </Btn>
-                  <Btn
+                  </CmsButton>
+                  <CmsButton
                     size="icon"
                     variant="ghost"
                     className="size-6 text-destructive"
@@ -92,7 +93,7 @@ export default function VariantsManager({
                     aria-label={`Delete ${color.name}`}
                   >
                     <Trash2 className="size-3.5" />
-                  </Btn>
+                  </CmsButton>
                 </div>
               ))}
             </div>
@@ -105,13 +106,13 @@ export default function VariantsManager({
           title="Variants"
           description={`${product.variants.length} variant${product.variants.length === 1 ? "" : "s"} · SKUs are generated from the product code.`}
           actions={
-            <Btn
+            <CmsButton variant="outline"
               size="sm"
               onClick={() => setVariantDialog({ open: true })}
               disabled={product.colors.length === 0}
             >
               <Plus className="size-3.5" /> Add variant
-            </Btn>
+            </CmsButton>
           }
         />
         {variants.length === 0 ? (
@@ -173,18 +174,18 @@ export default function VariantsManager({
                     </td>
                     <td className="px-3 py-2">
                       <div className="flex items-center justify-end gap-1">
-                        <Btn size="sm" onClick={() => setStockVariant(variant)}>
+                        <CmsButton variant="outline" size="sm" onClick={() => setStockVariant(variant)}>
                           <Warehouse className="size-3.5" /> Stock
-                        </Btn>
-                        <Btn
+                        </CmsButton>
+                        <CmsButton variant="outline"
                           size="sm"
                           onClick={() =>
                             setVariantDialog({ open: true, variant })
                           }
                         >
                           <Pencil className="size-3.5" /> Edit
-                        </Btn>
-                        <Btn
+                        </CmsButton>
+                        <CmsButton
                           size="icon"
                           variant="ghost"
                           className="size-7 text-red-600"
@@ -192,7 +193,7 @@ export default function VariantsManager({
                           aria-label={`Delete ${variant.colorName} ${variant.size}`}
                         >
                           <Trash2 className="size-3.5" />
-                        </Btn>
+                        </CmsButton>
                       </div>
                     </td>
                   </tr>

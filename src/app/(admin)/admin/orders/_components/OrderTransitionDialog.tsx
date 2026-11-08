@@ -1,9 +1,10 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useOrderTransitionDialog from "../_hooks/useOrderTransitionDialog";
 
 import Modal from "@/components/cms/Modal";
-import { Btn } from "@/components/cms/ui";
+
 import { FormField } from "@/components/common/form-field";
 import { orderLabel } from "@/lib/order-rules";
 import type { OrderReceipt, OrderStatus } from "@/redux/apis/types/order.types";
@@ -40,16 +41,16 @@ export default function OrderTransitionDialog({
       errorMsg={error}
       footer={
         <>
-          <Btn disabled={pending} onClick={onClose}>
+          <CmsButton variant="outline" disabled={pending} onClick={onClose}>
             Back
-          </Btn>
-          <Btn
-            variant="primary"
+          </CmsButton>
+          <CmsButton
+            variant="default"
             disabled={pending}
             onClick={() => void submit()}
           >
             {pending ? "Saving…" : "Confirm"}
-          </Btn>
+          </CmsButton>
         </>
       }
     >

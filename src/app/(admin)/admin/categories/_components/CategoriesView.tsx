@@ -1,17 +1,11 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useCategoriesView from "../_hooks/useCategoriesView";
 
 import { Plus, Search } from "lucide-react";
 
-import {
-  Btn,
-  Card,
-  Empty,
-  Input,
-  PageHeader,
-  Toolbar,
-} from "@/components/cms/ui";
+import { Card, Empty, Input, PageHeader, Toolbar } from "@/components/cms/ui";
 import { apiErrorMessage } from "@/redux/api.utils";
 
 import CategoriesTable from "./CategoriesTable";
@@ -44,9 +38,9 @@ export default function CategoriesView() {
         description="Organise products into a nested catalogue. Deleting a category with products archives it instead."
         crumbs={["Catalog", "Categories"]}
         actions={
-          <Btn variant="primary" onClick={openCreate}>
+          <CmsButton variant="default" onClick={openCreate}>
             <Plus className="size-4" /> New category
-          </Btn>
+          </CmsButton>
         }
       />
 
@@ -75,9 +69,9 @@ export default function CategoriesView() {
               "Check the API connection and try again.",
             )}
             action={
-              <Btn variant="primary" onClick={() => void refetch()}>
+              <CmsButton variant="default" onClick={() => void refetch()}>
                 Try again
-              </Btn>
+              </CmsButton>
             }
           />
         ) : (

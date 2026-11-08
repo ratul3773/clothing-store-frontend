@@ -1,5 +1,6 @@
 'use client'
 
+import { CmsButton } from "@/components/ui/button";
 import { useState } from 'react'
 import { Copy, Pencil, Plus, Trash2 } from 'lucide-react'
 import { flashSales, type FlashSale } from '@/data/site'
@@ -8,7 +9,7 @@ import { useCms } from '@/lib/useCms'
 import useNow from '@/lib/useNow'
 import { useStore } from '@/components/providers/StoreProvider'
 import DataTable from '@/components/cms/DataTable'
-import { Badge, Btn, Card, Empty, PageHeader, StatCard, Switch } from '@/components/cms/ui'
+import { Badge, Card, Empty, PageHeader, StatCard, Switch } from '@/components/cms/ui';
 import { countdown, flashStatus, fmtDate, statusTone } from '../_utils/flash.utils'
 import FlashForm from './FlashForm'
 import AlertDialogText from '@/components/common/Alert-Dialogue'
@@ -43,7 +44,7 @@ export default function FlashSalesView() {
 
   return (
     <>
-      <PageHeader title="Flash sales" description="Time-limited discounts applied to selected products." crumbs={['Admin', 'Flash sales']} actions={<Btn variant="primary" onClick={() => open(null)}><Plus className="size-4" />New campaign</Btn>} />
+      <PageHeader title="Flash sales" description="Time-limited discounts applied to selected products." crumbs={['Admin', 'Flash sales']} actions={<CmsButton variant="default" onClick={() => open(null)}><Plus className="size-4" />New campaign</CmsButton>} />
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         <StatCard label="Live now" value={live.length} />
         <StatCard label="Scheduled" value={scheduled} />
@@ -54,7 +55,7 @@ export default function FlashSalesView() {
           rows={flashSales}
           rowKey={(f) => f.id}
           onRowClick={(f) => open(f)}
-          empty={<Empty title="No flash sales yet" description="Create a campaign to discount products for a limited time." action={<Btn variant="primary" onClick={() => open(null)}>New campaign</Btn>} />}
+          empty={<Empty title="No flash sales yet" description="Create a campaign to discount products for a limited time." action={<CmsButton variant="default" onClick={() => open(null)}>New campaign</CmsButton>} />}
           columns={[
             { key: 'title', header: 'Campaign', cell: (f) => <div><p className="font-medium">{f.title}</p><p className="max-w-xs truncate text-xs text-muted-foreground">{f.subtitle}</p></div> },
             { key: 'status', header: 'Status', cell: (f) => { const s = flashStatus(f, now); return <Badge tone={statusTone[s]}>{s}</Badge> } },
@@ -68,9 +69,9 @@ export default function FlashSalesView() {
               key: 'act', header: '', align: 'right',
               cell: (f) => (
                 <span className="inline-flex gap-1" onClick={(e) => e.stopPropagation()}>
-                  <Btn size="icon" variant="ghost" aria-label="Edit" onClick={() => open(f)}><Pencil className="size-4" /></Btn>
-                  <Btn size="icon" variant="ghost" aria-label="Duplicate" onClick={() => duplicate(f)}><Copy className="size-4" /></Btn>
-                  <Btn size="icon" variant="ghost" aria-label="Delete" onClick={() => setDel(f)}><Trash2 className="size-4 text-red-600" /></Btn>
+                  <CmsButton size="icon" variant="ghost" aria-label="Edit" onClick={() => open(f)}><Pencil className="size-4" /></CmsButton>
+                  <CmsButton size="icon" variant="ghost" aria-label="Duplicate" onClick={() => duplicate(f)}><Copy className="size-4" /></CmsButton>
+                  <CmsButton size="icon" variant="ghost" aria-label="Delete" onClick={() => setDel(f)}><Trash2 className="size-4 text-red-600" /></CmsButton>
                 </span>
               ),
             },

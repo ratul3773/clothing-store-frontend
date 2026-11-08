@@ -1,11 +1,12 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useStockAdjustDialog, { type Props } from "../_hooks/useStockAdjustDialog";
 
 import { Boxes, History } from "lucide-react";
 
 import Modal from "@/components/cms/Modal";
-import { Badge, Btn, Empty } from "@/components/cms/ui";
+import { Badge, Empty } from "@/components/cms/ui";
 import { cn } from "@/lib/utils";
 
 import { Swirling } from "@/components/animation/swirling";
@@ -41,18 +42,18 @@ function StockAdjustDialogContent({
       footer={
         tab === "adjust" ? (
           <>
-            <Btn onClick={() => onOpenChange(false)}>Cancel</Btn>
-            <Btn
+            <CmsButton variant="outline" onClick={() => onOpenChange(false)}>Cancel</CmsButton>
+            <CmsButton
               type="submit"
               form="stock-adjust-form"
-              variant="primary"
+              variant="default"
               disabled={adjustState.isLoading}
             >
               {adjustState.isLoading ? "Saving…" : "Apply adjustment"}
-            </Btn>
+            </CmsButton>
           </>
         ) : (
-          <Btn onClick={() => onOpenChange(false)}>Close</Btn>
+          <CmsButton variant="outline" onClick={() => onOpenChange(false)}>Close</CmsButton>
         )
       }
     >
@@ -184,7 +185,7 @@ function StockAdjustDialogContent({
                 Page {history.meta.page} of {history.meta.totalPage}
               </span>
               <div className="flex gap-1">
-                <Btn
+                <CmsButton variant="outline"
                   size="sm"
                   disabled={history.meta.page <= 1}
                   onClick={() =>
@@ -192,14 +193,14 @@ function StockAdjustDialogContent({
                   }
                 >
                   Previous
-                </Btn>
-                <Btn
+                </CmsButton>
+                <CmsButton variant="outline"
                   size="sm"
                   disabled={history.meta.page >= history.meta.totalPage}
                   onClick={() => setHistoryPage((page) => page + 1)}
                 >
                   Next
-                </Btn>
+                </CmsButton>
               </div>
             </div>
           )}

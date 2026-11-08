@@ -1,10 +1,11 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import Image from "next/image";
 import { useEffect, useMemo, useRef } from "react";
 import { ImagePlus, X } from "lucide-react";
 
-import { Btn, Card, CardHeader } from "@/components/cms/ui";
+import { Card, CardHeader } from "@/components/cms/ui";
 import { useStore } from "@/components/providers/StoreProvider";
 
 import { IMAGE_ACCEPT, MAX_IMAGES } from "../_constants/products.constants";
@@ -58,13 +59,13 @@ export default function ImagesCreateSection({ files, onChange, error }: Props) {
         title="Images"
         description={`Staged locally now and uploaded after the draft is created. Up to ${MAX_IMAGES} images, 5 MB each. The first image becomes the primary image.`}
         actions={
-          <Btn
+          <CmsButton variant="outline"
             size="sm"
             onClick={() => inputRef.current?.click()}
             disabled={files.length >= MAX_IMAGES}
           >
             <ImagePlus className="size-3.5" /> Add images
-          </Btn>
+          </CmsButton>
         }
       />
       <input

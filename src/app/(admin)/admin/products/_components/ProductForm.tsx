@@ -1,8 +1,9 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useProductEditor from "../_hooks/useProductEditor";
 
-import { Btn, Empty } from "@/components/cms/ui";
+import { Empty } from "@/components/cms/ui";
 import { apiErrorMessage } from "@/redux/api.utils";
 
 import ProductCreateForm from "./ProductCreateForm";
@@ -31,10 +32,10 @@ function ProductEditor({ productId }: { productId: string }) {
         )}
         action={
           <div className="flex gap-2">
-            <Btn onClick={() => go("/admin/products")}>Back to products</Btn>
-            <Btn variant="primary" onClick={() => void refetch()}>
+            <CmsButton variant="outline" onClick={() => go("/admin/products")}>Back to products</CmsButton>
+            <CmsButton variant="default" onClick={() => void refetch()}>
               Try again
-            </Btn>
+            </CmsButton>
           </div>
         }
       />

@@ -1,11 +1,12 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useCombosTab from "../_hooks/useCombosTab";
 
 import DataTable from "@/components/cms/DataTable";
 import Modal from "@/components/cms/Modal";
 import TableSkeleton from "@/components/cms/TableSkeleton";
-import { Btn, Card, Empty } from "@/components/cms/ui";
+import { Card, Empty } from "@/components/cms/ui";
 import Pagination from "@/components/common/Pagination";
 import { comboDiscountLabel } from "@/lib/combo-pricing";
 import { bdt } from "@/lib/utils";
@@ -45,15 +46,15 @@ export default function CombosTab() {
             onOpenChange={changeOpen}
             size="xl"
             trigger={
-              <Btn
-                variant="primary"
+              <CmsButton
+                variant="default"
                 onClick={() => {
                   setEditing(null);
                   setReplacement(false);
                 }}
               >
                 <Plus className="size-4" /> New combo
-              </Btn>
+              </CmsButton>
             }
             title={
               replacement
@@ -79,7 +80,7 @@ export default function CombosTab() {
         {error ? (
           <div role="alert" className="p-4">
             <p>{apiErrorMessage(error)}</p>
-            <Btn onClick={() => refetch()}>Retry combos</Btn>
+            <CmsButton variant="outline" onClick={() => refetch()}>Retry combos</CmsButton>
           </div>
         ) : isFetching ? (
           <TableSkeleton columns={8} />
@@ -167,13 +168,13 @@ export default function CombosTab() {
                     className="flex gap-2"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <Btn onClick={() => edit(c)}>Edit</Btn>
-                    <Btn
+                    <CmsButton variant="outline" onClick={() => edit(c)}>Edit</CmsButton>
+                    <CmsButton variant="outline"
                       disabled={updating.isLoading}
                       onClick={() => void toggle(c)}
                     >
                       {c.isActive ? "Deactivate" : "Activate"}
-                    </Btn>
+                    </CmsButton>
                   </div>
                 ),
               },

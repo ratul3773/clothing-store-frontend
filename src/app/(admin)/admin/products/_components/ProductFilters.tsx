@@ -1,10 +1,11 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useProductFilters, { type Props } from "../_hooks/useProductFilters";
 
 import { Search } from "lucide-react";
 
-import { Btn, Input, Select, Toolbar } from "@/components/cms/ui";
+import { Input, Select, Toolbar } from "@/components/cms/ui";
 
 import { SORT_OPTIONS, STATUS_OPTIONS } from "../_constants/products.constants";
 import {
@@ -88,9 +89,9 @@ export default function ProductFilters({ value, onChange }: Props) {
       </Select>
 
       {dirty && (
-        <Btn variant="ghost" onClick={() => onChange(defaultProductFilters)}>
+        <CmsButton variant="ghost" onClick={() => onChange(defaultProductFilters)}>
           Reset
-        </Btn>
+        </CmsButton>
       )}
     </Toolbar>
   );

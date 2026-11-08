@@ -1,9 +1,10 @@
 'use client'
 
+import { CmsButton } from "@/components/ui/button";
 import { useMemo, useState } from 'react'
 import { Download, Search } from 'lucide-react'
 import { bdt } from '@/lib/utils'
-import { Badge, Btn, Card, Input, Select, StatCard, Toolbar, PageHeader, type Tone } from '@/components/cms/ui'
+import { Badge, Card, Input, Select, StatCard, Toolbar, PageHeader, type Tone } from '@/components/cms/ui';
 import DataTable from '@/components/cms/DataTable'
 import useCustomers from '@/app/(admin)/admin/customers/_hooks/useCustomers'
 import { SEGMENTS, SORTS } from '@/app/(admin)/admin/customers/_constants/customers.constants'
@@ -37,7 +38,7 @@ export default function CustomersTable() {
         title="Customers"
         description="Derived from orders, grouped by phone number."
         crumbs={['Admin', 'Customers']}
-        actions={<Btn onClick={() => downloadCsv('customers.csv', customersCsv(rows))} disabled={!rows.length}><Download className="size-4" />Export CSV</Btn>}
+        actions={<CmsButton variant="outline" onClick={() => downloadCsv('customers.csv', customersCsv(rows))} disabled={!rows.length}><Download className="size-4" />Export CSV</CmsButton>}
       />
       <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Customers" value={all.length} />

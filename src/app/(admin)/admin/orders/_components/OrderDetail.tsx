@@ -1,9 +1,10 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import useOrderDetail from "../_hooks/useOrderDetail";
 
 import StatusBadge from "@/components/cms/StatusBadge";
-import { Btn, Card, CardHeader, PageHeader } from "@/components/cms/ui";
+import { Card, CardHeader, PageHeader } from "@/components/cms/ui";
 import OrderReceipt from "@/components/common/OrderReceipt";
 import { Skeleton } from "@/components/ui/skeleton";
 import { nextOrderStatuses, orderLabel } from "@/lib/order-rules";
@@ -22,7 +23,7 @@ export default function OrderDetail({ id }: { id: string }) {
       <div className="space-y-4" role="alert">
         <PageHeader title="Order unavailable" />
         <p>{apiErrorMessage(query.error || session.error)}</p>
-        <Btn onClick={() => void query.refetch()}>Retry</Btn>
+        <CmsButton variant="outline" onClick={() => void query.refetch()}>Retry</CmsButton>
         <Link href="/admin/orders">Back to orders</Link>
       </div>
     );
@@ -40,15 +41,15 @@ export default function OrderDetail({ id }: { id: string }) {
         actions={
           <>
             <Link href="/admin/orders">
-              <Btn>Back</Btn>
+              <CmsButton variant="outline">Back</CmsButton>
             </Link>
-            <Btn onClick={() => window.print()}>Print receipt</Btn>
-            <Btn
+            <CmsButton variant="outline" onClick={() => window.print()}>Print receipt</CmsButton>
+            <CmsButton variant="outline"
               disabled={query.isFetching}
               onClick={() => void query.refetch()}
             >
               Refresh
-            </Btn>
+            </CmsButton>
           </>
         }
       />
@@ -75,7 +76,7 @@ export default function OrderDetail({ id }: { id: string }) {
               )}
               <div className="flex flex-wrap gap-2">
                 {nextOrderStatuses(order.status).map((status) => (
-                  <Btn
+                  <CmsButton variant="outline"
                     key={status}
                     disabled={query.isFetching}
                     onClick={() => setTarget(status)}
@@ -83,7 +84,7 @@ export default function OrderDetail({ id }: { id: string }) {
                     {status === "RETURNED"
                       ? "Inspect returned goods"
                       : `Mark as ${orderLabel(status)}`}
-                  </Btn>
+                  </CmsButton>
                 ))}
               </div>
             </div>

@@ -1,4 +1,5 @@
 "use client";
+import { CmsButton } from "@/components/ui/button";
 import { useWatch } from "react-hook-form";
 
 import { FormField } from "@/components/common/form-field";
@@ -6,12 +7,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { useFieldArray, type UseFormReturn } from "react-hook-form";
 import type { ProductDraftFormValues } from "../_schemas/product.schema";
 
-import {
-  Badge,
-  Btn,
-  Card,
-  CardHeader
-} from "@/components/cms/ui";
+import { Badge, Card, CardHeader } from "@/components/cms/ui";
 
 import { SIZE_PRESETS } from "../_constants/products.constants";
 import {
@@ -55,14 +51,14 @@ export default function VariantsCreateSection({ form }: Props) {
               <h4 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Colours
               </h4>
-              <Btn
+              <CmsButton variant="outline"
                 size="sm"
                 onClick={() =>
                   append({ key: createKey(), name: "", hex: "" })
                 }
               >
                 <Plus className="size-3.5" /> Add colour
-              </Btn>
+              </CmsButton>
             </div>
 
             {colors.length === 0 ? (
@@ -92,7 +88,7 @@ export default function VariantsCreateSection({ form }: Props) {
                       aria-label={`Choose colour ${index + 1}`}
                       className="mt-1 h-6 w-7 cursor-pointer rounded border border-border bg-card p-0"
                     />
-                    <Btn
+                    <CmsButton
                       size="icon"
                       variant="ghost"
                       aria-label={`Remove colour ${index + 1}`}
@@ -101,7 +97,7 @@ export default function VariantsCreateSection({ form }: Props) {
                       }
                     >
                       <Trash2 className="size-3.5" />
-                    </Btn>
+                    </CmsButton>
                   </div>
                 ))}
               </div>
@@ -122,9 +118,9 @@ export default function VariantsCreateSection({ form }: Props) {
                   addSize(sizeInput);
                 }
               }} />
-              <Btn onClick={() => addSize(sizeInput)}>
+              <CmsButton variant="outline" onClick={() => addSize(sizeInput)}>
                 <Plus className="size-3.5" /> Add
-              </Btn>
+              </CmsButton>
             </div>
 
             <div className="mt-2 flex flex-wrap gap-1.5">
@@ -159,7 +155,7 @@ export default function VariantsCreateSection({ form }: Props) {
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {SIZE_PRESETS.map((preset) => (
-                  <Btn
+                  <CmsButton variant="outline"
                     key={preset.label}
                     size="sm"
                     onClick={() => {
@@ -178,7 +174,7 @@ export default function VariantsCreateSection({ form }: Props) {
                     }}
                   >
                     {preset.label}
-                  </Btn>
+                  </CmsButton>
                 ))}
               </div>
             </div>
