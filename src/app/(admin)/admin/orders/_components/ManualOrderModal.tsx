@@ -1,114 +1,371 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { Btn, Field, Input, Select, Textarea } from '@/components/cms/ui'
-import Modal from '@/components/cms/Modal'
-import { useStore } from '@/components/providers/StoreProvider'
-import { priceOf, products } from '@/data/catalog'
-import { settings } from '@/data/site'
-import { statusLabel } from '@/data/orders'
-import { useNavigate } from '@/lib/nav'
-import { bdt } from '@/lib/utils'
-import { MANUAL_SOURCES, MANUAL_STATUSES, PAYMENTS, SOURCE_LABEL } from '@/app/(admin)/admin/orders/_constants/orders.constants'
-import { validateManual, type Errors } from '@/app/(admin)/admin/orders/_schemas/order.schema'
-import { adjustStock } from '@/app/(admin)/admin/orders/_services/orders.api'
-import { holdsStock } from '@/app/(admin)/admin/orders/_utils/orders.utils'
-import type { ManualDraft } from '@/app/(admin)/admin/orders/_types/orders.types'
-import ManualOrderLines from '@/app/(admin)/admin/orders/_components/ManualOrderLines'
+import { useState } from "react";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import Modal from "@/components/cms/Modal";
+import { Btn } from "@/components/cms/ui";
+import { FormField } from "@/components/common/form-field";
+import OrderReceipt from "@/components/common/OrderReceipt";
+import { Skeleton } from "@/components/ui/skeleton";
+import { productApi, useGetProductsQuery } from "@/redux/apis/product.api";
+import { useAppDispatch } from "@/redux/hooks";
+import {
+  useGetOrderDeliveryPolicyQuery,
+  useSearchOrderCustomersQuery,
+} from "@/redux/apis/order.api";
+import { apiErrorMessage } from "@/redux/api.utils";
+import type { PublicProduct } from "@/redux/apis/types/product.types";
+import type {
+  CustomerOption,
+  OrderDisplay,
+} from "@/redux/apis/types/order.types";
+import {
+  addressFieldLabels,
+  emptyOrderAddress,
+  zoneOptions,
+} from "@/lib/order-form";
+import { orderLabel } from "@/lib/order-rules";
+import { manualOrderLines, orderTotals } from "@/lib/order-summary";
+import useOrderAttempt from "@/hooks/useOrderAttempt";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import {
+  manualOrderFormSchema,
+  manualOrderPayload,
+  type ManualOrderFormValues,
+} from "../_schemas/manual-order.schema";
+import ManualOrderLines from "./ManualOrderLines";
 
-const blank = (): ManualDraft => ({ name: '', phone: '', address: '', zone: 'dhaka', source: 'ADMIN_MANUAL', payment: 'COD', paid: false, status: 'CONFIRMED', discount: '', deliveryOverride: '', lines: [] })
-
-export default function ManualOrderModal({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
-  const { placeOrder, toast } = useStore()
-  const go = useNavigate()
-  const [d, setD] = useState<ManualDraft>(blank)
-  const [errors, setErrors] = useState<Errors>({})
-  useEffect(() => {
-    if (open) { setD(blank()); setErrors({}) }
-  }, [open])
-  const set = <K extends keyof ManualDraft>(k: K, v: ManualDraft[K]) => setD((x) => ({ ...x, [k]: v }))
-
-  const priced = d.lines.map((l) => {
-    const p = products.find((x) => x.id === l.productId)!
-    const col = p.colors.find((c) => c.name === l.color) ?? p.colors[0]
-    return { productId: p.id, name: p.name, color: l.color, size: l.size, qty: l.qty, price: priceOf(p), image: p.images[col.image] }
-  })
-  const subtotal = priced.reduce((a, i) => a + i.price * i.qty, 0)
-  const autoFee = subtotal === 0 || subtotal >= settings.delivery.freeAbove ? 0 : settings.delivery[d.zone]
-  const delivery = d.deliveryOverride !== '' ? Number(d.deliveryOverride) || 0 : autoFee
-  const discount = Math.min(Number(d.discount) || 0, subtotal)
-  const total = Math.max(0, subtotal + delivery - discount)
-
-  const submit = () => {
-    const e = validateManual(d)
-    setErrors(e)
-    if (Object.keys(e).length) return
-    const now = new Date().toISOString()
-    const order = placeOrder({
-      source: d.source, guest: true, status: d.status,
-      customer: { name: d.name.trim(), phone: d.phone.trim(), address: d.address.trim(), zone: d.zone },
-      items: priced, subtotal, delivery, discount, total, payment: d.payment, paid: d.paid,
-      history: [{ status: d.status, at: now }],
-    })
-    if (holdsStock(d.status)) adjustStock({ items: priced }, -1)
-    toast(`Order ${order.id} created`)
-    onOpenChange(false)
-    go(`/admin/orders/?id=${order.id}`)
-  }
-
+export default function ManualOrderModal({
+  owner,
+  open,
+  onOpenChange,
+}: {
+  owner: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const router = useRouter();
+  const [catalogs, setCatalogs] = useState<Record<string, PublicProduct>>({});
+  const [selectedCustomer, setSelectedCustomer] =
+    useState<CustomerOption | null>(null);
+  const [reviewError, setReviewError] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+  const dispatch = useAppDispatch();
+  const policy = useGetOrderDeliveryPolicyQuery(undefined, { skip: !open, refetchOnMountOrArgChange: true });
+  const form = useForm<ManualOrderFormValues>({
+    resolver: zodResolver(manualOrderFormSchema),
+    defaultValues: {
+      address: emptyOrderAddress,
+      customerSearch: "",
+      customerId: "none",
+      catalogSearch: "",
+      lines: [],
+      source: "ADMIN_MANUAL",
+      status: "CONFIRMED",
+      discount: "0",
+      deliveryOverride: "",
+      adjustmentReason: "",
+      note: "",
+    },
+  });
+  const array = useFieldArray({ control: form.control, name: "lines" });
+  const searches = useWatch({
+    control: form.control,
+    name: ["catalogSearch", "customerSearch", "customerId"],
+  });
+  const catalogSearch = useDebouncedValue(searches[0].trim(), 350);
+  const customerSearch = useDebouncedValue(searches[1].trim(), 350);
+  const catalogQuery = useGetProductsQuery(
+    { q: catalogSearch, page: 1, limit: 10, inStock: "true" },
+    { skip: catalogSearch.length < 2 || !open },
+  );
+  const customerQuery = useSearchOrderCustomersQuery(
+    { q: customerSearch, owner },
+    { skip: customerSearch.length < 2 || !open },
+  );
+  const attempt = useOrderAttempt(owner, true, (order) => {
+    onOpenChange(false);
+    router.push(`/admin/orders?id=${order.id}`);
+  });
+  const locked = attempt.pending || !!attempt.attempt || refreshing;
+  const values = useWatch({ control: form.control });
+  const parsed = manualOrderFormSchema.safeParse(values);
+  const draft = parsed.success ? manualOrderPayload(parsed.data) : null;
+  const lines = draft ? manualOrderLines(draft.lines, catalogs) : [];
+  const complete = !!draft && lines.length === draft.lines.length && lines.every((line, index) =>
+    line.components.length === (draft.lines[index].type === "COMBO" ? draft.lines[index].selections.length : 1));
+  const totals = draft && policy.currentData && complete ? orderTotals(
+    lines.reduce((sum, line) => sum + line.quantity * line.unitPrice, 0), values.address?.zone ?? "INSIDE_DHAKA",
+    policy.currentData, draft.discount, draft.deliveryOverride) : null;
+  const summary: OrderDisplay | null = totals && parsed.success ? { ...parsed.data.address, ...totals, lines } : null;
+  const customerOptions = [
+    ...new Map(
+      [
+        ...(selectedCustomer ? [selectedCustomer] : []),
+        ...(customerQuery.currentData ?? []),
+      ].map((customer) => [customer.id, customer]),
+    ).values(),
+  ];
+  const create = (event?: React.BaseSyntheticEvent) =>
+    form.handleSubmit(async (values) => {
+      if (locked || attempt.conflict || policy.isFetching || policy.error) return;
+      setReviewError("");
+      if (!totals) { setReviewError("Selected products or sizes are unavailable. Remove or reselect them before creating the order."); return; }
+      if (totals.discount > totals.subtotal) { setReviewError("Discount cannot exceed subtotal"); return; }
+      await attempt.submit({ ...manualOrderPayload(values), expected: totals });
+    })(event);
+  const refreshPrices = async () => {
+    setRefreshing(true);
+    try {
+      const ids = [...new Set(form.getValues("lines").map((line) => line.catalogId))];
+      const result = ids.length ? await dispatch(productApi.endpoints.getProducts.initiate(
+        { ids, page: 1, limit: ids.length }, { subscribe: false, forceRefetch: true })).unwrap() : { items: [] };
+      await policy.refetch().unwrap();
+      setCatalogs(Object.fromEntries(result.items.map((item) => [item.id, item])));
+      attempt.clearConflict();
+    } catch (error) { setReviewError(apiErrorMessage(error)); }
+    finally { setRefreshing(false); }
+  };
   return (
     <Modal
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={(value) => {
+        if (!attempt.pending) onOpenChange(value);
+      }}
       variant="drawer"
       title="Create manual order"
-      description="Record an order taken by phone, chat or in person."
-      footer={<><Btn onClick={() => onOpenChange(false)}>Cancel</Btn><Btn variant="primary" onClick={submit}>Create order</Btn></>}
+      description="Record a COD order taken by phone, chat, or in person."
+      errorMsg={attempt.error || reviewError || (policy.error ? apiErrorMessage(policy.error) : "")}
+      footer={
+        <>
+          <Btn disabled={attempt.pending} onClick={() => onOpenChange(false)}>
+            Close
+          </Btn>
+          {attempt.attempt ? (
+            <Btn
+              variant="primary"
+              disabled={attempt.pending}
+              onClick={() => void attempt.submit()}
+            >
+              {attempt.pending ? "Confirming…" : "Retry original order"}
+            </Btn>
+          ) : (
+            <>
+              {(attempt.conflict || policy.error) && <Btn disabled={locked} onClick={() => void refreshPrices()}>Refresh prices and availability</Btn>}
+                <Btn
+                  variant="primary"
+                  disabled={locked || attempt.conflict || policy.isFetching || !!policy.error || !policy.currentData}
+                  onClick={() => void create()}
+                >
+                  Create COD order
+                </Btn>
+            </>
+          )}
+        </>
+      }
     >
-      <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Customer name" error={errors.name}><Input value={d.name} onChange={(e) => set('name', e.target.value)} /></Field>
-          <Field label="Phone" error={errors.phone}><Input value={d.phone} onChange={(e) => set('phone', e.target.value)} placeholder="01XXX XXXXXX" /></Field>
-        </div>
-        <Field label="Address" error={errors.address}><Textarea className="min-h-16" value={d.address} onChange={(e) => set('address', e.target.value)} /></Field>
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Delivery zone">
-            <Select value={d.zone} onChange={(e) => set('zone', e.target.value as ManualDraft['zone'])}>
-              <option value="dhaka">Dhaka</option>
-              <option value="outside">Outside Dhaka</option>
-            </Select>
-          </Field>
-          <Field label="Source">
-            <Select value={d.source} onChange={(e) => set('source', e.target.value as ManualDraft['source'])}>
-              {MANUAL_SOURCES.map((s) => <option key={s} value={s}>{SOURCE_LABEL[s]}</option>)}
-            </Select>
-          </Field>
-        </div>
-        <ManualOrderLines lines={d.lines} onChange={(l) => set('lines', l)} error={errors.lines} />
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Delivery fee (BDT)" error={errors.deliveryOverride} hint={`Auto: ${bdt(autoFee)}${subtotal >= settings.delivery.freeAbove ? ' (free delivery)' : ''}`}>
-            <Input type="number" min={0} value={d.deliveryOverride} onChange={(e) => set('deliveryOverride', e.target.value)} placeholder={String(autoFee)} />
-          </Field>
-          <Field label="Discount (BDT)" error={errors.discount}><Input type="number" min={0} value={d.discount} onChange={(e) => set('discount', e.target.value)} /></Field>
-          <Field label="Payment method">
-            <Select value={d.payment} onChange={(e) => set('payment', e.target.value as ManualDraft['payment'])}>
-              {PAYMENTS.map((p) => <option key={p} value={p}>{p}</option>)}
-            </Select>
-          </Field>
-          <Field label="Initial status" hint="Confirmed orders deduct stock">
-            <Select value={d.status} onChange={(e) => set('status', e.target.value as ManualDraft['status'])}>
-              {MANUAL_STATUSES.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}
-            </Select>
-          </Field>
-        </div>
-        <label className="flex items-center gap-2 text-[13px]"><input type="checkbox" checked={d.paid} onChange={(e) => set('paid', e.target.checked)} /> Payment already received</label>
-        <dl className="space-y-1 rounded-md border border-border bg-muted/30 p-3 text-[13px]">
-          <div className="flex justify-between"><dt>Subtotal</dt><dd className="tabular-nums">{bdt(subtotal)}</dd></div>
-          <div className="flex justify-between"><dt>Delivery</dt><dd className="tabular-nums">{bdt(delivery)}</dd></div>
-          <div className="flex justify-between"><dt>Discount</dt><dd className="tabular-nums">-{bdt(discount)}</dd></div>
-          <div className="flex justify-between border-t border-border pt-1 font-semibold"><dt>Total</dt><dd className="tabular-nums">{bdt(total)}</dd></div>
-        </dl>
-      </div>
+      {attempt.attempt ? (
+        <p className="text-sm">
+          A previous submission needs its result confirmed. Retry that exact
+          order before creating another.
+        </p>
+      ) : (
+        <form onSubmit={create} noValidate className="space-y-6">
+          <fieldset disabled={locked} className="space-y-5">
+            <FormField
+              form={form}
+              id="manual-customer-search"
+              name="customerSearch"
+              label="Find an account (optional)"
+              isInput
+              placeholder="Name, phone or email — at least 2 characters"
+              disabled={locked}
+            />
+            {customerQuery.isFetching && (
+              <p role="status">Finding customers…</p>
+            )}
+            {customerQuery.error && (
+              <p role="alert">{apiErrorMessage(customerQuery.error)}</p>
+            )}
+            <FormField
+              form={form}
+              id="manual-customer"
+              name="customerId"
+              label="Link to customer"
+              isSelect
+              disabled={locked}
+              onValueChange={(id) => {
+                const customer = customerOptions.find((item) => item.id === id);
+                setSelectedCustomer(customer ?? null);
+                if (customer) {
+                  form.setValue("address.recipientName", customer.name);
+                  form.setValue("address.recipientPhone", customer.phone ?? "");
+                }
+              }}
+              options={[
+                { value: "none", label: "Unlinked — managed by admin" },
+                ...customerOptions.map((customer) => ({
+                  value: customer.id,
+                  label: `${customer.name} · ${customer.phone ?? customer.email}`,
+                })),
+              ]}
+            />
+            <div className="grid gap-3 sm:grid-cols-2">
+              {(
+                Object.keys(addressFieldLabels) as Array<
+                  keyof typeof addressFieldLabels
+                >
+              ).map((name) => (
+                <FormField
+                  key={name}
+                  form={form}
+                  id={`manual-${name}`}
+                  name={`address.${name}`}
+                  label={addressFieldLabels[name]}
+                  isInput={name !== "zone" && name !== "addressLine"}
+                  isTextArea={name === "addressLine"}
+                  isSelect={name === "zone"}
+                  options={name === "zone" ? zoneOptions : undefined}
+                  disabled={locked}
+                  type={name === "recipientPhone" ? "tel" : "text"}
+                  className={
+                    name === "addressLine" ? "sm:col-span-2" : undefined
+                  }
+                />
+              ))}
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <FormField
+                form={form}
+                id="manual-source"
+                name="source"
+                label="Source"
+                isSelect
+                disabled={locked}
+                options={[
+                  "ADMIN_MANUAL",
+                  "WHATSAPP",
+                  "FACEBOOK",
+                  "INSTAGRAM",
+                  "PHONE",
+                ].map((value) => ({ value, label: orderLabel(value) }))}
+              />
+              <FormField
+                form={form}
+                id="manual-status"
+                name="status"
+                label="Initial status"
+                isSelect
+                disabled={locked}
+                options={["CONFIRMED", "PENDING_CONFIRMATION"].map((value) => ({
+                  value,
+                  label: orderLabel(value),
+                }))}
+              />
+            </div>
+            <FormField
+              form={form}
+              id="manual-catalog-search"
+              name="catalogSearch"
+              label="Find products or combos"
+              isInput
+              placeholder="Search catalog — at least 2 characters"
+              disabled={locked}
+            />
+            {catalogQuery.isFetching && <Skeleton className="h-20" />}
+            {catalogQuery.error && (
+              <p role="alert">{apiErrorMessage(catalogQuery.error)}</p>
+            )}
+            <div className="flex flex-wrap gap-2">
+              {catalogQuery.currentData?.items.map((product) => (
+                <Btn
+                  key={product.id}
+                  disabled={locked || array.fields.length >= 50}
+                  onClick={() => {
+                    setCatalogs((current) => ({
+                      ...current,
+                      [product.id]: product,
+                    }));
+                    array.append({
+                      type: product.type === "COMBO" ? "COMBO" : "VARIANT",
+                      catalogId: product.id,
+                      name: product.name,
+                      variantId: "",
+                      quantity: "1",
+                      selections:
+                        product.type === "COMBO"
+                          ? product.items.map((item) => ({
+                              comboItemId: item.id,
+                              variantId: "",
+                            }))
+                          : [],
+                    });
+                  }}
+                >
+                  Add {product.name}
+                  {product.type === "COMBO" ? " (combo)" : ""}
+                </Btn>
+              ))}
+            </div>
+            <ManualOrderLines
+              form={form}
+              catalogs={catalogs}
+              fields={array.fields}
+              remove={array.remove}
+              disabled={locked}
+            />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <FormField
+                form={form}
+                id="manual-discount"
+                name="discount"
+                label="Discount (taka)"
+                type="number"
+                min={0}
+                isInput
+                disabled={locked}
+              />
+              <FormField
+                form={form}
+                id="manual-delivery"
+                name="deliveryOverride"
+                label="Delivery override (optional)"
+                type="number"
+                min={0}
+                isInput
+                disabled={locked}
+              />
+            </div>
+            <FormField
+              form={form}
+              id="manual-adjustment"
+              name="adjustmentReason"
+              label="Pricing adjustment reason"
+              isTextArea
+              disabled={locked}
+            />
+            <FormField
+              form={form}
+              id="manual-note"
+              name="note"
+              label="Order note (visible on receipt)"
+              isTextArea
+              disabled={locked}
+            />
+            <p className="text-sm text-muted-foreground">
+              Cash on delivery only. Confirmed orders cannot be cancelled;
+              pending orders expire after 24 hours.
+            </p>
+          </fieldset>
+          {summary && (
+            <div className="border-t border-border pt-5">
+              <OrderReceipt order={summary} />
+            </div>
+          )}
+        </form>
+      )}
     </Modal>
-  )
+  );
 }

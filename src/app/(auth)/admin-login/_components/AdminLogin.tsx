@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, Store } from 'lucide-react'
+import { ArrowRight, Eye, EyeClosed, LockKeyhole, Mail, Store } from 'lucide-react'
 import { settings } from '@/data/site'
 import { Card } from '@/components/cms/ui'
 import { useForm } from 'react-hook-form'
@@ -55,6 +55,7 @@ export default function AdminLogin() {
                             label="Email"
                             type="email"
                             autoComplete="email"
+                            isInput
                             placeholder="you@example.com"
                             startIcon={Mail}
                             required
@@ -68,6 +69,7 @@ export default function AdminLogin() {
                             type={showPassword ? "text" : "password"}
                             placeholder="Your password"
                             startIcon={LockKeyhole}
+                            isInput
                             endAction={
                                 <CmsButton
                                     type="button"
@@ -79,7 +81,7 @@ export default function AdminLogin() {
                                     }
                                     className="absolute right-2 top-1 size-8"
                                 >
-                                    {showPassword ? <EyeOff /> : <Eye />}
+                                    {showPassword ? <EyeClosed /> : <Eye />}
                                 </CmsButton>
                             }
                             required

@@ -1,81 +1,147 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { ArrowLeft, Printer, Trash2 } from 'lucide-react'
-import { Btn, Empty, PageHeader } from '@/components/cms/ui'
-import AlertDialogText from '@/components/common/Alert-Dialogue'
-import StatusBadge from '@/components/cms/StatusBadge'
-import { useStore } from '@/components/providers/StoreProvider'
-import { useNavigate } from '@/lib/nav'
-import { adjustStock } from '@/app/(admin)/admin/orders/_services/orders.api'
-import { fmtDate, holdsStock } from '@/app/(admin)/admin/orders/_utils/orders.utils'
-import OrderCustomerCard from '@/app/(admin)/admin/orders/_components/OrderCustomerCard'
-import OrderItemsCard from '@/app/(admin)/admin/orders/_components/OrderItemsCard'
-import OrderStatusCard from '@/app/(admin)/admin/orders/_components/OrderStatusCard'
-import OrderShippingCard from '@/app/(admin)/admin/orders/_components/OrderShippingCard'
-import OrderNotesCard from '@/app/(admin)/admin/orders/_components/OrderNotesCard'
-import OrderExchangeCard from '@/app/(admin)/admin/orders/_components/OrderExchangeCard'
-import OrderInvoice from '@/app/(admin)/admin/orders/_components/OrderInvoice'
+import { useState } from "react";
+import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
+import { Btn, Card, CardHeader, PageHeader } from "@/components/cms/ui";
+import { Skeleton } from "@/components/ui/skeleton";
+import OrderReceipt from "@/components/common/OrderReceipt";
+import StatusBadge from "@/components/cms/StatusBadge";
+import { useGetAdminOrderQuery } from "@/redux/apis/order.api";
+import type { OrderStatus } from "@/redux/apis/types/order.types";
+import { nextOrderStatuses, orderLabel } from "@/lib/order-rules";
+import { apiErrorMessage } from "@/redux/api.utils";
+import OrderTransitionDialog from "./OrderTransitionDialog";
 
 export default function OrderDetail({ id }: { id: string }) {
-  const { orders, removeOrder, toast } = useStore()
-  const go = useNavigate()
-  const [confirmDelete, setConfirmDelete] = useState(false)
-  const order = orders.find((o) => o.id === id)
-  if (!order) {
+  const session = authClient.useSession();
+  const owner = session.data?.user.id ?? "";
+  const query = useGetAdminOrderQuery(
+    { id, owner },
+    {
+      skip:
+        session.isPending ||
+        session.data?.user.role !== "admin" ||
+        !!session.error,
+      refetchOnMountOrArgChange: true,
+    },
+  );
+  const [target, setTarget] = useState<OrderStatus | null>(null);
+  const [actionError, setActionError] = useState("");
+  if (session.isPending || query.isLoading)
+    return <Skeleton className="h-96" />;
+  const order = query.currentData;
+  if (!order)
     return (
-      <div>
-        <PageHeader title="Order not found" crumbs={['Orders']} />
-        <Empty title={`No order with ID ${id}`} action={<Link href="/admin/orders"><Btn>Back to orders</Btn></Link>} />
+      <div className="space-y-4" role="alert">
+        <PageHeader title="Order unavailable" />
+        <p>{apiErrorMessage(query.error || session.error)}</p>
+        <Btn onClick={() => void query.refetch()}>Retry</Btn>
+        <Link href="/admin/orders">Back to orders</Link>
       </div>
-    )
-  }
-  const del = () => {
-    if (holdsStock(order.status)) adjustStock(order, 1)
-    removeOrder(order.id)
-    toast(`Order ${order.id} deleted`)
-    go('/admin/orders')
-  }
+    );
   return (
-    <div>
-      <div className="print:hidden">
-        <PageHeader
-          crumbs={['Orders', order.id]}
-          title={order.id}
-          description={`Placed ${fmtDate(order.createdAt)}`}
-          actions={
-            <>
+    <div className="space-y-5">
+      {actionError && (
+        <p role="alert" className="text-destructive">
+          {actionError}
+        </p>
+      )}
+      <PageHeader
+        title={order.number}
+        description={`${orderLabel(order.source)} · ${new Date(order.createdAt).toLocaleString("en-GB")}`}
+        crumbs={["Orders", order.number]}
+        actions={
+          <>
+            <Link href="/admin/orders">
+              <Btn>Back</Btn>
+            </Link>
+            <Btn onClick={() => window.print()}>Print receipt</Btn>
+            <Btn
+              disabled={query.isFetching}
+              onClick={() => void query.refetch()}
+            >
+              Refresh
+            </Btn>
+          </>
+        }
+      />
+      <div className="grid items-start gap-5 lg:grid-cols-[1.5fr_1fr]">
+        <Card className="p-5">
+          <OrderReceipt order={order} printable />
+        </Card>
+        <div className="space-y-5">
+          <Card>
+            <CardHeader title="Status & fulfillment" />
+            <div className="space-y-4 p-4">
               <StatusBadge status={order.status} />
-              <Link href="/admin/orders"><Btn><ArrowLeft className="size-4" /> Orders</Btn></Link>
-              <Btn onClick={() => window.print()}><Printer className="size-4" /> Print invoice</Btn>
-              <Btn variant="dangerOutline" onClick={() => setConfirmDelete(true)}><Trash2 className="size-4" /> Delete</Btn>
-            </>
-          }
-        />
-        <div className="grid gap-4 lg:grid-cols-3">
-          <div className="space-y-4 lg:col-span-2">
-            <OrderItemsCard order={order} />
-            {order.exchange && <OrderExchangeCard order={order} />}
-            <OrderNotesCard order={order} />
-          </div>
-          <div className="space-y-4">
-            <OrderStatusCard order={order} />
-            <OrderShippingCard order={order} />
-            <OrderCustomerCard order={order} />
-          </div>
+              <p className="text-sm">
+                Cash on delivery ·{" "}
+                {order.paidAt
+                  ? `Collected ${new Date(order.paidAt).toLocaleString("en-GB")}`
+                  : "Unpaid"}
+              </p>
+              {order.expiresAt && (
+                <p className="text-xs text-muted-foreground">
+                  Pending hold expires{" "}
+                  {new Date(order.expiresAt).toLocaleString("en-GB")}
+                </p>
+              )}
+              <div className="flex flex-wrap gap-2">
+                {nextOrderStatuses(order.status).map((status) => (
+                  <Btn
+                    key={status}
+                    disabled={query.isFetching}
+                    onClick={() => setTarget(status)}
+                  >
+                    {status === "RETURNED"
+                      ? "Inspect returned goods"
+                      : `Mark as ${orderLabel(status)}`}
+                  </Btn>
+                ))}
+              </div>
+            </div>
+          </Card>
+          <Card>
+            <CardHeader title="History" />
+            <ol className="space-y-4 p-4">
+              {order.history.map((event) => (
+                <li
+                  key={event.id}
+                  className="border-l border-border pl-3 text-sm"
+                >
+                  <p className="font-medium">
+                    {event.event === "EXPIRED"
+                      ? "Expired — stock released"
+                      : orderLabel(event.toStatus)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(event.createdAt).toLocaleString("en-GB")} ·{" "}
+                    {event.actorType}
+                    {event.actorId ? ` (${event.actorId})` : ""}
+                  </p>
+                  {event.reason && <p>{event.reason}</p>}
+                </li>
+              ))}
+            </ol>
+          </Card>
         </div>
       </div>
-      <OrderInvoice order={order} />
-      <AlertDialogText
-        mode="normal"
-        open={confirmDelete}
-        onOpenChange={setConfirmDelete}
-        title="Delete order?"
-        description={`Order ${order.id} will be permanently removed.${holdsStock(order.status) ? ' Reserved stock will be returned to inventory.' : ''}`}
-        actionType="delete"
-        onConfirm={del}
-      />
+      {target && (
+        <OrderTransitionDialog
+          key={`${order.id}:${order.version}:${target}`}
+          order={order}
+          target={target}
+          onClose={() => setTarget(null)}
+          onConflict={() => {
+            setTarget(null);
+            setActionError(
+              "This order changed. Review its refreshed status before trying another action.",
+            );
+            void query.refetch();
+          }}
+        />
+      )}
     </div>
-  )
+  );
 }

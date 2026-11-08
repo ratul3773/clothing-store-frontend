@@ -1,40 +1,30 @@
-'use client'
+"use client";
 
-import { Search } from 'lucide-react'
-import { Btn, Input, Select, Toolbar } from '@/components/cms/ui'
-import { LIFECYCLE, statusLabel } from '@/data/orders'
-import { COURIERS, EMPTY_FILTERS, EXTRA_STATUSES, PAYMENTS, SOURCE_LABEL } from '@/app/(admin)/admin/orders/_constants/orders.constants'
-import type { OrderFilters } from '@/app/(admin)/admin/orders/_types/orders.types'
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { FormField } from "@/components/common/form-field";
+import { Btn, Toolbar } from "@/components/cms/ui";
+import { ORDER_STATUSES, ORDER_SOURCES, dhakaDateBoundary, orderLabel } from "@/lib/order-rules";
+import type { OrderQuery } from "@/redux/apis/types/order.types";
 
-export default function OrdersFilters({ value, onChange }: { value: OrderFilters; onChange: (v: OrderFilters) => void }) {
-  const set = <K extends keyof OrderFilters>(k: K, v: OrderFilters[K]) => onChange({ ...value, [k]: v })
-  const dirty = JSON.stringify(value) !== JSON.stringify(EMPTY_FILTERS)
-  return (
-    <Toolbar>
-      <div className="relative min-w-52 flex-1">
-        <Search className="pointer-events-none absolute left-2.5 top-2 size-4 text-muted-foreground" />
-        <Input className="pl-8" placeholder="Search order ID, name or phone" value={value.q} onChange={(e) => set('q', e.target.value)} />
-      </div>
-      <Select className="w-40" value={value.status} onChange={(e) => set('status', e.target.value as OrderFilters['status'])} aria-label="Status">
-        <option value="">All statuses</option>
-        {[...LIFECYCLE, ...EXTRA_STATUSES].map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}
-      </Select>
-      <Select className="w-36" value={value.source} onChange={(e) => set('source', e.target.value as OrderFilters['source'])} aria-label="Source">
-        <option value="">All sources</option>
-        {Object.entries(SOURCE_LABEL).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
-      </Select>
-      <Select className="w-32" value={value.payment} onChange={(e) => set('payment', e.target.value as OrderFilters['payment'])} aria-label="Payment">
-        <option value="">All payments</option>
-        {PAYMENTS.map((p) => <option key={p} value={p}>{p}</option>)}
-      </Select>
-      <Select className="w-32" value={value.courier} onChange={(e) => set('courier', e.target.value as OrderFilters['courier'])} aria-label="Courier">
-        <option value="">All couriers</option>
-        {COURIERS.map((c) => <option key={c} value={c}>{c}</option>)}
-        <option value="none">Unassigned</option>
-      </Select>
-      <Input type="date" className="w-36" value={value.from} onChange={(e) => set('from', e.target.value)} aria-label="From date" />
-      <Input type="date" className="w-36" value={value.to} onChange={(e) => set('to', e.target.value)} aria-label="To date" />
-      {dirty && <Btn variant="ghost" onClick={() => onChange(EMPTY_FILTERS)}>Clear</Btn>}
-    </Toolbar>
-  )
+const date = z.union([z.literal(""), z.iso.date()]);
+const schema = z.object({ q: z.string().trim().max(100), status: z.enum(["ALL", ...ORDER_STATUSES]),
+  source: z.enum(["ALL", ...ORDER_SOURCES]), from: date, to: date })
+  .refine((values) => !values.from || !values.to || values.from <= values.to, { message: "End date must follow start date", path: ["to"] });
+const empty = { q: "", status: "ALL" as const, source: "ALL" as const, from: "", to: "" };
+
+export default function OrdersFilters({ onChange }: { onChange: (query: OrderQuery) => void }) {
+  const form = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema), defaultValues: empty });
+  return <form noValidate onSubmit={form.handleSubmit((values) => onChange({
+    ...(values.q ? { q: values.q } : {}), ...(values.status !== "ALL" ? { status: values.status } : {}), ...(values.source !== "ALL" ? { source: values.source } : {}),
+    ...(values.from ? { from: dhakaDateBoundary(values.from) } : {}), ...(values.to ? { to: dhakaDateBoundary(values.to, true) } : {}),
+  }))}><Toolbar>
+    <FormField form={form} id="orders-search" name="q" label="Search" placeholder="Order number, name or phone" isInput />
+    <FormField form={form} id="orders-status" name="status" label="Status" isSelect options={[{ value: "ALL", label: "All statuses" }, ...ORDER_STATUSES.map((value) => ({ value, label: orderLabel(value) }))]} />
+    <FormField form={form} id="orders-source" name="source" label="Source" isSelect options={[{ value: "ALL", label: "All sources" }, ...ORDER_SOURCES.map((value) => ({ value, label: orderLabel(value) }))]} />
+    <FormField form={form} id="orders-from" name="from" label="From (Dhaka)" type="date" isInput />
+    <FormField form={form} id="orders-to" name="to" label="To (Dhaka)" type="date" isInput />
+    <div className="flex items-end gap-2"><Btn type="submit">Apply filters</Btn><Btn onClick={() => { form.reset(empty); onChange({}); }}>Clear</Btn></div>
+  </Toolbar></form>;
 }
