@@ -20,7 +20,7 @@ interface AlertDialogProps {
     open: boolean;
     mode?: 'animated' | 'normal';
     onOpenChange: (open: boolean) => void;
-    onConfirm: () => void;
+    onConfirm: (event: React.MouseEvent<HTMLButtonElement>) => void;
     onCancel?: () => void;
     warningMessage?: React.ReactNode;
     actionType?: ActionType;
@@ -98,7 +98,7 @@ export default function AlertDialogText({
         {warningMessage && ( warningMessage
         )}
         <AlertDialogFooter>
-          <AlertDialogCancel mode={mode}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel mode={mode} disabled={disabled}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             mode={mode}
             variant={config.variant}

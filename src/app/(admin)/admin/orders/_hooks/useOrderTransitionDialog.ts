@@ -8,7 +8,7 @@ import {
 } from "@/redux/apis/order.api";
 import type { OrderReceipt, OrderStatus } from "@/redux/apis/types/order.types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useRef, useState, type BaseSyntheticEvent } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -35,6 +35,8 @@ export default function useOrderTransitionDialog({
   onConflict: () => void;
 }) {
   const [error, setError] = useState("");
+  const submitting = useRef(false);
+  const needsReason = ["CANCELLED", "DELIVERY_FAILED", "RETURNED"].includes(target);
   const [changeStatus, statusState] = useChangeOrderStatusMutation();
   const [receiveReturn, returnState] = useReceiveOrderReturnMutation();
   const components = order.lines.flatMap((line) => line.components);
@@ -58,10 +60,10 @@ export default function useOrderTransitionDialog({
     keyName: "fieldId",
   });
   const pending = statusState.isLoading || returnState.isLoading;
-  const submit = form.handleSubmit(async (values) => {
-    if (pending) return;
+  const submit = (event?: BaseSyntheticEvent) => form.handleSubmit(async (values) => {
+    if (pending || submitting.current) return;
     if (
-      ["CANCELLED", "DELIVERY_FAILED", "RETURNED"].includes(target) &&
+      needsReason &&
       !values.reason
     ) {
       form.setError("reason", { message: "A reason is required" });
@@ -83,6 +85,7 @@ export default function useOrderTransitionDialog({
       if (invalid) return;
     }
     setError("");
+    submitting.current = true;
     try {
       if (target === "RETURNED")
         await receiveReturn({
@@ -100,7 +103,7 @@ export default function useOrderTransitionDialog({
           id: order.id,
           version: order.version,
           status: target,
-          ...(values.reason ? { reason: values.reason } : {}),
+          ...(needsReason ? { reason: values.reason } : {}),
         }).unwrap();
       onClose();
     } catch (failure) {
@@ -108,7 +111,7 @@ export default function useOrderTransitionDialog({
       if (isConflictError(failure)) {
         onConflict();
       }
-    }
-  });
-  return { error, components, form, array, pending, submit };
+    } finally { submitting.current = false; }
+  })(event);
+  return { error, components, form, array, pending, submit, needsReason };
 }

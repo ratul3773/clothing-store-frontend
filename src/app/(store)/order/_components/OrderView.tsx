@@ -39,6 +39,7 @@ const accessSchema = z.object({
     ),
 });
 const noSubscription = () => () => {};
+const cancellationSchema = z.object({ reason: z.string().trim().min(1, "A reason is required").max(500) });
 
 export default function OrderView() {
   const params = useSearchParams();
@@ -92,6 +93,9 @@ function OrderContent({
     refetchOnMountOrArgChange: true,
   });
   const [cancel, cancelState] = useCancelOrderMutation();
+  const cancelForm = useForm<z.infer<typeof cancellationSchema>>({
+    resolver: zodResolver(cancellationSchema), defaultValues: { reason: "" },
+  });
   const openWithCode = form.handleSubmit((values) => {
     if (!rememberGuestOrder(values.id, values.token))
       setError(
@@ -102,15 +106,17 @@ function OrderContent({
       dispatch(orderApi.util.invalidateTags([{ type: "Order", id }]));
     } else router.push(`/order?id=${values.id}`);
   });
-  const cancelOrder = async () => {
-    if (!query.currentData || cancelState.isLoading) return;
+  const cancelOrder = cancelForm.handleSubmit(async ({ reason }) => {
+    if (!query.currentData || query.currentData.status !== "PENDING_CONFIRMATION" || cancelState.isLoading) return;
     try {
-      await cancel({ ...access, version: query.currentData.version }).unwrap();
+      await cancel({ ...access, version: query.currentData.version, reason }).unwrap();
+      setConfirmCancel(false);
     } catch (failure) {
       setError(apiErrorMessage(failure));
+      setConfirmCancel(false);
       void query.refetch();
     }
-  };
+  });
   return (
     <section className="space-y-6 py-8">
       <div className="flex flex-wrap justify-between gap-3">
@@ -273,8 +279,9 @@ function OrderContent({
         actionType="warning"
         confirmButtonText="Cancel order"
         open={confirmCancel}
-        onOpenChange={setConfirmCancel}
-        onConfirm={() => void cancelOrder()}
+        onOpenChange={(open) => { if (!cancelState.isLoading) setConfirmCancel(open); }}
+        onConfirm={(event) => { event.preventDefault(); void cancelOrder(); }}
+        warningMessage={<FormField form={cancelForm} id="customer-cancellation-reason" name="reason" label="Reason" isTextArea disabled={cancelState.isLoading} />}
         disabled={cancelState.isLoading}
       />
     </section>

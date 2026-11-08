@@ -76,13 +76,13 @@ export const orderApi = baseApi.injectEndpoints({
     }),
     cancelOrder: builder.mutation<
       OrderReceipt,
-      OrderAccess & { version: number }
+      OrderAccess & { version: number; reason: string }
     >({
       query: (access) => ({
         url: `${orderUrl(access)}/cancel`,
         method: "POST",
         headers: accessHeaders(access),
-        body: { version: access.version },
+        body: { version: access.version, reason: access.reason },
         timeout: 90_000,
       }),
       transformResponse: unwrapData<OrderReceipt>,
