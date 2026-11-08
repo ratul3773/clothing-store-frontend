@@ -1,22 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
-import { Check, Plus, Search, X } from "lucide-react";
-import {
-  useGetAdminProductsQuery,
-  useGetAdminProductQuery,
-} from "@/redux/apis/product.api";
+import useComboColorPicker from "../_hooks/useComboColorPicker";
+
+import { Badge, Btn } from "@/components/cms/ui";
+import { FormField } from "@/components/common/form-field";
+import Pagination from "@/components/common/Pagination";
+import { Skeleton } from "@/components/ui/skeleton";
+import { bdt, cn } from "@/lib/utils";
 import type { ComboComponent } from "@/redux/apis/types/combo.types";
 import type {
   AdminProduct,
   ProductColor,
 } from "@/redux/apis/types/product.types";
-import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-import { Badge, Btn, Field, Input } from "@/components/cms/ui";
-import Pagination from "@/components/common/Pagination";
-import { Skeleton } from "@/components/ui/skeleton";
-import { bdt, cn } from "@/lib/utils";
+import { Check, Plus, Search, X } from "lucide-react";
+import Image from "next/image";
 
 export default function ComboColorPicker({
   onAdd,
@@ -27,21 +24,7 @@ export default function ComboColorPicker({
   disabled: boolean;
   selectedItems: ComboComponent[];
 }) {
-  const [search, setSearch] = useState("");
-  const [now] = useState(Date.now);
-  const [page, setPage] = useState(1);
-  const [productId, setProductId] = useState("");
-  const searchTerm = useDebouncedValue(search, 300);
-  const products = useGetAdminProductsQuery({
-    q: searchTerm || undefined,
-    page,
-    limit: 5,
-  });
-  const detail = useGetAdminProductQuery(
-    { id: productId },
-    { skip: !productId },
-  );
-  const product = detail.currentData;
+  const { form, search, setSearch, now, setPage, productId, setProductId, products, detail, product } = useComboColorPicker();
   return (
     <section
       aria-label="Product picker"
@@ -54,23 +37,7 @@ export default function ComboColorPicker({
         </p>
       </div>
       <div className="relative">
-        <Field label="Search products">
-          <div className="relative">
-            <Search
-              aria-hidden="true"
-              className="pointer-events-none absolute left-2.5 top-2 size-4 text-muted-foreground"
-            />
-            <Input
-              className="pl-8 pr-9"
-              placeholder="Search by product name or code..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-            />
-          </div>
-        </Field>
+        <FormField form={form} id="combo-product-search" name="search" label="Search products" isAdmin isInput startIcon={Search} placeholder="Search by product name or code..." onValueChange={() => setPage(1)} />
         {search && (
           <Btn
             variant="ghost"

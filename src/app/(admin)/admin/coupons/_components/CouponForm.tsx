@@ -1,11 +1,16 @@
 'use client'
+import { useWatch } from "react-hook-form";
 
-import { useState } from 'react'
-import { saveCoupon } from '@/data/cms'
-import { useStore } from '@/components/providers/StoreProvider'
+import { FormField } from '@/components/common/form-field'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { couponFormSchema } from '../_schemas/coupon.schema'
+
 import Modal from '@/components/cms/Modal'
-import { Btn, Field, Input, Select } from '@/components/cms/ui'
-import { couponToDraft, draftToCoupon, emptyCoupon, validateCoupon, type Coupon, type CouponDraft } from '../_utils/coupon.utils'
+import { Btn } from '@/components/cms/ui'
+import { useStore } from '@/components/providers/StoreProvider'
+import { saveCoupon } from '@/data/cms'
+import { couponToDraft, draftToCoupon, emptyCoupon, type Coupon, type CouponDraft } from '../_utils/coupon.utils'
 
 type Props = { open: boolean; onOpenChange: (o: boolean) => void; coupon: Coupon | null }
 
@@ -15,32 +20,27 @@ export default function CouponForm({ open, onOpenChange, coupon }: Props) {
 
 function Inner({ onOpenChange, coupon }: Omit<Props, 'open'>) {
   const { toast } = useStore()
-  const [d, setD] = useState<CouponDraft>(coupon ? couponToDraft(coupon) : emptyCoupon)
-  const [submitted, setSubmitted] = useState(false)
-  const errors = validateCoupon(d, coupon?.code)
-  const err = (k: keyof typeof errors) => (submitted ? errors[k] : undefined)
-  const set = <K extends keyof CouponDraft>(k: K, v: CouponDraft[K]) => setD((x) => ({ ...x, [k]: v }))
+  const form = useForm<CouponDraft>({ resolver: zodResolver(couponFormSchema(coupon?.code)), defaultValues: coupon ? couponToDraft(coupon) : emptyCoupon })
+  const d = useWatch({ control: form.control, compute: (values) => values })
 
-  const submit = () => {
-    setSubmitted(true)
-    if (Object.keys(errors).length) return
+  const submit = form.handleSubmit(() => {
     saveCoupon(draftToCoupon(d), coupon?.code)
     toast(coupon ? 'Coupon updated' : 'Coupon created')
     onOpenChange(false)
-  }
+  })
 
   return (
-    <Modal open onOpenChange={onOpenChange} title={coupon ? `Edit ${coupon.code}` : 'New coupon'} footer={<><Btn onClick={() => onOpenChange(false)}>Cancel</Btn><Btn variant="primary" onClick={submit}>Save</Btn></>}>
-      <div className="grid gap-4">
-        <Field label="Code" error={err('code')}><Input className="font-mono uppercase" value={d.code} onChange={(e) => set('code', e.target.value.toUpperCase())} /></Field>
+    <Modal open onOpenChange={onOpenChange} title={coupon ? `Edit ${coupon.code}` : 'New coupon'} footer={<><Btn onClick={() => onOpenChange(false)}>Cancel</Btn><Btn variant="primary" type="submit" form="coupon-form">Save</Btn></>}>
+      <form id="coupon-form" onSubmit={submit} noValidate className="grid gap-4">
+        <FormField form={form} id="coupon-code" name="code" isAdmin isInput label="Code" className="font-mono uppercase" onValueChange={(value) => form.setValue('code', value.toUpperCase(), { shouldDirty: true })} />
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Type"><Select value={d.type} onChange={(e) => set('type', e.target.value as 'pct' | 'fix')}><option value="pct">Percentage (%)</option><option value="fix">Fixed amount (৳)</option></Select></Field>
-          <Field label={d.type === 'pct' ? 'Value (%)' : 'Value (৳)'} error={err('value')}><Input type="number" min={0} value={d.value} onChange={(e) => set('value', e.target.value)} /></Field>
-          <Field label="Minimum order (৳)" error={err('min')}><Input type="number" min={0} value={d.min} onChange={(e) => set('min', e.target.value)} /></Field>
-          {d.type === 'pct' && <Field label="Max discount (৳)" hint="0 = no cap" error={err('max')}><Input type="number" min={0} value={d.max} onChange={(e) => set('max', e.target.value)} /></Field>}
+          <FormField form={form} id="coupon-type" name="type" isAdmin isSelect label="Type" options={[{ value: "pct", label: "Percentage (%)" }, { value: "fix", label: "Fixed amount (৳)" }]} />
+          <FormField form={form} id="coupon-value" name="value" isAdmin isInput label={d.type === 'pct' ? 'Value (%)' : 'Value (৳)'} type="number" min={0} />
+          <FormField form={form} id="coupon-min" name="min" isAdmin isInput label="Minimum order (৳)" type="number" min={0} />
+          {d.type === 'pct' && <FormField form={form} id="coupon-max" name="max" isAdmin isInput label="Max discount (৳)" description="0 = no cap" type="number" min={0} />}
         </div>
-        <Field label="Note" hint="Shown to customers. Auto-generated if empty."><Input value={d.note} onChange={(e) => set('note', e.target.value)} /></Field>
-      </div>
+        <FormField form={form} id="coupon-note" name="note" isAdmin isInput label="Note" description="Shown to customers. Auto-generated if empty." />
+      </form>
     </Modal>
   )
 }
