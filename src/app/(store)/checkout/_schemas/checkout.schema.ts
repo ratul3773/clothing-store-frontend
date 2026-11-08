@@ -1,6 +1,8 @@
-import type { CheckoutFields } from '@/app/(store)/checkout/_types/checkout.types'
-
-export const isPhoneValid = (v: string) => /^[0-9 +]{10,15}$/.test(v.trim())
-
-export const isCheckoutValid = (f: CheckoutFields) =>
-  !!f.name.trim() && isPhoneValid(f.phone) && f.address.trim().length > 6
+import { z } from "zod";
+import { orderAddressSchema } from "@/lib/order-form";
+export const checkoutFormSchema = z.object({
+  savedAddressId: z.string(),
+  address: orderAddressSchema,
+  note: z.string().trim().max(1000),
+});
+export type CheckoutFormValues = z.infer<typeof checkoutFormSchema>;
