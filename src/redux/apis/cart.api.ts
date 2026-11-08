@@ -187,5 +187,7 @@ export function hasPendingCartMutation(state: RootState) {
     cartApi.endpoints.updateCartItem.select(cartMutationKey("quantity"))(state),
     cartApi.endpoints.removeCartItem.select(cartMutationKey("remove"))(state),
     cartApi.endpoints.clearCart.select(cartMutationKey("clear"))(state),
-  ].some((result) => result.status === "pending");
+  ].some((result) => result.status === "pending") || Object.values(state.api.mutations).some(
+    (mutation) => mutation?.endpointName === "createOrder" && mutation.status === "pending",
+  );
 }
