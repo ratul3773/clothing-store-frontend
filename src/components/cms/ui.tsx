@@ -42,7 +42,7 @@ export const Btn = React.forwardRef<
 Btn.displayName = "Btn";
 
 export const cmsInput =
-  "h-8 w-full rounded-md border border-border bg-card px-2.5 text-[13px] text-foreground outline-none placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:bg-muted";
+  "h-8 w-full rounded-md border border-border bg-card px-2.5 text-[13px] text-foreground outline-none placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:bg-muted/30";
 
 export const Input = React.forwardRef<
   HTMLInputElement,

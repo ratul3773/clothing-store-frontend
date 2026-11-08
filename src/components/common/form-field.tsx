@@ -13,14 +13,14 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 import { Pick } from "../ui/controls";
 import { Textarea } from "../ui/textarea";
 
 type FormFieldProps<T extends FieldValues> = Omit<
   InputHTMLAttributes<HTMLInputElement>,
-  "id" | "name" | "type" | "value" | "defaultValue" | "onChange"|"form"
+  "id" | "name" | "type" | "value" | "defaultValue" | "onChange" | "form"
 > & {
   form: UseFormReturn<T>;
   id: string;
@@ -37,6 +37,8 @@ type FormFieldProps<T extends FieldValues> = Omit<
   isTextArea?: boolean;
   isAdmin?: boolean;
   onValueChange?: (value: string) => void;
+  rows?: number;
+  valueAsNumber?: boolean;
 };
 export function FormField<T extends FieldValues>({
   form,
@@ -55,6 +57,8 @@ export function FormField<T extends FieldValues>({
   isTextArea,
   isAdmin,
   onValueChange,
+  rows = 4,
+  valueAsNumber,
   ...inputProps
 }: FormFieldProps<T>) {
   return (
@@ -78,27 +82,32 @@ export function FormField<T extends FieldValues>({
                 disabled={inputProps.disabled || field.disabled}
                 onBlur={field.onBlur}
                 triggerRef={field.ref}
-                options={options}
+                options={inputProps.placeholder ? [{ value: "", label: inputProps.placeholder }, ...options] : options}
                 isAdmin={isAdmin}
                 className="w-full"
                 aria-invalid={fieldState.invalid}
               />
             )}
-            {isInput && 
+            {isInput &&
               <Input
-              {...field}
-              {...inputProps}
-              id={id}
-              type={type}
-              value={field.value ?? ""}
-              aria-invalid={fieldState.invalid}
-              isAdmin={isAdmin}
-              className={cn(
-                StartIcon && "pl-10",
-                endAction && "pr-12",
-                className,
-              )}
-            />}
+                {...field}
+                {...inputProps}
+                id={id}
+                type={type}
+                value={typeof field.value === "number" && !Number.isFinite(field.value) ? "" : field.value ?? ""}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  field.onChange(valueAsNumber ? (value === "" ? NaN : Number(value)) : value);
+                  onValueChange?.(value);
+                }}
+                aria-invalid={fieldState.invalid}
+                isAdmin={isAdmin}
+                className={cn(
+                  StartIcon && "pl-10",
+                  endAction && "pr-12",
+                  className,
+                )}
+              />}
             {isTextArea && (
               <Textarea
                 {...field}
@@ -109,7 +118,7 @@ export function FormField<T extends FieldValues>({
                 disabled={inputProps.disabled || field.disabled}
                 maxLength={inputProps.maxLength}
                 isAdmin={isAdmin}
-                rows={4}
+                rows={rows}
                 className={cn(
                   StartIcon && "pl-10",
                   endAction && "pr-12",

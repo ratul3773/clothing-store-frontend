@@ -1,33 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
-import { Btn, Card, CardHeader, PageHeader } from "@/components/cms/ui";
-import { Skeleton } from "@/components/ui/skeleton";
-import OrderReceipt from "@/components/common/OrderReceipt";
+import useOrderDetail from "../_hooks/useOrderDetail";
+
 import StatusBadge from "@/components/cms/StatusBadge";
-import { useGetAdminOrderQuery } from "@/redux/apis/order.api";
-import type { OrderStatus } from "@/redux/apis/types/order.types";
+import { Btn, Card, CardHeader, PageHeader } from "@/components/cms/ui";
+import OrderReceipt from "@/components/common/OrderReceipt";
+import { Skeleton } from "@/components/ui/skeleton";
 import { nextOrderStatuses, orderLabel } from "@/lib/order-rules";
 import { apiErrorMessage } from "@/redux/api.utils";
+import Link from "next/link";
 import OrderTransitionDialog from "./OrderTransitionDialog";
 
 export default function OrderDetail({ id }: { id: string }) {
-  const session = authClient.useSession();
-  const owner = session.data?.user.id ?? "";
-  const query = useGetAdminOrderQuery(
-    { id, owner },
-    {
-      skip:
-        session.isPending ||
-        session.data?.user.role !== "admin" ||
-        !!session.error,
-      refetchOnMountOrArgChange: true,
-    },
-  );
-  const [target, setTarget] = useState<OrderStatus | null>(null);
-  const [actionError, setActionError] = useState("");
+  const { session, query, target, setTarget, actionError, setActionError } =
+    useOrderDetail({ id });
   if (session.isPending || query.isLoading)
     return <Skeleton className="h-96" />;
   const order = query.currentData;

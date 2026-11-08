@@ -1,40 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
-import { Btn, Card, PageHeader } from "@/components/cms/ui";
+import useOrdersList from "../_hooks/useOrdersList";
+
 import DataTable from "@/components/cms/DataTable";
 import StatusBadge from "@/components/cms/StatusBadge";
+import { Card, PageHeader } from "@/components/cms/ui";
 import Pagination from "@/components/common/Pagination";
-import { useGetAdminOrdersQuery } from "@/redux/apis/order.api";
-import type { OrderQuery } from "@/redux/apis/types/order.types";
-import { apiErrorMessage } from "@/redux/api.utils";
-import { bdt } from "@/lib/utils";
-import { orderLabel } from "@/lib/order-rules";
-import OrdersFilters from "./OrdersFilters";
-import ManualOrderModal from "./ManualOrderModal";
 import { CmsButton } from "@/components/ui/button";
+import { orderLabel } from "@/lib/order-rules";
+import { bdt } from "@/lib/utils";
+import { apiErrorMessage } from "@/redux/api.utils";
+import { Plus } from "lucide-react";
+import ManualOrderModal from "./ManualOrderModal";
+import OrdersFilters from "./OrdersFilters";
 
 export default function OrdersList() {
-  const session = authClient.useSession();
-  const router = useRouter();
-  const [filters, setFilters] = useState<OrderQuery>({});
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [creating, setCreating] = useState(false);
-  const owner = session.data?.user.id ?? "";
-  const query = useGetAdminOrdersQuery(
-    { ...filters, page, limit, owner },
-    {
-      skip:
-        session.isPending ||
-        session.data?.user.role !== "admin" ||
-        !!session.error,
-      refetchOnMountOrArgChange: true,
-    },
-  );
+  const { session, router, setFilters, setPage, limit, setLimit, creating, setCreating, owner, query } = useOrdersList();
   return (
     <div>
       <PageHeader
@@ -46,7 +27,7 @@ export default function OrdersList() {
         }
         actions={
           <CmsButton
-            
+
             disabled={!owner}
             onClick={() => setCreating(true)}
           >

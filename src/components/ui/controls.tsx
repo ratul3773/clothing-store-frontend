@@ -1,17 +1,18 @@
 "use client";
 
-import * as React from "react";
+import { useLogout } from "@/hooks/useLogout";
+import { cn } from "@/lib/utils";
 import * as Checkbox from "@radix-ui/react-checkbox";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import * as Radio from "@radix-ui/react-radio-group";
+import * as Select from "@radix-ui/react-select";
 import * as Slider from "@radix-ui/react-slider";
 import * as Switch from "@radix-ui/react-switch";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import * as Select from "@radix-ui/react-select";
-import * as Radio from "@radix-ui/react-radio-group";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Check, ChevronDown, LogOut } from "lucide-react";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useLogout } from "@/hooks/useLogout";
+import * as React from "react";
+import { useComposedRefs } from "@radix-ui/react-compose-refs";
 
 export function Check1({
   checked,
@@ -119,7 +120,6 @@ export function Tip({
   );
 }
 
-
 export function Pick({
   value,
   onChange,
@@ -145,16 +145,28 @@ export function Pick({
   isAdmin?: boolean;
   "aria-invalid"?: boolean;
 }) {
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const composedRef = useComposedRefs(buttonRef, triggerRef);
+
   return (
     <Select.Root
-      value={value}
-      onValueChange={onChange}
+      value={value || "__pick_empty__"}
+      onValueChange={(next) => {
+        if (buttonRef.current?.matches(":disabled")) return;
+        onChange(next === "__pick_empty__" ? "" : next);
+      }}
       disabled={disabled}
     >
       <Select.Trigger
         id={id}
-        ref={triggerRef}
+        ref={composedRef}
         onBlur={onBlur}
+        onPointerDown={(event) => {
+          if (event.currentTarget.matches(":disabled")) event.preventDefault();
+        }}
+        onKeyDown={(event) => {
+          if (event.currentTarget.matches(":disabled")) event.preventDefault();
+        }}
         {...aria}
         aria-label={label}
         className={cn(
@@ -164,15 +176,15 @@ export function Pick({
 
           isAdmin
             ? [
-                "rounded-md border border-border bg-background px-3",
-                "text-foreground shadow-none",
-                "hover:border-foreground/30",
-                "data-[state=open]:border-foreground/40",
-              ]
+              "rounded-md border border-border bg-background px-3",
+              "text-foreground shadow-none",
+              "hover:border-foreground/30",
+              "data-[state=open]:border-foreground/40",
+            ]
             : [
-                "rounded-[3px] border border-foreground/50 bg-card px-4",
-                "hover:border-accent",
-              ],
+              "rounded-[3px] border border-foreground/50 bg-card px-4",
+              "hover:border-accent",
+            ],
 
           className,
         )}
@@ -205,11 +217,10 @@ export function Pick({
         >
           <Select.Viewport className="p-1">
             {options
-              .filter((option) => option.value)
               .map((option) => (
                 <Select.Item
                   key={option.value}
-                  value={option.value}
+                  value={option.value || "__pick_empty__"}
                   disabled={option.disabled}
                   className={cn(
                     "relative flex cursor-pointer select-none items-center justify-between gap-3 px-3 py-2 text-sm outline-none",
@@ -217,15 +228,15 @@ export function Pick({
 
                     isAdmin
                       ? [
-                          "rounded-sm",
-                          "data-[highlighted]:bg-primary",
-                          "data-[highlighted]:text-accent-foreground",
-                        ]
+                        "rounded-sm",
+                        "data-[highlighted]:bg-primary",
+                        "data-[highlighted]:text-accent-foreground",
+                      ]
                       : [
-                          "rounded-[2px]",
-                          "data-[highlighted]:bg-foreground",
-                          "data-[highlighted]:text-background",
-                        ],
+                        "rounded-[2px]",
+                        "data-[highlighted]:bg-foreground",
+                        "data-[highlighted]:text-background",
+                      ],
                   )}
                 >
                   <Select.ItemText>
@@ -246,7 +257,6 @@ export function Pick({
     </Select.Root>
   );
 }
-
 
 export function Choice({
   value,
