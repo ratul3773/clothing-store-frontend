@@ -12,6 +12,7 @@ import { apiErrorMessage } from "@/redux/api.utils";
 
 import { FormField } from "@/components/common/form-field";
 import Image from "next/image";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 export default function CategoryModal(props: Props) {
   if (!props.open) return null;
@@ -59,7 +60,7 @@ function CategoryModalContent({ onOpenChange, categories, editing }: Props) {
             variant="default"
             disabled={saving || (imageRequired && !hasImage)}
           >
-            {saving ? "Saving…" : editing ? "Save category" : "Create category"}
+            {saving ? <><FadeArc className="size-3.5" /> Saving…</> : editing ? "Save category" : "Create category"}
           </CmsButton>
         </>
       }

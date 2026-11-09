@@ -48,6 +48,11 @@ export default function useProductStatusActions() {
     remove,
     removeState,
     busy,
+    isPublishing: publishState.isLoading,
+    isUnpublishing: unpublishState.isLoading,
+    isArchiving: archiveState.isLoading,
+    isRestoring: restoreState.isLoading,
+    isRemoving: removeState.isLoading,
     run,
   };
 }

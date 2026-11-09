@@ -81,7 +81,7 @@ export default function AddressesTab() {
         title="Delete Address"
         description="Are you sure you want to delete this address?"
         onConfirm={() => void book.remove()}
-        onCancel={() => book.setDeleting(null)} loading={book.isDeleting}
+        onCancel={() => book.setDeleting(null)}
       />
     </>
   );

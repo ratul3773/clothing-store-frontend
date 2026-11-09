@@ -11,6 +11,7 @@ import type {
 } from "@/redux/apis/types/product.types";
 
 import { FormField } from "@/components/common/form-field";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 export default function VariantDialog(props: Props) {
   return props.variant ? (
@@ -38,7 +39,7 @@ function CreateVariantDialog({ productId, colors, open, onOpenChange }: Props) {
             variant="default"
             disabled={createState.isLoading || !form.formState.isDirty}
           >
-            {createState.isLoading ? "Saving…" : "Add variant"}
+            {createState.isLoading ? <><FadeArc className="size-3.5" /> Saving…</>: "Add variant"}
           </CmsButton>
         </>
       }
@@ -117,7 +118,7 @@ function EditVariantDialog({
             variant="default"
             disabled={updateState.isLoading || !form.formState.isDirty}
           >
-            {updateState.isLoading ? "Saving…" : "Save variant"}
+            {updateState.isLoading ? <><FadeArc className="size-3.5" /> Saving…</> : "Save variant"}
           </CmsButton>
         </>
       }

@@ -8,6 +8,7 @@ import Modal from "@/components/cms/Modal";
 import { bdt } from "@/lib/utils";
 
 import { FormField } from "@/components/common/form-field";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 export default function OfferDialog({
   productId,
@@ -44,7 +45,7 @@ export default function OfferDialog({
             }
           >
             {createState.isLoading || updateState.isLoading
-              ? "Saving…"
+              ? <><FadeArc className="size-3.5" /> Saving…</>
               : "Save offer"}
           </CmsButton>
         </>

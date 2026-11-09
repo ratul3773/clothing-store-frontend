@@ -8,6 +8,7 @@ import Modal from "@/components/cms/Modal";
 import { FormField } from "@/components/common/form-field";
 import type { ProductColor } from "@/redux/apis/types/product.types";
 import { useColor } from "../_hooks/useColor";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 type Props = {
   productId: string;
@@ -54,7 +55,7 @@ export default function ColorDialog({
             variant="default"
             disabled={isSaving || !form.formState.isDirty}
           >
-            {isSaving ? "Saving…" : "Save colour"}
+            {isSaving ? <><FadeArc className="size-3.5" /> Saving…</> : "Save colour"}
           </CmsButton>
         </>
       }

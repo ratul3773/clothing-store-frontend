@@ -60,18 +60,26 @@ export default function ComboItemsList({
       )}
       {!items.length && (
         <p className="text-sm text-muted-foreground">
-          Select products and colors below, then choose the variants customers can
-          pick from. A combo needs two or three physical pieces.
+          Select products and colors below, then choose the variants customers
+          can pick from. A combo needs two or three physical pieces.
         </p>
       )}
       <ul className="space-y-3 [&_button]:transition-none">
         {fields.map((item, index) => {
           const quantity = items[index]?.quantity;
-          const setQuantity = (value: number) => form.setValue(`items.${index}.quantity`, value, { shouldDirty: true, shouldValidate: true });
+          const setQuantity = (value: number) =>
+            form.setValue(`items.${index}.quantity`, value, {
+              shouldDirty: true,
+              shouldValidate: true,
+            });
           const maxStock = Math.max(
             0,
             ...item.variants
-              .filter((variant) => !items[index]?.variantIds || items[index].variantIds?.includes(variant.id))
+              .filter(
+                (variant) =>
+                  !items[index]?.variantIds ||
+                  items[index].variantIds?.includes(variant.id),
+              )
               .map((variant) => variant.available),
           );
           const maxQuantity = Math.min(
@@ -108,28 +116,41 @@ export default function ComboItemsList({
                 <p className="text-sm font-semibold">
                   {bdt(
                     item.product.unitPrice *
-                    (Number.isFinite(items[index]?.quantity)
-                      ? items[index].quantity
-                      : 0),
+                      (Number.isFinite(items[index]?.quantity)
+                        ? items[index].quantity
+                        : 0),
                   )}
                 </p>
               </div>
               <div className="space-y-1">
                 <div className="flex items-end gap-1">
-                  <CmsButton variant="outline"
+                  <CmsButton
+                    variant="outline"
                     size="icon"
                     disabled={
-                      busy ||
-                      !Number.isFinite(quantity) ||
-                      quantity <= 1
+                      busy || !Number.isFinite(quantity) || quantity <= 1
                     }
                     aria-label={`Decrease quantity of ${item.product.name} ${item.color.name}`}
                     onClick={() => setQuantity(quantity - 1)}
                   >
                     <Minus className="size-3.5" />
                   </CmsButton>
-                  <FormField form={form} id={`combo-quantity-${item.id}`} name={`items.${index}.quantity`} label="Quantity" isAdmin isInput valueAsNumber type="number" className="w-16 text-center" min={1} max={Math.max(1, maxQuantity)} aria-label={`Quantity of ${item.product.name} ${item.color.name}`} />
-                  <CmsButton variant="outline"
+                  <FormField
+                    form={form}
+                    id={`combo-quantity-${item.id}`}
+                    name={`items.${index}.quantity`}
+                    label="Quantity"
+                    isAdmin
+                    isInput
+                    valueAsNumber
+                    type="number"
+                    className="w-auto text-center"
+                    min={1}
+                    max={Math.max(1, maxQuantity)}
+                    aria-label={`Quantity of ${item.product.name} ${item.color.name}`}
+                  />
+                  <CmsButton
+                    variant="outline"
                     size="icon"
                     disabled={
                       busy ||
@@ -156,8 +177,13 @@ export default function ComboItemsList({
                 control={form.control}
                 name={`items.${index}.variantIds`}
                 render={({ field, fieldState }) => (
-                  <fieldset disabled={busy} className="w-full min-w-0 space-y-2 border-t border-border pt-3">
-                    <legend className="sr-only">Allowed variants for {item.product.name} {item.color.name}</legend>
+                  <fieldset
+                    disabled={busy}
+                    className="w-full min-w-0 space-y-2 border-t border-border pt-3"
+                  >
+                    <legend className="sr-only">
+                      Allowed variants for {item.product.name} {item.color.name}
+                    </legend>
                     <p className="text-xs font-medium">Allowed variants</p>
                     <div className="flex flex-wrap gap-2">
                       <CmsButton
@@ -168,11 +194,17 @@ export default function ComboItemsList({
                       >
                         All variants
                       </CmsButton>
-                      <CmsButton variant="outline" size="sm" onClick={() => field.onChange([])}>
+                      <CmsButton
+                        variant="outline"
+                        size="sm"
+                        onClick={() => field.onChange([])}
+                      >
                         Clear selection
                       </CmsButton>
                       {item.variants.map((variant) => {
-                        const selected = field.value == null || field.value.includes(variant.id);
+                        const selected =
+                          field.value == null ||
+                          field.value.includes(variant.id);
                         return (
                           <CmsButton
                             key={variant.id}
@@ -181,8 +213,14 @@ export default function ComboItemsList({
                             aria-pressed={selected}
                             aria-label={`${variant.size} for ${item.product.name} ${item.color.name}`}
                             onClick={() => {
-                              const current = field.value ?? item.variants.map((entry) => entry.id);
-                              field.onChange(selected ? current.filter((id) => id !== variant.id) : [...current, variant.id]);
+                              const current =
+                                field.value ??
+                                item.variants.map((entry) => entry.id);
+                              field.onChange(
+                                selected
+                                  ? current.filter((id) => id !== variant.id)
+                                  : [...current, variant.id],
+                              );
                             }}
                           >
                             {variant.size}
@@ -195,7 +233,11 @@ export default function ComboItemsList({
                         ? "Customers can choose any active variant, including variants added later."
                         : `${field.value.length} variant${field.value.length === 1 ? "" : "s"} selected. Customers choose from these variants only.`}
                     </p>
-                    {fieldState.error && <p role="alert" className="text-xs text-destructive">{fieldState.error.message}</p>}
+                    {fieldState.error && (
+                      <p role="alert" className="text-xs text-destructive">
+                        {fieldState.error.message}
+                      </p>
+                    )}
                   </fieldset>
                 )}
               />

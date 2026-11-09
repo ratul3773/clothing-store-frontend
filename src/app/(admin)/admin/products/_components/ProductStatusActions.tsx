@@ -8,6 +8,7 @@ import { Archive, RotateCcw, Send, Trash2, Undo2 } from "lucide-react";
 
 import AlertDialogText from "@/components/common/Alert-Dialogue";
 import type { AdminProduct } from "@/redux/apis/types/product.types";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 type Props = {
   product: AdminProduct;
@@ -31,6 +32,10 @@ export default function ProductStatusActions({
     removeState,
     busy,
     run,
+    isPublishing,
+    isUnpublishing,
+    isArchiving,
+    isRestoring,
   } = useProductStatusActions();
 
   return (
@@ -44,7 +49,7 @@ export default function ProductStatusActions({
             void run(() => publish(product.id).unwrap(), "Product published.")
           }
         >
-          <Send className="size-3.5" /> Publish
+          {isPublishing ? <><FadeArc className="size-3.5" /> Publishing…</> : <><Send className="size-3.5" /> Publish</>}
         </CmsButton>
       )}
 
@@ -59,7 +64,7 @@ export default function ProductStatusActions({
             )
           }
         >
-          <Undo2 className="size-3.5" /> Unpublish
+          {isUnpublishing ? <><FadeArc className="size-3.5" /> Unpublishing…</> : <><Undo2 className="size-3.5" /> Unpublish</>}
         </CmsButton>
       )}
 
@@ -74,7 +79,7 @@ export default function ProductStatusActions({
             )
           }
         >
-          <RotateCcw className="size-3.5" /> Restore
+          {isRestoring ? <><FadeArc className="size-3.5" /> Restoring…</> : <><RotateCcw className="size-3.5" /> Restore</>}
         </CmsButton>
       ) : (
         <CmsButton variant="outline"
@@ -84,7 +89,7 @@ export default function ProductStatusActions({
             void run(() => archive(product.id).unwrap(), "Product archived.")
           }
         >
-          <Archive className="size-3.5" /> Archive
+          { isArchiving ? <><FadeArc className="size-3.5" /> Archiving…</> : <><Archive className="size-3.5" /> Archive</> }
         </CmsButton>
       )}
 

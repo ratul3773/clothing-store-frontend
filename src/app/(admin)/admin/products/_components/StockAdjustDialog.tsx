@@ -14,6 +14,7 @@ import { TextShimmerWave } from "@/components/animation/text-shimmer";
 import { FormField } from "@/components/common/form-field";
 import { STOCK_TYPE_OPTIONS } from "../_constants/products.constants";
 import { formatDate, variantName } from "../_utils/products.utils";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 export default function StockAdjustDialog(props: Props) {
   return props.open ? <StockAdjustDialogContent key={props.variant.id} {...props} /> : null;
@@ -49,7 +50,7 @@ function StockAdjustDialogContent({
               variant="default"
               disabled={adjustState.isLoading}
             >
-              {adjustState.isLoading ? "Saving…" : "Apply adjustment"}
+              {adjustState.isLoading ? <><FadeArc className="size-3.5" /> Saving…</> : "Apply adjustment"}
             </CmsButton>
           </>
         ) : (
@@ -120,7 +121,7 @@ function StockAdjustDialogContent({
         <div>
           {historyLoading && !history ? (
             <div className="py-5 text-center">
-              <Swirling className="size-12 text-accent mx-auto mb-1" />
+              <Swirling className="size-12 text-primary mx-auto mb-1" />
               <TextShimmerWave className="text-primary label-mono">
                 Loading stock movements...
               </TextShimmerWave>

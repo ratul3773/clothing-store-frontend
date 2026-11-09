@@ -12,6 +12,7 @@ import ImagesCreateSection from "./ImagesCreateSection";
 import PricingSection from "./PricingSection";
 import ProductPreview from "./ProductPreview";
 import VariantsCreateSection from "./VariantsCreateSection";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 export default function ProductCreateForm() {
   const {
@@ -46,8 +47,8 @@ export default function ProductCreateForm() {
               variant="default"
               disabled={submitting || createState.isLoading}
             >
-              <Save className="size-4" />
-              {submitting ? "Creating…" : "Create draft"}
+              
+              {submitting ? <><FadeArc className="size-3.5" /> Creating…</> : <><Save className="size-4" /> Create draft</>}
             </CmsButton>
           </>
         }
