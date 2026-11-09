@@ -106,8 +106,17 @@ export default function OrderDetail({ id }: { id: string }) {
                   <p className="text-xs text-muted-foreground">
                     {new Date(event.createdAt).toLocaleString("en-GB")} ·{" "}
                     {event.actorType}
-                    {event.actorId ? ` (${event.actorId})` : ""}
                   </p>
+                  {event.actor ? (
+                    <div className="break-words text-xs text-muted-foreground">
+                      <p>{event.actor.name}</p>
+                      <p className="break-all">{event.actor.email}</p>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">
+                      {event.actorType === "SYSTEM" ? "System" : event.actorType === "CUSTOMER" && !event.actorId ? "Guest" : "Unavailable user"}
+                    </p>
+                  )}
                   {event.reason && <p>{event.reason}</p>}
                 </li>
               ))}

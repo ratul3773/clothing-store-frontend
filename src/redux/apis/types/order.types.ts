@@ -64,6 +64,7 @@ export type OrderHistory = {
   createdAt: string;
   actorType?: string;
   actorId?: string | null;
+  actor?: { name: string; email: string } | null;
   reason?: string | null;
 };
 export type OrderSummary = OrderTotals & {
