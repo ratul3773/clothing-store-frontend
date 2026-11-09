@@ -4,7 +4,7 @@ import { CmsButton } from "@/components/ui/button";
 import Link from 'next/link'
 import { Card, CardHeader } from '@/components/cms/ui';
 import DataTable from '@/components/cms/DataTable'
-import StatusBadge from '@/components/cms/StatusBadge'
+import StatusBadge from '@/components/common/StatusBadge'
 import { useNavigate } from '@/lib/nav'
 import { bdt } from '@/lib/utils'
 import type { Order } from '@/data/orders'

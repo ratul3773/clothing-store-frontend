@@ -3,7 +3,7 @@
 import useOrdersList from "../_hooks/useOrdersList";
 
 import DataTable from "@/components/cms/DataTable";
-import StatusBadge from "@/components/cms/StatusBadge";
+import StatusBadge from "@/components/common/StatusBadge";
 import { Card, PageHeader } from "@/components/cms/ui";
 import Pagination from "@/components/common/Pagination";
 import { CmsButton } from "@/components/ui/button";

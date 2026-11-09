@@ -102,7 +102,7 @@ function CheckoutContent({
           )}
         </p>
       )}
-      {checkout.attempt.attempt && (
+      {checkout.attempt.error && (
         <div className="space-y-4 rounded border border-border p-6">
           <p>
             A previous submission needs its result confirmed. Retry it before

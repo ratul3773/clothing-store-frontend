@@ -25,7 +25,7 @@ import {
   rememberedGuestOrders,
   rememberGuestOrder,
 } from "@/lib/order-storage";
-import { orderLabel } from "@/lib/order-rules";
+import StatusBadge from "@/components/common/StatusBadge";
 import type { OrderAccess } from "@/redux/apis/types/order.types";
 import AlertText from "@/components/common/Alert";
 
@@ -211,11 +211,12 @@ function OrderContent({
             <ol className="space-y-3 border-l border-border pl-4">
               {query.currentData.history.map((event) => (
                 <li key={event.id}>
-                  <p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <StatusBadge status={event.toStatus} />
                     {event.event === "EXPIRED"
                       ? "Expired — stock released"
-                      : orderLabel(event.toStatus)}
-                  </p>
+                      : null}
+                  </div>
                   <time className="text-sm text-muted-foreground">
                     {new Date(event.createdAt).toLocaleString("en-GB")}
                   </time>

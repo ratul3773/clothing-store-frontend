@@ -1,5 +1,5 @@
 import { Card, CardHeader, Empty } from '@/components/cms/ui'
-import StatusBadge from '@/components/cms/StatusBadge'
+import StatusBadge from '@/components/common/StatusBadge'
 import type { Status } from '@/data/orders'
 
 export default function DashboardStatusBreakdown({ rows }: { rows: { status: string; count: number }[] }) {

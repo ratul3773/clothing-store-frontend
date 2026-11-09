@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { bdt } from '@/lib/utils'
-import StatusBadge from '@/components/cms/StatusBadge'
+import StatusBadge from '@/components/common/StatusBadge'
 import type { Order } from '@/data/orders'
 import { fmtDate } from '@/app/(admin)/admin/customers/_utils/customers.utils'
 

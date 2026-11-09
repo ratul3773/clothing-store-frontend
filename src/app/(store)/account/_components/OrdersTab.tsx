@@ -7,7 +7,7 @@ import { apiErrorMessage } from "@/redux/api.utils";
 import Pagination from "@/components/common/Pagination";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import StatusBadge from "@/components/cms/StatusBadge";
+import StatusBadge from "@/components/common/StatusBadge";
 import { bdt } from "@/lib/utils";
 
 export default function OrdersTab() {

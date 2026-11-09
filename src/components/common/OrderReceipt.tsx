@@ -2,7 +2,7 @@
 
 import { bdt } from "@/lib/utils";
 import Image from "next/image";
-import { orderLabel } from "@/lib/order-rules";
+import StatusBadge from "@/components/common/StatusBadge";
 import type {
   OrderDisplay,
   OrderReceipt as Receipt,
@@ -27,7 +27,7 @@ export default function OrderReceipt({
             </p>
           </div>
           <div className="text-sm">
-            <p>{orderLabel(order.status)}</p>
+            <StatusBadge status={order.status} />
             <p>COD · {order.paidAt ? "Collected" : "Unpaid"}</p>
           </div>
         </div>

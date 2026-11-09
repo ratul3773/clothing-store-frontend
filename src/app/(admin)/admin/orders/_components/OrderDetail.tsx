@@ -3,7 +3,7 @@
 import { CmsButton } from "@/components/ui/button";
 import useOrderDetail from "../_hooks/useOrderDetail";
 
-import StatusBadge from "@/components/cms/StatusBadge";
+import StatusBadge from "@/components/common/StatusBadge";
 import { Card, CardHeader, PageHeader } from "@/components/cms/ui";
 import OrderReceipt from "@/components/common/OrderReceipt";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -97,11 +97,12 @@ export default function OrderDetail({ id }: { id: string }) {
                   key={event.id}
                   className="border-l border-border pl-3 text-sm"
                 >
-                  <p className="font-medium">
+                  <div className="flex flex-wrap items-center gap-2 font-medium">
+                    <StatusBadge status={event.toStatus} />
                     {event.event === "EXPIRED"
                       ? "Expired — stock released"
-                      : orderLabel(event.toStatus)}
-                  </p>
+                      : null}
+                  </div>
                   <p className="text-xs text-muted-foreground">
                     {new Date(event.createdAt).toLocaleString("en-GB")} ·{" "}
                     {event.actorType}
