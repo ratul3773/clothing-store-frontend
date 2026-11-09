@@ -39,7 +39,9 @@ const accessSchema = z.object({
     ),
 });
 const noSubscription = () => () => {};
-const cancellationSchema = z.object({ reason: z.string().trim().min(1, "A reason is required").max(500) });
+const cancellationSchema = z.object({
+  reason: z.string().trim().min(1, "A reason is required").max(500),
+});
 
 export default function OrderView() {
   const params = useSearchParams();
@@ -81,7 +83,9 @@ function OrderContent({
   const [remembered, setRemembered] = useState(rememberedGuestOrders);
   const [error, setError] = useState("");
   const [confirmCancel, setConfirmCancel] = useState(false);
-  const [showCode, setShowCode] = useState(() => !!token && !guestOrderPersisted(id));
+  const [showCode, setShowCode] = useState(
+    () => !!token && !guestOrderPersisted(id),
+  );
   const form = useForm<z.infer<typeof accessSchema>>({
     resolver: zodResolver(accessSchema),
     defaultValues: { id, token: "" },
@@ -94,7 +98,8 @@ function OrderContent({
   });
   const [cancel, cancelState] = useCancelOrderMutation();
   const cancelForm = useForm<z.infer<typeof cancellationSchema>>({
-    resolver: zodResolver(cancellationSchema), defaultValues: { reason: "" },
+    resolver: zodResolver(cancellationSchema),
+    defaultValues: { reason: "" },
   });
   const openWithCode = form.handleSubmit((values) => {
     if (!rememberGuestOrder(values.id, values.token))
@@ -107,9 +112,18 @@ function OrderContent({
     } else router.push(`/order?id=${values.id}`);
   });
   const cancelOrder = cancelForm.handleSubmit(async ({ reason }) => {
-    if (!query.currentData || query.currentData.status !== "PENDING_CONFIRMATION" || cancelState.isLoading) return;
+    if (
+      !query.currentData ||
+      query.currentData.status !== "PENDING_CONFIRMATION" ||
+      cancelState.isLoading
+    )
+      return;
     try {
-      await cancel({ ...access, version: query.currentData.version, reason }).unwrap();
+      await cancel({
+        ...access,
+        version: query.currentData.version,
+        reason,
+      }).unwrap();
       setConfirmCancel(false);
     } catch (failure) {
       setError(apiErrorMessage(failure));
@@ -137,47 +151,49 @@ function OrderContent({
           <div className="border border-border p-5">
             <OrderReceipt order={query.currentData} printable />
           </div>
-          <div className="flex flex-wrap gap-3">
-            <Button variant="outline" onClick={() => window.print()}>
-              Print receipt
-            </Button>
-            <Button
-              variant="outline"
-              disabled={query.isFetching}
-              onClick={() => void query.refetch()}
-            >
-              Refresh status
-            </Button>
-            {query.currentData.status === "PENDING_CONFIRMATION" && (
-              <Button
-                variant="destructive"
-                disabled={cancelState.isLoading || query.isFetching}
-                onClick={() => setConfirmCancel(true)}
-              >
-                Cancel order
+          {query.currentData.status !== "CANCELLED" && (
+            <div className="flex flex-wrap gap-3">
+              <Button variant="outline" onClick={() => window.print()}>
+                Print receipt
               </Button>
-            )}
-            {token && (
-              <>
+              <Button
+                variant="outline"
+                disabled={query.isFetching}
+                onClick={() => void query.refetch()}
+              >
+                Refresh status
+              </Button>
+              {query.currentData.status === "PENDING_CONFIRMATION" && (
                 <Button
-                  variant="ghost"
-                  onClick={() => setShowCode((value) => !value)}
+                  variant="destructive"
+                  disabled={cancelState.isLoading || query.isFetching}
+                  onClick={() => setConfirmCancel(true)}
                 >
-                  Show private access code
+                  Cancel order
                 </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    forgetGuestOrder(id);
-                    setToken(null);
-                    setRemembered(rememberedGuestOrders());
-                  }}
-                >
-                  Forget this order
-                </Button>
-              </>
-            )}
-          </div>
+              )}
+              {token && (
+                <>
+                  <Button
+                    variant="ghost"
+                    onClick={() => setShowCode((value) => !value)}
+                  >
+                    Show private access code
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      forgetGuestOrder(id);
+                      setToken(null);
+                      setRemembered(rememberedGuestOrders());
+                    }}
+                  >
+                    Forget this order
+                  </Button>
+                </>
+              )}
+            </div>
+          )}
           {showCode && token && (
             <p className="break-all border border-border p-4 text-sm">
               Order ID: {id}
@@ -226,7 +242,18 @@ function OrderContent({
               sign in again.
             </p>
           )}
-          {token && <Button variant="outline" onClick={() => { forgetGuestOrder(id); setToken(null); setRemembered(rememberedGuestOrders()); }}>Forget saved code and try another method</Button>}
+          {token && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                forgetGuestOrder(id);
+                setToken(null);
+                setRemembered(rememberedGuestOrders());
+              }}
+            >
+              Forget saved code and try another method
+            </Button>
+          )}
           <p>
             Enter the order ID and private access code from your guest receipt,
             or sign in to the customer account that owns the order.
@@ -279,9 +306,23 @@ function OrderContent({
         actionType="warning"
         confirmButtonText="Cancel order"
         open={confirmCancel}
-        onOpenChange={(open) => { if (!cancelState.isLoading) setConfirmCancel(open); }}
-        onConfirm={(event) => { event.preventDefault(); void cancelOrder(); }}
-        warningMessage={<FormField form={cancelForm} id="customer-cancellation-reason" name="reason" label="Reason" isTextArea disabled={cancelState.isLoading} />}
+        onOpenChange={(open) => {
+          if (!cancelState.isLoading) setConfirmCancel(open);
+        }}
+        onConfirm={(event) => {
+          event.preventDefault();
+          void cancelOrder();
+        }}
+        warningMessage={
+          <FormField
+            form={cancelForm}
+            id="customer-cancellation-reason"
+            name="reason"
+            label="Reason"
+            isTextArea
+            disabled={cancelState.isLoading}
+          />
+        }
         disabled={cancelState.isLoading}
       />
     </section>

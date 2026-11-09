@@ -58,7 +58,11 @@ function CheckoutContent({
           Your checkout selection is missing or has changed. Review the current
           items before continuing.
         </p>
-        {checkout.attempt.error && <p role="alert" className="text-destructive">{checkout.attempt.error}</p>}
+        {checkout.attempt.error && (
+          <p role="alert" className="text-destructive">
+            {checkout.attempt.error}
+          </p>
+        )}
         <Button to="/cart">Return to cart</Button>
       </div>
     );
@@ -86,10 +90,18 @@ function CheckoutContent({
       {(checkout.policyError || checkout.attempt.error) && (
         <p role="alert" className="mb-4 text-destructive">
           {checkout.policyError || checkout.attempt.error}
-          {checkout.policyError && <Button type="button" variant="link" onClick={() => void checkout.retryPolicy()}>Retry delivery charges</Button>}
+          {checkout.policyError && (
+            <Button
+              type="button"
+              variant="link"
+              onClick={() => void checkout.retryPolicy()}
+            >
+              Retry delivery charges
+            </Button>
+          )}
         </p>
       )}
-      {checkout.attempt.attempt ? (
+      {checkout.attempt.attempt && (
         <div className="space-y-4 rounded border border-border p-6">
           <p>
             A previous submission needs its result confirmed. Retry it before
@@ -102,7 +114,7 @@ function CheckoutContent({
             {checkout.attempt.pending ? "Confirming…" : "Retry original order"}
           </Button>
         </div>
-      ) : (
+      )} (
         <form
           onSubmit={checkout.place}
           noValidate
@@ -129,14 +141,23 @@ function CheckoutContent({
               disabled={locked}
             />
             <div className="flex flex-wrap gap-3">
-              <Button type="submit" variant="accent" disabled={locked || checkout.policyLoading || !!checkout.policyError || !checkout.summary}>
+              <Button
+                type="submit"
+                variant="accent"
+                disabled={
+                  locked ||
+                  checkout.policyLoading ||
+                  !!checkout.policyError ||
+                  !checkout.summary
+                }
+              >
                 Place COD order
               </Button>
             </div>
           </div>
           <OrderSummary order={checkout.summary} />
         </form>
-      )}
+      )
     </section>
   );
 }
