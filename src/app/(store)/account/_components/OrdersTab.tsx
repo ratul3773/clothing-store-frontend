@@ -6,7 +6,7 @@ import { useGetOrdersQuery } from "@/redux/apis/order.api";
 import { apiErrorMessage } from "@/redux/api.utils";
 import Pagination from "@/components/common/Pagination";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import OrdersSkeleton from "./OrdersSkeleton";
 import StatusBadge from "@/components/common/StatusBadge";
 import { bdt } from "@/lib/utils";
 
@@ -34,8 +34,8 @@ export default function OrdersTab() {
       refetchOnMountOrArgChange: true,
     },
   );
-  if (session.isPending || query.isLoading)
-    return <Skeleton className="h-56" />;
+  if (session.isPending || query.isLoading || (query.isFetching && !query.currentData))
+    return <OrdersSkeleton count={limit} />;
   if (query.error || session.error)
     return (
       <div role="alert">

@@ -10,7 +10,7 @@ import { FormField } from "@/components/common/form-field";
 import OrderReceipt from "@/components/common/OrderReceipt";
 import AlertDialogText from "@/components/common/Alert-Dialogue";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import OrderSkeleton from "./OrderSkeleton";
 import {
   useGetOrderQuery,
   useCancelOrderMutation,
@@ -52,7 +52,7 @@ export default function OrderView() {
     () => false,
   );
   const session = authClient.useSession();
-  if (!ready || session.isPending) return <Skeleton className="my-8 h-96" />;
+  if (!ready || session.isPending) return <OrderSkeleton />;
   return (
     <OrderContent
       key={`${params.get("id")}:${session.data?.user.id ?? "guest"}`}
@@ -148,7 +148,7 @@ function OrderContent({
         />
       )}
       {query.isLoading ? (
-        <Skeleton className="h-96" />
+        <OrderSkeleton contentOnly />
       ) : query.currentData ? (
         <>
           <div className="border border-border p-5">

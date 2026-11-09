@@ -1,10 +1,10 @@
 import { Suspense } from 'react'
 import OrderView from '@/app/(store)/order/_components/OrderView'
-import { Skeleton } from '@/components/ui/skeleton'
+import OrderSkeleton from '@/app/(store)/order/_components/OrderSkeleton'
 
 export default function Page() {
   return (
-    <Suspense fallback={<Skeleton className="my-8 h-96" />}>
+    <Suspense fallback={<OrderSkeleton />}>
       <OrderView />
     </Suspense>
   )

@@ -12,6 +12,7 @@ import AlertText from '@/components/common/Alert'
 import { FormField } from '@/components/common/form-field'
 import { CmsButton } from '@/components/ui/button'
 import Link from 'next/link'
+import { FadeArc } from '@/components/animation/fade-arc'
 
 export default function AdminLogin() {
     const [showPassword, setShowPassword] = useState(false);
@@ -103,9 +104,9 @@ export default function AdminLogin() {
                         disabled={form.formState.isSubmitting}
                     >
                         {form.formState.isSubmitting
-                            ? 'Signing in...'
-                            : 'Sign in'}
-                        <ArrowRight className="ml-2 h-4 w-4" />
+                            ? <><FadeArc className="size-3.5" /> Signing in...</>
+                            : <>Sign in <ArrowRight className=" h-4 w-4" /></>
+                        }
                     </CmsButton>
                 </form>
                 <p className="mt-4 rounded bg-muted p-2 text-xs text-muted-foreground">Demo: {settings.admin.email} / {settings.admin.password}</p>
