@@ -76,7 +76,7 @@ export const orderApi = baseApi.injectEndpoints({
     }),
     cancelOrder: builder.mutation<
       OrderReceipt,
-      OrderAccess & { version: number; reason: string }
+      OrderAccess & { version: number; reason?: string }
     >({
       query: (access) => ({
         url: `${orderUrl(access)}/cancel`,
@@ -143,7 +143,7 @@ export const orderApi = baseApi.injectEndpoints({
       {
         id: string;
         version: number;
-        reason: string;
+        reason?: string;
         components: ReturnInspection[];
       }
     >({

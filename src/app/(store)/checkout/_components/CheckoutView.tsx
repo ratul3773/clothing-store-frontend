@@ -7,6 +7,7 @@ import OrderSummary from "./OrderSummary";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useStore } from "@/components/providers/StoreProvider";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 export default function CheckoutView() {
   const { cart, retrySession } = useCart({ page: 1, limit: 50 }, true);
@@ -114,7 +115,7 @@ function CheckoutContent({
             {checkout.attempt.pending ? "Confirming…" : "Retry original order"}
           </Button>
         </div>
-      )} (
+      )}
         <form
           onSubmit={checkout.place}
           noValidate
@@ -150,14 +151,11 @@ function CheckoutContent({
                   !!checkout.policyError ||
                   !checkout.summary
                 }
-              >
-                Place COD order
-              </Button>
+              >{locked ? <><FadeArc className="size-4" /> Placing order…</> : "Place order"}</Button>
             </div>
           </div>
           <OrderSummary order={checkout.summary} />
         </form>
-      )
     </section>
   );
 }

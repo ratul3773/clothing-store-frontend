@@ -27,6 +27,7 @@ import {
 } from "@/lib/order-storage";
 import { orderLabel } from "@/lib/order-rules";
 import type { OrderAccess } from "@/redux/apis/types/order.types";
+import AlertText from "@/components/common/Alert";
 
 const accessSchema = z.object({
   id: z.string().uuid("Enter a valid order ID"),
@@ -40,7 +41,7 @@ const accessSchema = z.object({
 });
 const noSubscription = () => () => {};
 const cancellationSchema = z.object({
-  reason: z.string().trim().min(1, "A reason is required").max(500),
+  reason: z.string().trim().max(500).optional(),
 });
 
 export default function OrderView() {
@@ -140,9 +141,11 @@ function OrderContent({
         </Button>
       </div>
       {error && (
-        <p role="alert" className="text-destructive">
-          {error}
-        </p>
+        <AlertText
+          title="Error"
+          description={error}
+          setSubmitError={setError}
+        />
       )}
       {query.isLoading ? (
         <Skeleton className="h-96" />
@@ -318,7 +321,7 @@ function OrderContent({
             form={cancelForm}
             id="customer-cancellation-reason"
             name="reason"
-            label="Reason"
+            label="Reason (optional)"
             isTextArea
             disabled={cancelState.isLoading}
           />
