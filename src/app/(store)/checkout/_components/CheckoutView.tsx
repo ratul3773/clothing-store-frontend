@@ -69,10 +69,10 @@ function CheckoutContent({
     );
   return (
     <section className="py-8">
-      <h1 className="mb-6 font-display text-3xl">Checkout</h1>
+      <h1 className="mb-6 px-2 font-display text-3xl">Checkout</h1>
       {cart.mode === "guest" && !locked && (
-        <p className="mb-6 text-sm">
-          No account needed.{" "}
+        <p className="mb-4 px-2 text-sm">
+          No account needed.
           <Button
             type="button"
             variant="link"
@@ -84,7 +84,7 @@ function CheckoutContent({
             }}
           >
             Sign in
-          </Button>{" "}
+          </Button>
           to use saved addresses. Your bag will be reviewed again after sign-in.
         </p>
       )}
@@ -141,7 +141,7 @@ function CheckoutContent({
               onSelectAddress={checkout.selectAddress}
               disabled={locked}
             />
-            <div className="flex flex-wrap gap-3">
+            <div className="flex justify-end px-2 gap-3">
               <Button
                 type="submit"
                 variant="accent"

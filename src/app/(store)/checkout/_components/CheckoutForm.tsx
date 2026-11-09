@@ -20,7 +20,7 @@ export default function CheckoutForm({
   const isAddressSelected = form.watch("savedAddressId") !== "new";
   return (
     <fieldset disabled={disabled} className="space-y-5">
-      <legend className="mb-4 font-display text-xl">Contact & delivery</legend>
+      <legend className="mb-4 px-2 font-display text-xl">Contact & delivery</legend>
       {addresses.length > 0 && (
         <FormField
           form={form}
@@ -70,7 +70,7 @@ export default function CheckoutForm({
         maxLength={1000}
         disabled={disabled}
       />
-      <p className="rounded border border-border p-4 text-sm">
+      <p className="rounded border border-border mx-2 p-4 text-sm">
         <strong>Cash on delivery</strong> — pay the full order total when it
         arrives.
       </p>
