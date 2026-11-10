@@ -1,66 +1,35 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { CmsButton } from "@/components/ui/button";
+import useCategoriesView from "../_hooks/useCategoriesView";
+
 import { Plus, Search } from "lucide-react";
 
-import {
-  Btn,
-  Card,
-  Empty,
-  Input,
-  PageHeader,
-  Toolbar,
-} from "@/components/cms/ui";
+import { Card, Empty, Input, PageHeader, Toolbar } from "@/components/cms/ui";
 import { apiErrorMessage } from "@/redux/api.utils";
-import { useGetAdminCategoriesQuery } from "@/redux/apis/category.api";
-import {
-  toCategoryRows,
-  type CategoryRow,
-} from "@/redux/apis/types/category.types";
 
 import CategoriesTable from "./CategoriesTable";
 import CategoryModal from "./CategoryModal";
 
 export default function CategoriesView() {
-  const { data, isLoading, isError, error, refetch } =
-    useGetAdminCategoriesQuery();
-  const [query, setQuery] = useState("");
-  const [modal, setModal] = useState<{ open: boolean; editingId?: string }>({
-    open: false,
-  });
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  const rows = useMemo(() => toCategoryRows(data ?? []), [data]);
-
-  // Resolve the edited row from the latest query data so image uploads and
-  // saves are reflected in the open modal.
-  const editing = useMemo(
-    () =>
-      modal.editingId
-        ? data?.find((category) => category.id === modal.editingId)
-        : undefined,
-    [data, modal.editingId],
-  );
-
-  const selectedCategory = useMemo(
-    () => data?.find((cat) => cat.id === selectedId),
-    [data, selectedId],
-  );
-
-  const filtered = useMemo(() => {
-    const term = query.trim().toLowerCase();
-    if (!term) return rows;
-    return rows.filter(
-      (category) =>
-        category.name.toLowerCase().includes(term) ||
-        category.slug.toLowerCase().includes(term),
-    );
-  }, [rows, query]);
-
-  const openEdit = (category: CategoryRow) =>
-    setModal({ open: true, editingId: category.id });
-
-  const openCreate = () => setModal({ open: true });
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    query,
+    setQuery,
+    modal,
+    setModal,
+    selectedId,
+    setSelectedId,
+    rows,
+    editing,
+    filtered,
+    openEdit,
+    openCreate,
+  } = useCategoriesView();
 
   return (
     <div>
@@ -69,9 +38,9 @@ export default function CategoriesView() {
         description="Organise products into a nested catalogue. Deleting a category with products archives it instead."
         crumbs={["Catalog", "Categories"]}
         actions={
-          <Btn variant="primary" onClick={openCreate}>
+          <CmsButton variant="default" onClick={openCreate}>
             <Plus className="size-4" /> New category
-          </Btn>
+          </CmsButton>
         }
       />
 
@@ -100,9 +69,9 @@ export default function CategoriesView() {
               "Check the API connection and try again.",
             )}
             action={
-              <Btn variant="primary" onClick={() => void refetch()}>
+              <CmsButton variant="default" onClick={() => void refetch()}>
                 Try again
-              </Btn>
+              </CmsButton>
             }
           />
         ) : (

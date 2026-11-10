@@ -15,6 +15,7 @@ export default function Footer() {
   const shopLinks = [...taxonomy.map((t) => [t.label, `/shop?cat=${t.cat}`]), ['Offers', '/shop?offers=1'], ['Combos', '/#combos'], ['About us', '/about'], ['Contact', '/contact']]
   const helpLinks = [
     ['FAQ', '/faq'],
+    ['Track an order', '/order'],
     ['Shipping & delivery', '/shipping'],
     ['Returns & exchanges', '/returns'],
     ['Privacy policy', '/privacy-policy'],

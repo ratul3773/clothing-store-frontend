@@ -1,4 +1,5 @@
-import { Btn } from "@/components/cms/ui";
+import { CmsButton } from "@/components/ui/button";
+
 
 export default function ComboConflictNotice({
   active,
@@ -17,10 +18,10 @@ export default function ComboConflictNotice({
         replacement are separate actions.
       </p>
       <div className="flex flex-wrap gap-2">
-        <Btn disabled={!active} onClick={onDeactivate}>
+        <CmsButton variant="outline" disabled={!active} onClick={onDeactivate}>
           Deactivate existing combo
-        </Btn>
-        <Btn onClick={onReplacement}>Create replacement from draft</Btn>
+        </CmsButton>
+        <CmsButton variant="outline" onClick={onReplacement}>Create replacement from draft</CmsButton>
       </div>
     </div>
   );

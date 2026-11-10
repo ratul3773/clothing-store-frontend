@@ -1,20 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { CmsButton } from "@/components/ui/button";
+import useVariantsManager from "../_hooks/useVariantsManager";
+
 import { Pencil, Plus, Trash2, Warehouse } from "lucide-react";
 
+import { Badge, Card, CardHeader, Empty } from "@/components/cms/ui";
 import AlertDialogText from "@/components/common/Alert-Dialogue";
-import { Badge, Btn, Card, CardHeader, Empty } from "@/components/cms/ui";
-import { useStore } from "@/components/providers/StoreProvider";
-import { apiErrorMessage } from "@/redux/api.utils";
-import {
-  useDeleteColorMutation,
-  useDeleteVariantMutation,
-} from "@/redux/apis/product.api";
 import type {
-  AdminProduct,
-  AdminVariant,
-  ProductColor,
+  AdminProduct
 } from "@/redux/apis/types/product.types";
 
 import { variantStockState } from "../_utils/products.utils";
@@ -28,61 +22,25 @@ export default function VariantsManager({
 }: {
   product: AdminProduct;
 }) {
-  const { toast, toastError } = useStore();
-  const [deleteColor, deleteColorState] = useDeleteColorMutation();
-  const [deleteVariant, deleteVariantState] = useDeleteVariantMutation();
-
-  const [colorDialog, setColorDialog] = useState<{
-    open: boolean;
-    color?: ProductColor;
-  }>({ open: false });
-  const [variantDialog, setVariantDialog] = useState<{
-    open: boolean;
-    variant?: AdminVariant;
-  }>({ open: false });
-  const [stockVariant, setStockVariant] = useState<AdminVariant | null>(null);
-  const [colorTarget, setColorTarget] = useState<ProductColor | null>(null);
-  const [variantTarget, setVariantTarget] = useState<AdminVariant | null>(null);
-
-  const variants = [...product.variants].sort(
-    (a, b) =>
-      a.colorName.localeCompare(b.colorName) ||
-      a.sizeOrder - b.sizeOrder ||
-      a.size.localeCompare(b.size),
-  );
-
-  const confirmDeleteColor = async () => {
-    if (!colorTarget) return;
-    try {
-      await deleteColor({
-        productId: product.id,
-        colorId: colorTarget.id,
-      }).unwrap();
-      toast("Colour deleted.");
-      setColorTarget(null);
-    } catch (error) {
-      toast(
-        apiErrorMessage(
-          error,
-          "The colour could not be deleted. Remove its variants first.",
-        ),
-      );
-    }
-  };
-
-  const confirmDeleteVariant = async () => {
-    if (!variantTarget) return;
-    try {
-      await deleteVariant({
-        productId: product.id,
-        variantId: variantTarget.id,
-      }).unwrap();
-      toast("Variant deleted.");
-      setVariantTarget(null);
-    } catch (error) {
-      toastError(apiErrorMessage(error, "The variant could not be deleted."));
-    }
-  };
+  const {
+    deleteColorState,
+    deleteVariantState,
+    colorDialog,
+    setColorDialog,
+    variantDialog,
+    setVariantDialog,
+    stockVariant,
+    setStockVariant,
+    colorTarget,
+    setColorTarget,
+    variantTarget,
+    setVariantTarget,
+    variants,
+    confirmDeleteColor,
+    confirmDeleteVariant,
+  } = useVariantsManager({
+    product,
+  });
 
   return (
     <div className="space-y-4">
@@ -91,9 +49,9 @@ export default function VariantsManager({
           title="Colours"
           description="Colours group variants and can be attached to images."
           actions={
-            <Btn size="sm" onClick={() => setColorDialog({ open: true })}>
+            <CmsButton variant="outline" size="sm" onClick={() => setColorDialog({ open: true })}>
               <Plus className="size-3.5" /> Add colour
-            </Btn>
+            </CmsButton>
           }
         />
         <div className="p-4">
@@ -118,7 +76,7 @@ export default function VariantsManager({
                       {color.hex}
                     </span>
                   )}
-                  <Btn
+                  <CmsButton
                     size="icon"
                     variant="ghost"
                     className="size-6"
@@ -126,8 +84,8 @@ export default function VariantsManager({
                     aria-label={`Edit ${color.name}`}
                   >
                     <Pencil className="size-3.5" />
-                  </Btn>
-                  <Btn
+                  </CmsButton>
+                  <CmsButton
                     size="icon"
                     variant="ghost"
                     className="size-6 text-destructive"
@@ -135,7 +93,7 @@ export default function VariantsManager({
                     aria-label={`Delete ${color.name}`}
                   >
                     <Trash2 className="size-3.5" />
-                  </Btn>
+                  </CmsButton>
                 </div>
               ))}
             </div>
@@ -148,13 +106,13 @@ export default function VariantsManager({
           title="Variants"
           description={`${product.variants.length} variant${product.variants.length === 1 ? "" : "s"} · SKUs are generated from the product code.`}
           actions={
-            <Btn
+            <CmsButton variant="outline"
               size="sm"
               onClick={() => setVariantDialog({ open: true })}
               disabled={product.colors.length === 0}
             >
               <Plus className="size-3.5" /> Add variant
-            </Btn>
+            </CmsButton>
           }
         />
         {variants.length === 0 ? (
@@ -216,18 +174,18 @@ export default function VariantsManager({
                     </td>
                     <td className="px-3 py-2">
                       <div className="flex items-center justify-end gap-1">
-                        <Btn size="sm" onClick={() => setStockVariant(variant)}>
+                        <CmsButton variant="outline" size="sm" onClick={() => setStockVariant(variant)}>
                           <Warehouse className="size-3.5" /> Stock
-                        </Btn>
-                        <Btn
+                        </CmsButton>
+                        <CmsButton variant="outline"
                           size="sm"
                           onClick={() =>
                             setVariantDialog({ open: true, variant })
                           }
                         >
                           <Pencil className="size-3.5" /> Edit
-                        </Btn>
-                        <Btn
+                        </CmsButton>
+                        <CmsButton
                           size="icon"
                           variant="ghost"
                           className="size-7 text-red-600"
@@ -235,7 +193,7 @@ export default function VariantsManager({
                           aria-label={`Delete ${variant.colorName} ${variant.size}`}
                         >
                           <Trash2 className="size-3.5" />
-                        </Btn>
+                        </CmsButton>
                       </div>
                     </td>
                   </tr>

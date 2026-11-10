@@ -1,20 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { CmsButton } from "@/components/ui/button";
+import useProductStatusActions from "../_hooks/useProductStatusActions";
+
 import { Archive, RotateCcw, Send, Trash2, Undo2 } from "lucide-react";
 
+
 import AlertDialogText from "@/components/common/Alert-Dialogue";
-import { Btn } from "@/components/cms/ui";
-import { useStore } from "@/components/providers/StoreProvider";
-import { apiErrorMessage } from "@/redux/api.utils";
-import {
-  useArchiveProductMutation,
-  useDeleteProductMutation,
-  usePublishProductMutation,
-  useRestoreProductMutation,
-  useUnpublishProductMutation,
-} from "@/redux/apis/product.api";
 import type { AdminProduct } from "@/redux/apis/types/product.types";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 type Props = {
   product: AdminProduct;
@@ -27,52 +21,40 @@ export default function ProductStatusActions({
   onDeleted,
   size = "md",
 }: Props) {
-  const { toast, toastError } = useStore();
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [publish, publishState] = usePublishProductMutation();
-  const [unpublish, unpublishState] = useUnpublishProductMutation();
-  const [archive, archiveState] = useArchiveProductMutation();
-  const [restore, restoreState] = useRestoreProductMutation();
-  const [remove, removeState] = useDeleteProductMutation();
-
-  const busy =
-    publishState.isLoading ||
-    unpublishState.isLoading ||
-    archiveState.isLoading ||
-    restoreState.isLoading ||
-    removeState.isLoading;
-
-  const run = async (
-    action: () => Promise<unknown>,
-    success: string,
-  ): Promise<boolean> => {
-    try {
-      await action();
-      toast(success);
-      return true;
-    } catch (error) {
-      toastError(apiErrorMessage(error, "The action could not be completed."));
-      return false;
-    }
-  };
+  const {
+    confirmDelete,
+    setConfirmDelete,
+    publish,
+    unpublish,
+    archive,
+    restore,
+    remove,
+    removeState,
+    busy,
+    run,
+    isPublishing,
+    isUnpublishing,
+    isArchiving,
+    isRestoring,
+  } = useProductStatusActions();
 
   return (
     <div className="flex flex-wrap items-center gap-2">
       {product.status === "DRAFT" && (
-        <Btn
+        <CmsButton
           size={size}
-          variant="primary"
+          variant="default"
           disabled={busy}
           onClick={() =>
             void run(() => publish(product.id).unwrap(), "Product published.")
           }
         >
-          <Send className="size-3.5" /> Publish
-        </Btn>
+          {isPublishing ? <><FadeArc className="size-3.5" /> Publishing…</> : <><Send className="size-3.5" /> Publish</>}
+        </CmsButton>
       )}
 
       {product.status === "ACTIVE" && (
-        <Btn
+        <CmsButton variant="outline"
           size={size}
           disabled={busy}
           onClick={() =>
@@ -82,12 +64,12 @@ export default function ProductStatusActions({
             )
           }
         >
-          <Undo2 className="size-3.5" /> Unpublish
-        </Btn>
+          {isUnpublishing ? <><FadeArc className="size-3.5" /> Unpublishing…</> : <><Undo2 className="size-3.5" /> Unpublish</>}
+        </CmsButton>
       )}
 
       {product.status === "ARCHIVED" ? (
-        <Btn
+        <CmsButton variant="outline"
           size={size}
           disabled={busy}
           onClick={() =>
@@ -97,30 +79,30 @@ export default function ProductStatusActions({
             )
           }
         >
-          <RotateCcw className="size-3.5" /> Restore
-        </Btn>
+          {isRestoring ? <><FadeArc className="size-3.5" /> Restoring…</> : <><RotateCcw className="size-3.5" /> Restore</>}
+        </CmsButton>
       ) : (
-        <Btn
+        <CmsButton variant="outline"
           size={size}
           disabled={busy}
           onClick={() =>
             void run(() => archive(product.id).unwrap(), "Product archived.")
           }
         >
-          <Archive className="size-3.5" /> Archive
-        </Btn>
+          { isArchiving ? <><FadeArc className="size-3.5" /> Archiving…</> : <><Archive className="size-3.5" /> Archive</> }
+        </CmsButton>
       )}
 
       {product.status === "DRAFT" && (
         <>
-          <Btn
+          <CmsButton
             size={size}
-            variant="dangerOutline"
+            variant="destructive"
             disabled={busy}
             onClick={() => setConfirmDelete(true)}
           >
             <Trash2 className="size-3.5" /> Delete
-          </Btn>
+          </CmsButton>
           <AlertDialogText
             open={confirmDelete}
             onOpenChange={setConfirmDelete}

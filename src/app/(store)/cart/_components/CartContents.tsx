@@ -12,6 +12,9 @@ import { Input } from "@/components/ui/input";
 import AlertDialogText from "@/components/common/Alert-Dialogue";
 import PaginationComponent from "@/components/common/Pagination";
 import type { CartItem } from "@/redux/apis/types/cart.types";
+import { saveCheckoutHandoff } from "@/lib/order-storage";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function CartContents({
   drawer = false,
@@ -21,6 +24,7 @@ export default function CartContents({
   onNavigate?: () => void;
 }) {
   const [page, setPage] = useState(1);
+  const router = useRouter();
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const { cart, edit, setSelection, reload, retrySession } = useCart({
     page,
@@ -204,8 +208,15 @@ export default function CartContents({
                 Quantity changes are saved only after you click Update. Your
                 subtotal uses saved quantities.
               </p>
-              <Button variant="accent" className="w-full" disabled>
-                Checkout coming soon
+              <Button variant="accent" className="w-full" disabled={disabled || !cart.selectedCount} onClick={() => {
+                if (!saveCheckoutHandoff({ owner: cart.identityKey, version: cart.version, lines: cart.selectedLines })) {
+                  toast.error("Enable browser session storage to continue to checkout.");
+                  return;
+                }
+                onNavigate?.();
+                router.push("/checkout");
+              }}>
+                Checkout selected items
               </Button>
               {!cart.selectedCount && (
                 <p className="text-xs text-muted-foreground">

@@ -1,19 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { CmsButton } from "@/components/ui/button";
 import { AlertTriangle, Pencil, Save } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useState } from "react";
 
-import { Badge, Btn, Card, CardHeader, PageHeader } from "@/components/cms/ui";
-import { useStore } from "@/components/providers/StoreProvider";
-import { useNavigate } from "@/lib/nav";
-import { apiErrorMessage, isConflictError } from "@/redux/api.utils";
-import { useUpdateProductMutation } from "@/redux/apis/product.api";
+import { Badge, Card, CardHeader, PageHeader } from "@/components/cms/ui";
 import type { AdminProduct } from "@/redux/apis/types/product.types";
 
 import { STATUS_TONES } from "../_constants/products.constants";
 
+import AlertText from "@/components/common/Alert";
+import { useEditProduct } from "../_hooks/useEditProduct";
 import {
   formatDate,
   statusLabel,
@@ -27,8 +24,7 @@ import PricingSection from "./PricingSection";
 import ProductPreview from "./ProductPreview";
 import ProductStatusActions from "./ProductStatusActions";
 import VariantsManager from "./VariantsManager";
-import { useEditProduct } from "../_hooks/useEditProduct";
-import AlertText from "@/components/common/Alert";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 type Props = {
   product: AdminProduct;
@@ -59,14 +55,14 @@ export default function ProductEditForm({ product, reload }: Props) {
         crumbs={["Catalog", "Products", product.name]}
         actions={
           <>
-            <Btn onClick={() => go("/admin/products")}>Back</Btn>
+            <CmsButton variant="outline" onClick={() => go("/admin/products")}>Back</CmsButton>
             {!editable ? (
-              <Btn variant="primary" onClick={() => setEditable(true)}>
+              <CmsButton variant="default" onClick={() => setEditable(true)}>
                 <Pencil className="size-4" /> Edit
-              </Btn>
+              </CmsButton>
             ) : (
               <>
-                <Btn
+                <CmsButton variant="outline"
                   onClick={() => {
                     form.reset(toCoreFormValues(product));
                     setEditable(false);
@@ -74,16 +70,15 @@ export default function ProductEditForm({ product, reload }: Props) {
                   disabled={isSubmitting}
                 >
                   Cancel
-                </Btn>
-                <Btn
+                </CmsButton>
+                <CmsButton
                   type="submit"
                   form="product-edit-form"
-                  variant="primary"
+                  variant="default"
                   disabled={isSubmitting || !form.formState.isDirty}
                 >
-                  <Save className="size-4" />
-                  {isSubmitting ? "Saving…" : "Save changes"}
-                </Btn>
+                  {isSubmitting ?<> <FadeArc className="size-4"/>Saving…</>  : <><Save className="size-4" /> Save changes</>}
+                </CmsButton>
               </>
             )}
             <ProductStatusActions
@@ -108,7 +103,7 @@ export default function ProductEditForm({ product, reload }: Props) {
         <div className="mb-4 flex flex-wrap items-center gap-2 rounded border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
           <AlertTriangle className="size-4 shrink-0" />
           <span className="flex-1">{conflict}</span>
-          <Btn
+          <CmsButton variant="outline"
             size="sm"
             onClick={async () => {
               try {
@@ -122,10 +117,10 @@ export default function ProductEditForm({ product, reload }: Props) {
             }}
           >
             Reload latest
-          </Btn>
-          <Btn size="sm" variant="ghost" onClick={() => setConflict(null)}>
+          </CmsButton>
+          <CmsButton size="sm" variant="ghost" onClick={() => setConflict(null)}>
             Dismiss
-          </Btn>
+          </CmsButton>
         </div>
       )}
 

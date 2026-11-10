@@ -1,60 +1,41 @@
 "use client";
 
-import Image from "next/image";
-import { useState } from "react";
-import { toast } from "sonner";
-import {
-  useGetAdminCombosQuery,
-  useUpdateComboMutation,
-} from "@/redux/apis/combo.api";
-import { apiErrorMessage } from "@/redux/api.utils";
-import type { Combo } from "@/redux/apis/types/combo.types";
-import { bdt } from "@/lib/utils";
-import { Btn, Card, Empty } from "@/components/cms/ui";
+import { CmsButton } from "@/components/ui/button";
+import useCombosTab from "../_hooks/useCombosTab";
+
 import DataTable from "@/components/cms/DataTable";
+import Modal from "@/components/cms/Modal";
+import TableSkeleton from "@/components/cms/TableSkeleton";
+import { Card, Empty } from "@/components/cms/ui";
 import Pagination from "@/components/common/Pagination";
-import { Skeleton } from "@/components/ui/skeleton";
+import { comboDiscountLabel } from "@/lib/combo-pricing";
+import { bdt } from "@/lib/utils";
+import { apiErrorMessage } from "@/redux/api.utils";
+import { Plus } from "lucide-react";
+import Image from "next/image";
 import { formatComboDate } from "../_utils/combo.utils";
 import ComboForm from "./ComboForm";
-import { comboDiscountLabel } from "@/lib/combo-pricing";
-import Modal from "@/components/cms/Modal";
-import { Plus } from "lucide-react";
-import TableSkeleton from "@/components/cms/TableSkeleton";
 
 export default function CombosTab() {
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [editing, setEditing] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [replacement, setReplacement] = useState(false);
   const {
-    data: ComboData,
-    isLoading,
+    setPage,
+    setLimit,
+    editing,
+    setEditing,
+    open,
+    setOpen,
+    setSaving,
+    replacement,
+    setReplacement,
+    ComboData,
     isFetching,
     error,
     refetch,
-  } = useGetAdminCombosQuery({ page, limit });
-  const [update, updating] = useUpdateComboMutation();
-  const edit = (combo: Combo) => {
-    setEditing(combo.id);
-    setReplacement(false);
-    setOpen(true);
-  };
-  const changeOpen = (value: boolean) => {
-    if (!saving) setOpen(value);
-  };
-  const toggle = async (combo: Combo) => {
-    try {
-      await update({
-        id: combo.id,
-        data: { isActive: !combo.isActive },
-      }).unwrap();
-      toast.success(combo.isActive ? "Combo deactivated" : "Combo activated");
-    } catch (failure) {
-      toast.error(apiErrorMessage(failure));
-    }
-  };
+    updating,
+    edit,
+    changeOpen,
+    toggle,
+  } = useCombosTab();
   return (
     <>
       <Card>
@@ -65,15 +46,15 @@ export default function CombosTab() {
             onOpenChange={changeOpen}
             size="xl"
             trigger={
-              <Btn
-                variant="primary"
+              <CmsButton
+                variant="default"
                 onClick={() => {
                   setEditing(null);
                   setReplacement(false);
                 }}
               >
                 <Plus className="size-4" /> New combo
-              </Btn>
+              </CmsButton>
             }
             title={
               replacement
@@ -82,16 +63,15 @@ export default function CombosTab() {
                   ? "Edit combo"
                   : "New combo"
             }
-            children={
-              <ComboForm
-                key={editing ?? "new"}
-                onOpenChange={setOpen}
-                comboId={editing}
-                onPendingChange={setSaving}
-                onReplacement={() => setReplacement(true)}
-              />
-            }
-          />
+          >
+            <ComboForm
+              key={editing ?? "new"}
+              onOpenChange={setOpen}
+              comboId={editing}
+              onPendingChange={setSaving}
+              onReplacement={() => setReplacement(true)}
+            />
+          </Modal>
         </div>
         <p className="p-3 text-xs text-muted-foreground">
           Schedules are shown in Asia/Dhaka. Active status alone does not
@@ -100,7 +80,7 @@ export default function CombosTab() {
         {error ? (
           <div role="alert" className="p-4">
             <p>{apiErrorMessage(error)}</p>
-            <Btn onClick={() => refetch()}>Retry combos</Btn>
+            <CmsButton variant="outline" onClick={() => refetch()}>Retry combos</CmsButton>
           </div>
         ) : isFetching ? (
           <TableSkeleton columns={8} />
@@ -188,13 +168,13 @@ export default function CombosTab() {
                     className="flex gap-2"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <Btn onClick={() => edit(c)}>Edit</Btn>
-                    <Btn
+                    <CmsButton variant="outline" onClick={() => edit(c)}>Edit</CmsButton>
+                    <CmsButton variant="outline"
                       disabled={updating.isLoading}
                       onClick={() => void toggle(c)}
                     >
                       {c.isActive ? "Deactivate" : "Activate"}
-                    </Btn>
+                    </CmsButton>
                   </div>
                 ),
               },

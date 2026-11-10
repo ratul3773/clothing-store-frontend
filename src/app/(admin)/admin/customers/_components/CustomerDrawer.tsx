@@ -1,12 +1,13 @@
 'use client'
 
+import { CmsButton } from "@/components/ui/button";
 import Link from 'next/link'
 import { Ban, CheckCircle2, Mail, Phone, Plus } from 'lucide-react'
 import { patchCustomer } from '@/data/cms'
 import { bdt } from '@/lib/utils'
 import { useStore } from '@/components/providers/StoreProvider'
 import Modal from '@/components/cms/Modal'
-import { Badge, Btn, Card } from '@/components/cms/ui'
+import { Badge, Card } from '@/components/cms/ui';
 import type { Customer } from '@/app/(admin)/admin/customers/_types/customer.types'
 import { fmtDate } from '@/app/(admin)/admin/customers/_utils/customers.utils'
 import CustomerOrders from '@/app/(admin)/admin/customers/_components/CustomerOrders'
@@ -32,11 +33,11 @@ export default function CustomerDrawer({ customer: c, onClose }: { customer: Cus
       description={`${c.segment} customer since ${fmtDate(c.firstOrder)}`}
       footer={
         <>
-          <Link href={`/admin/orders/?new=1&phone=${encodeURIComponent(c.phone)}`}><Btn><Plus className="size-4" />Create manual order</Btn></Link>
-          <Btn variant={c.blocked ? 'outline' : 'dangerOutline'} onClick={toggleBlock}>
+          <Link href={`/admin/orders/?new=1&phone=${encodeURIComponent(c.phone)}`}><CmsButton variant="outline"><Plus className="size-4" />Create manual order</CmsButton></Link>
+          <CmsButton variant={c.blocked ? 'outline' : 'destructive'} onClick={toggleBlock}>
             {c.blocked ? <CheckCircle2 className="size-4" /> : <Ban className="size-4" />}
             {c.blocked ? 'Unblock' : 'Block customer'}
-          </Btn>
+          </CmsButton>
         </>
       }
     >

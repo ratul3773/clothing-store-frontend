@@ -1,8 +1,8 @@
 'use client'
 
 import { motion } from 'motion/react'
-import { LIFECYCLE, statusLabel } from '@/data/orders'
-import { cn } from '@/lib/utils'
+import { LIFECYCLE } from '@/data/orders'
+import StatusBadge from '@/components/common/StatusBadge'
 
 export default function OrderTimeline({ idx }: { idx: number }) {
   return (
@@ -10,7 +10,7 @@ export default function OrderTimeline({ idx }: { idx: number }) {
       {LIFECYCLE.map((s, i) => (
         <li key={s} className="relative">
           <div className="h-1.5 overflow-hidden rounded-full bg-foreground/15"><motion.div className="h-full bg-accent" initial={{ width: 0 }} animate={{ width: i <= idx ? '100%' : 0 }} transition={{ duration: 0.6, delay: 0.9 + i * 0.12 }} /></div>
-          <p className={cn('label-mono mt-2 text-[0.6rem] leading-tight', i <= idx ? 'text-foreground' : 'text-muted-foreground')}>{statusLabel(s)}</p>
+          <div className="mt-2"><StatusBadge status={s} /></div>
         </li>
       ))}
     </ol>

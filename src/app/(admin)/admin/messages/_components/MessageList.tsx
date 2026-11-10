@@ -1,9 +1,10 @@
 'use client'
 
+import { CmsButton } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import usePagination from '@/lib/usePagination'
 import { cn } from '@/lib/utils'
-import { Badge, Btn, Empty } from '@/components/cms/ui'
+import { Badge, Empty } from '@/components/cms/ui';
 import type { Message } from '@/data/cms'
 import { PAGE_SIZE } from '@/app/(admin)/admin/messages/_constants/messages.constants'
 import { fmtDateTime, statusTone } from '@/app/(admin)/admin/messages/_utils/messages.utils'
@@ -40,9 +41,9 @@ export default function MessageList({ rows, activeId, onSelect, resetKey }: { ro
       <div className="flex items-center justify-between px-3 py-2 text-xs text-muted-foreground">
         <span>{total} messages</span>
         <div className="flex items-center gap-1">
-          <Btn size="icon" className="size-7" disabled={page <= 1} onClick={() => setPage(page - 1)} aria-label="Previous page"><ChevronLeft className="size-4" /></Btn>
+          <CmsButton variant="outline" size="icon" className="size-7" disabled={page <= 1} onClick={() => setPage(page - 1)} aria-label="Previous page"><ChevronLeft className="size-4" /></CmsButton>
           <span className="px-1">{page} / {pageCount}</span>
-          <Btn size="icon" className="size-7" disabled={page >= pageCount} onClick={() => setPage(page + 1)} aria-label="Next page"><ChevronRight className="size-4" /></Btn>
+          <CmsButton variant="outline" size="icon" className="size-7" disabled={page >= pageCount} onClick={() => setPage(page + 1)} aria-label="Next page"><ChevronRight className="size-4" /></CmsButton>
         </div>
       </div>
     </div>

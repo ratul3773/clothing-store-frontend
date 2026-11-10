@@ -1,12 +1,14 @@
 
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import Modal from "@/components/cms/Modal";
-import { Btn } from "@/components/cms/ui";
 
+
+import { FormField } from "@/components/common/form-field";
 import type { ProductColor } from "@/redux/apis/types/product.types";
-import { TextField } from "../../../../../components/common/form-controls";
 import { useColor } from "../_hooks/useColor";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 type Props = {
   productId: string;
@@ -22,20 +24,18 @@ export default function ColorDialog({
   onOpenChange,
 }: Props) {
 
-      const {
-        form,
-        hex,
-        onSubmit,
-        isSaving,
-        errorMsg,
-        setErrorMsg,
-      } = useColor(
-        productId,
-        color,
-        onOpenChange
-      );
-
-
+  const {
+    form,
+    hex,
+    onSubmit,
+    isSaving,
+    errorMsg,
+    setErrorMsg,
+  } = useColor(
+    productId,
+    color,
+    onOpenChange
+  );
 
   return (
     <Modal
@@ -48,33 +48,29 @@ export default function ColorDialog({
       size="md"
       footer={
         <>
-          <Btn onClick={() => onOpenChange(false)}>Cancel</Btn>
-          <Btn
+          <CmsButton variant="outline" onClick={() => onOpenChange(false)}>Cancel</CmsButton>
+          <CmsButton
             type="submit"
             form="color-form"
-            variant="primary"
+            variant="default"
             disabled={isSaving || !form.formState.isDirty}
           >
-            {isSaving ? "Saving…" : "Save colour"}
-          </Btn>
+            {isSaving ? <><FadeArc className="size-3.5" /> Saving…</> : "Save colour"}
+          </CmsButton>
         </>
       }
     >
       <form id="color-form" onSubmit={onSubmit} className="space-y-4">
-        <TextField
-          form={form}
+        <FormField isAdmin isInput id="name" form={form}
           name="name"
           label="Colour name"
-          placeholder="e.g. Navy"
-        />
+          placeholder="e.g. Navy" />
 
-        <TextField
-          form={form}
+        <FormField isAdmin isInput id="hex" form={form}
           name="hex"
           label="Hex colour"
           placeholder="#1F2937"
-          hint="Optional. Choose a colour or enter its hex value."
-        />
+          description="Optional. Choose a colour or enter its hex value." />
 
         <div className="space-y-2">
           <label

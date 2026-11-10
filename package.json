@@ -8,6 +8,8 @@
     "start": "bun --bun next start",
     "lint": "eslint",
     "test:cart": "node --import tsx --test tests/cart.test.ts",
+    "test:order": "node --import tsx --test tests/order.test.ts tests/order-api.test.ts",
+    "test:order:browser": "playwright test --config playwright.orders.config.ts",
     "test:cart:browser": "playwright test",
     "test:combo": "node --import tsx --test tests/combo.test.ts tests/combo-api.test.ts"
   },

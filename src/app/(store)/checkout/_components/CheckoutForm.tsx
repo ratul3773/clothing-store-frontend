@@ -1,37 +1,79 @@
-'use client'
+"use client";
 
-import { Field, inputCls } from '@/components/common/FormField'
-import { Button } from '@/components/ui/button'
-import { useStore } from '@/components/providers/StoreProvider'
-import type { CheckoutFields } from '@/app/(store)/checkout/_types/checkout.types'
+import type { UseFormReturn } from "react-hook-form";
+import { FormField } from "@/components/common/form-field";
+import { addressFieldLabels, zoneOptions } from "@/lib/order-form";
+import type { Address } from "@/redux/apis/types/address.types";
+import type { CheckoutFormValues } from "../_schemas/checkout.schema";
 
-interface Props {
-  f: CheckoutFields
-  set: (k: keyof CheckoutFields) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
-}
-
-export default function CheckoutForm({ f, set }: Props) {
-  const s = useStore()
+export default function CheckoutForm({
+  form,
+  addresses,
+  disabled,
+  onSelectAddress,
+}: {
+  form: UseFormReturn<CheckoutFormValues>;
+  addresses: Address[];
+  disabled: boolean;
+  onSelectAddress: (id: string) => void;
+}) {
+  const isAddressSelected = form.watch("savedAddressId") !== "new";
   return (
-    <>
-      <h1 className="font-display text-lg sm:text-2xl font-medium">Checkout</h1>
-      {!s.user && (
-        <p className="mt-4 rounded-[3px] border border-border bg-card/70 p-4 text-sm">
-          No account needed. Already a member? <Button type="button" variant="link" size="xs" onClick={() => s.setAuthOpen(true)} className="h-auto p-0 text-sm font-semibold tracking-normal text-accent underline underline-offset-4">Sign in</Button> to use saved addresses.
-        </p>
+    <fieldset disabled={disabled} className="space-y-5">
+      <legend className="mb-4 px-2 font-display text-xl">Contact & delivery</legend>
+      {addresses.length > 0 && (
+        <FormField
+          form={form}
+          id="checkout-saved-address"
+          name="savedAddressId"
+          onValueChange={onSelectAddress}
+          label="Saved address"
+          isSelect
+          disabled={disabled}
+          options={[
+            { value: "new", label: "Enter a new address" },
+            ...addresses.map((address) => ({
+              value: address.id,
+              label: `${address.label || address.recipientName} — ${address.addressLine}`,
+            })),
+          ]}
+        />
       )}
-      <div className="mt-8 space-y-5">
-        <p className="label-mono text-accent">01 — Contact &amp; address</p>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Full name *"><input className={inputCls} value={f.name} onChange={set('name')} autoComplete="name" /></Field>
-          <Field label="Mobile *"><input className={inputCls} inputMode="tel" value={f.phone} onChange={set('phone')} placeholder="01XXX XXXXXX" autoComplete="tel" /></Field>
-        </div>
-        <Field label="Delivery address *"><textarea className={inputCls + ' h-24 resize-none py-3'} value={f.address} onChange={set('address')} placeholder="House, road, area, district" /></Field>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Email (optional)"><input className={inputCls} type="email" value={f.email} onChange={set('email')} /></Field>
-          <Field label="Order note (optional)"><input className={inputCls} value={f.note} onChange={set('note')} /></Field>
-        </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        {(
+          Object.keys(addressFieldLabels) as Array<
+            keyof typeof addressFieldLabels
+          >
+        ).map((name) => (
+          <FormField
+            key={name}
+            form={form}
+            id={`checkout-${name}`}
+            name={`address.${name}`}
+            label={addressFieldLabels[name]}
+            isInput={name !== "zone" && name !== "addressLine"}
+            isTextArea={name === "addressLine"}
+            isSelect={name === "zone"}
+            options={name === "zone" ? zoneOptions : undefined}
+            type={name === "recipientPhone" ? "tel" : "text"}
+            disabled={disabled || (isAddressSelected)}
+            className={name === "addressLine" ? "sm:col-span-2" : undefined}
+          />
+        ))}
       </div>
-    </>
-  )
+      <FormField
+        form={form}
+        id="checkout-note"
+        name="note"
+        label="Order note (optional)"
+        isTextArea
+        maxLength={1000}
+        disabled={disabled}
+      />
+      <p className="rounded border border-border mx-2 p-4 text-sm">
+        <strong>Cash on delivery</strong> — pay the full order total when it
+        arrives.
+      </p>
+    </fieldset>
+  );
 }

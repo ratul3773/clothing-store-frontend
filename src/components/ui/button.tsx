@@ -215,11 +215,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
 Button.displayName = 'Button'
 
-// Keep existing imports working if your admin code uses CmsButton.
 export const CmsButton = React.forwardRef<
   HTMLButtonElement,
   Omit<ButtonProps, 'mode'>
->((props, ref) => <Button {...props} ref={ref} mode="normal" />)
+>((props, ref) => <Button type="button" {...props} ref={ref} mode="normal" />)
 
 CmsButton.displayName = 'CmsButton'
 

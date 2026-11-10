@@ -1,5 +1,6 @@
 'use client'
 
+import { CmsButton } from "@/components/ui/button";
 import { useState } from 'react'
 import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { coupons } from '@/data/catalog'
@@ -8,7 +9,7 @@ import { useStore } from '@/components/providers/StoreProvider'
 import { bdt } from '@/lib/utils'
 import DataTable from '@/components/cms/DataTable'
 import AlertDialogText from '@/components/common/Alert-Dialogue'
-import { Badge, Btn, Card, Empty } from '@/components/cms/ui'
+import { Badge, Card, Empty } from '@/components/cms/ui';
 import type { Coupon } from '../_utils/coupon.utils'
 import CouponForm from './CouponForm'
 
@@ -23,7 +24,7 @@ export default function CouponsTab() {
       <Card>
         <div className="flex items-center justify-between border-b border-border p-3">
           <span className="text-xs text-muted-foreground">{coupons.length} coupon{coupons.length === 1 ? '' : 's'}</span>
-          <Btn variant="primary" onClick={() => open(null)}><Plus className="size-4" />New coupon</Btn>
+          <CmsButton variant="default" onClick={() => open(null)}><Plus className="size-4" />New coupon</CmsButton>
         </div>
         <DataTable
           rows={coupons}
@@ -41,8 +42,8 @@ export default function CouponsTab() {
               key: 'act', header: '', align: 'right',
               cell: (c) => (
                 <span className="inline-flex gap-1" onClick={(e) => e.stopPropagation()}>
-                  <Btn size="icon" variant="ghost" aria-label="Edit" onClick={() => open(c)}><Pencil className="size-4" /></Btn>
-                  <Btn size="icon" variant="ghost" aria-label="Delete" onClick={() => setDel(c)}><Trash2 className="size-4 text-red-600" /></Btn>
+                  <CmsButton size="icon" variant="ghost" aria-label="Edit" onClick={() => open(c)}><Pencil className="size-4" /></CmsButton>
+                  <CmsButton size="icon" variant="ghost" aria-label="Delete" onClick={() => setDel(c)}><Trash2 className="size-4 text-red-600" /></CmsButton>
                 </span>
               ),
             },

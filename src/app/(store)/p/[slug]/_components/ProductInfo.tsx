@@ -54,12 +54,12 @@ export default function ProductInfo({
         </div>
       )}
       <ProductTabs p={p} size={s.size} />
-      <SizeAssistant
+      {/* <SizeAssistant
         p={p}
         open={assist}
         onOpenChange={setAssist}
         onPick={s.setSize}
-      />
+      /> */}
     </div>
   );
 }

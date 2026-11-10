@@ -72,6 +72,7 @@ export default function LoginForm() {
                                 autoComplete="email"
                                 placeholder="you@example.com"
                                 startIcon={Mail}
+                                isInput
                                 required
                             />
 
@@ -83,6 +84,7 @@ export default function LoginForm() {
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Your password"
                                 startIcon={LockKeyhole}
+                                isInput
                                 endAction={
                                     <Button
                                         type="button"

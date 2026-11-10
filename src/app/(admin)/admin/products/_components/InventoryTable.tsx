@@ -1,11 +1,12 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import Image from 'next/image'
 import { useState } from "react";
 import { Plus } from "lucide-react";
 
 import DataTable, { type Column } from "@/components/cms/DataTable";
-import { Badge, Btn, Empty } from "@/components/cms/ui";
+import { Badge, Empty } from "@/components/cms/ui";
 import type { PageMeta } from "@/redux/api.utils";
 import type { AdminProduct, AdminVariant } from "@/redux/apis/types/product.types";
 
@@ -122,9 +123,9 @@ export default function InventoryTable({
       header: "",
       align: "right",
       cell: (row) => (
-        <Btn size="sm" onClick={() => setSelected(row)}>
+        <CmsButton variant="outline" size="sm" onClick={() => setSelected(row)}>
           <Plus className="size-3.5" /> Adjust
-        </Btn>
+        </CmsButton>
       ),
     },
   ];

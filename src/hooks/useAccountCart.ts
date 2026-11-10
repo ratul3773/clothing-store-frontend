@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
+import { useAppSelector } from "@/redux/hooks";
 import { useStore } from "react-redux";
 import type { RootState } from "@/redux/store";
 import { useStore as Store } from "@/components/providers/StoreProvider";
@@ -39,13 +40,14 @@ const DEFAULT_PAGE: PaginationQuery = { page: 1, limit: 5 };
 export default function useAccountCart(
   pagination: PaginationQuery = DEFAULT_PAGE,
   enabled = true,
+  refreshOnMount = false,
 ) {
   const { toast } = Store();
   const store = useStore<RootState>();
   const query = useGetCartQuery(pagination, {
     skip: !enabled,
     pollingInterval: 0,
-    refetchOnMountOrArgChange: false,
+    refetchOnMountOrArgChange: refreshOnMount,
     refetchOnFocus: false,
     refetchOnReconnect: false,
   });
@@ -70,7 +72,9 @@ export default function useAccountCart(
   const [removeCombo, comboRemoved] = useRemoveCartComboMutation({
     fixedCacheKey: cartMutationKey("removeCombo"),
   });
+  const pendingWrite = useAppSelector(hasPendingCartMutation);
   const busy =
+    pendingWrite ||
     comboAdded.isLoading ||
     comboUpdated.isLoading ||
     comboRemoved.isLoading ||
@@ -182,12 +186,12 @@ export default function useAccountCart(
               : intent.type === "remove"
                 ? "Removed item from your bag"
                 : intent.type === "clear"
-                ? "Whole bag is cleared"
-                : "Bag updated";
+                  ? "Whole bag is cleared"
+                  : "Bag updated";
         try {
           await request.unwrap();
           toast(toastMessage);
-          if(intent.type === "addCombo" || intent.type === "add") {
+          if (intent.type === "addCombo" || intent.type === "add") {
             openCartDrawer();
           }
         } catch (error) {

@@ -1,27 +1,32 @@
 'use client'
+import { CmsButton } from "@/components/ui/button";
+import { useWatch } from "react-hook-form";
 
-import { useState } from 'react'
-import { X } from 'lucide-react'
-import { patchCustomer } from '@/data/cms'
-import { useStore } from '@/components/providers/StoreProvider'
-import { Badge, Btn, Field, Input, Textarea } from '@/components/cms/ui'
 import type { Customer } from '@/app/(admin)/admin/customers/_types/customer.types'
+import { Badge } from '@/components/cms/ui';
+import { FormField } from '@/components/common/form-field'
+import { useStore } from '@/components/providers/StoreProvider'
+import { patchCustomer } from '@/data/cms'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { X } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { customerNotesSchema } from '../_schemas/customer-notes.schema'
 
 export default function CustomerNotes({ customer }: { customer: Customer }) {
   const { toast } = useStore()
-  const [tag, setTag] = useState('')
-  const [note, setNote] = useState(customer.note)
+  const form = useForm({ resolver: zodResolver(customerNotesSchema), defaultValues: { tag: '', note: customer.note } })
+  const note = useWatch({ control: form.control, name: 'note' })
 
   const addTag = () => {
-    const t = tag.trim()
-    if (!t || customer.tags.some((x) => x.toLowerCase() === t.toLowerCase())) return setTag('')
+    const t = form.getValues('tag').trim()
+    if (!t || customer.tags.some((x) => x.toLowerCase() === t.toLowerCase())) return form.resetField('tag')
     patchCustomer(customer.key, { tags: [...customer.tags, t] })
-    setTag('')
+    form.resetField('tag')
   }
 
   return (
     <div className="space-y-4">
-      <Field label="Tags">
+      <div>
         <div className="mb-2 flex flex-wrap gap-1">
           {customer.tags.length === 0 && <span className="text-xs text-muted-foreground">No tags</span>}
           {customer.tags.map((t) => (
@@ -32,14 +37,14 @@ export default function CustomerNotes({ customer }: { customer: Customer }) {
           ))}
         </div>
         <div className="flex gap-2">
-          <Input value={tag} placeholder="Add tag and press Enter" onChange={(e) => setTag(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag() } }} />
-          <Btn onClick={addTag}>Add</Btn>
+          <FormField form={form} id="customer-tag" name="tag" label="Tags" isAdmin isInput placeholder="Add tag and press Enter" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag() } }} />
+          <CmsButton variant="outline" onClick={addTag}>Add</CmsButton>
         </div>
-      </Field>
-      <Field label="Internal note" hint="Only visible to staff.">
-        <Textarea value={note} onChange={(e) => setNote(e.target.value)} />
-      </Field>
-      <Btn variant="primary" disabled={note === customer.note} onClick={() => { patchCustomer(customer.key, { note: note.trim() }); toast('Note saved') }}>Save note</Btn>
+      </div>
+      <form onSubmit={form.handleSubmit(({ note }) => { patchCustomer(customer.key, { note: note.trim() }); form.reset({ tag: form.getValues('tag'), note: note.trim() }); toast('Note saved') })} noValidate className="space-y-4">
+        <FormField form={form} id="customer-note" name="note" label="Internal note" description="Only visible to staff." isAdmin isTextArea />
+        <CmsButton type="submit" variant="default" disabled={note === customer.note}>Save note</CmsButton>
+      </form>
     </div>
   )
 }

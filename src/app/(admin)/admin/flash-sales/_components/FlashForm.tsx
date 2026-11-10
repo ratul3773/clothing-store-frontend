@@ -1,16 +1,23 @@
 'use client'
+import { CmsButton } from "@/components/ui/button";
+import { useWatch } from "react-hook-form";
 
-import Image from 'next/image'
-import { useMemo, useState } from 'react'
-import { AlertTriangle } from 'lucide-react'
-import { byId } from '@/data/catalog'
-import { flashSales, type FlashSale } from '@/data/site'
-import { saveFlash, uid } from '@/data/cms'
-import { useStore } from '@/components/providers/StoreProvider'
-import { bdt } from '@/lib/utils'
+import { FormField } from '@/components/common/form-field'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { flashFormSchema } from '../_schemas/flash.schema'
+
 import Modal from '@/components/cms/Modal'
-import { Btn, Field, Input, Switch, Textarea } from '@/components/cms/ui'
-import { findConflicts, fromLocalInput, toLocalInput, validateFlash, type FlashDraft } from '../_utils/flash.utils'
+
+import { useStore } from '@/components/providers/StoreProvider'
+import { byId } from '@/data/catalog'
+import { saveFlash, uid } from '@/data/cms'
+import { flashSales, type FlashSale } from '@/data/site'
+import { bdt } from '@/lib/utils'
+import { AlertTriangle } from 'lucide-react'
+import Image from 'next/image'
+import { useMemo } from 'react'
+import { findConflicts, fromLocalInput, toLocalInput, type FlashDraft } from '../_utils/flash.utils'
 import ProductPicker from './ProductPicker'
 
 type Props = { open: boolean; onOpenChange: (o: boolean) => void; sale: FlashSale | null; now: number }
@@ -28,20 +35,16 @@ export default function FlashForm({ open, onOpenChange, sale, now }: Props) {
 
 function Inner({ onOpenChange, sale, now }: Props) {
   const { toast } = useStore()
-  const [d, setD] = useState<FlashDraft>(() => toDraft(sale, now))
-  const [submitted, setSubmitted] = useState(false)
-  const set = <K extends keyof FlashDraft>(k: K, v: FlashDraft[K]) => setD((x) => ({ ...x, [k]: v }))
-  const errors = validateFlash(d)
-  const err = (k: keyof typeof errors) => (submitted ? errors[k] : undefined)
+  const form = useForm<FlashDraft>({ resolver: zodResolver(flashFormSchema), defaultValues: toDraft(sale, now) })
+  const d = useWatch({ control: form.control, compute: (values) => values })
+  const err = (key: keyof FlashDraft) => form.formState.errors[key]?.message
   const conflicts = useMemo(() => findConflicts(d, flashSales.filter((f) => f.id !== sale?.id && f.enabled)), [d, sale])
   const pct = Number(d.discountPct)
   const nConf = Object.keys(conflicts).length
 
   const preview = d.productIds.slice(0, 4).map(byId).filter(Boolean)
 
-  const submit = () => {
-    setSubmitted(true)
-    if (Object.keys(errors).length) return
+  const submit = form.handleSubmit(() => {
     saveFlash({
       id: sale?.id ?? uid('f'),
       title: d.title.trim(),
@@ -54,7 +57,7 @@ function Inner({ onOpenChange, sale, now }: Props) {
     })
     toast(sale ? 'Flash sale updated' : 'Flash sale created')
     onOpenChange(false)
-  }
+  })
 
   return (
     <Modal
@@ -63,22 +66,22 @@ function Inner({ onOpenChange, sale, now }: Props) {
       size="lg"
       title={sale ? 'Edit flash sale' : 'New flash sale'}
       description="Discount applies on top of the current offer price while the campaign is live."
-      footer={<><Btn onClick={() => onOpenChange(false)}>Cancel</Btn><Btn variant="primary" onClick={submit}>{sale ? 'Save changes' : 'Create campaign'}</Btn></>}
+      footer={<><CmsButton variant="outline" onClick={() => onOpenChange(false)}>Cancel</CmsButton><CmsButton variant="default" type="submit" form="flash-form">{sale ? 'Save changes' : 'Create campaign'}</CmsButton></>}
     >
-      <div className="grid gap-4">
+      <form id="flash-form" onSubmit={submit} noValidate className="grid gap-4">
         <div className="grid gap-4 sm:grid-cols-[1fr_120px]">
-          <Field label="Title" error={err('title')}><Input value={d.title} onChange={(e) => set('title', e.target.value)} /></Field>
-          <Field label="Discount %" error={err('discountPct')}><Input type="number" min={1} max={90} value={d.discountPct} onChange={(e) => set('discountPct', e.target.value)} /></Field>
+          <FormField form={form} id="flash-title" name="title" isAdmin isInput label="Title" />
+          <FormField form={form} id="flash-discountPct" name="discountPct" isAdmin isInput label="Discount %" type="number" min={1} max={90} />
         </div>
-        <Field label="Subtitle"><Textarea rows={2} value={d.subtitle} onChange={(e) => set('subtitle', e.target.value)} /></Field>
+        <FormField form={form} id="flash-subtitle" name="subtitle" isAdmin isTextArea label="Subtitle" rows={2} />
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Starts" error={err('startsAt')}><Input type="datetime-local" value={d.startsAt} onChange={(e) => set('startsAt', e.target.value)} /></Field>
-          <Field label="Ends" error={err('endsAt')}><Input type="datetime-local" value={d.endsAt} onChange={(e) => set('endsAt', e.target.value)} /></Field>
+          <FormField form={form} id="flash-startsAt" name="startsAt" isAdmin isInput label="Starts" type="datetime-local" />
+          <FormField form={form} id="flash-endsAt" name="endsAt" isAdmin isInput label="Ends" type="datetime-local" />
         </div>
-        <Switch checked={d.enabled} onChange={(v) => set('enabled', v)} label="Enabled" />
+        <FormField form={form} id="flash-enabled" name="enabled" isAdmin isSwitch label="Enabled" />
         <div>
           <p className="mb-1 text-xs font-medium text-foreground/80">Products</p>
-          <ProductPicker selected={d.productIds} onChange={(ids) => set('productIds', ids)} pct={pct} conflicts={conflicts} />
+          <ProductPicker selected={d.productIds} onChange={(ids) => form.setValue('productIds', ids, { shouldDirty: true, shouldValidate: form.formState.isSubmitted })} pct={pct} conflicts={conflicts} />
           {err('productIds') && <p className="mt-1 text-xs text-red-600">{err('productIds')}</p>}
         </div>
         {nConf > 0 && (
@@ -104,7 +107,7 @@ function Inner({ onOpenChange, sale, now }: Props) {
             </div>
           </div>
         )}
-      </div>
+      </form>
     </Modal>
   )
 }

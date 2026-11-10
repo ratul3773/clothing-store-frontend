@@ -1,69 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { CmsButton } from "@/components/ui/button";
+import useOffersManager from "../_hooks/useOffersManager";
+
 import { Pencil, Plus, Power } from "lucide-react";
 
+import { Badge, Card, CardHeader, Empty } from "@/components/cms/ui";
 import AlertDialogText from "@/components/common/Alert-Dialogue";
-import { Badge, Btn, Card, CardHeader, Empty } from "@/components/cms/ui";
-import { useStore } from "@/components/providers/StoreProvider";
 import { bdt } from "@/lib/utils";
-import { apiErrorMessage } from "@/redux/api.utils";
-import {
-  useDeactivateOfferMutation,
-  useUpdateOfferMutation,
-} from "@/redux/apis/product.api";
 import type {
-  AdminProduct,
-  ProductOffer,
+  AdminProduct
 } from "@/redux/apis/types/product.types";
 
 import { formatDate, offerStateTone } from "../_utils/products.utils";
 import OfferDialog from "./OfferDialog";
 
 export default function OffersManager({ product }: { product: AdminProduct }) {
-  const { toast, toastError } = useStore();
-  const [updateOffer, updateState] = useUpdateOfferMutation();
-  const [deactivateOffer, deactivateState] = useDeactivateOfferMutation();
-
-  const [dialog, setDialog] = useState<{ open: boolean; offer?: ProductOffer }>(
-    {
-      open: false,
-    },
-  );
-  const [target, setTarget] = useState<ProductOffer | null>(null);
-
-  const offers = [...product.offers].sort(
-    (a, b) =>
-      Number(b.isActive) - Number(a.isActive) ||
-      new Date(b.startsAt).getTime() - new Date(a.startsAt).getTime(),
-  );
-
-  const toggleActive = async (offer: ProductOffer) => {
-    try {
-      await updateOffer({
-        productId: product.id,
-        offerId: offer.id,
-        data: { isActive: !offer.isActive },
-      }).unwrap();
-      toast(offer.isActive ? "Offer paused." : "Offer activated.");
-    } catch (error) {
-      toastError(apiErrorMessage(error, "The offer could not be updated."));
-    }
-  };
-
-  const confirmDeactivate = async () => {
-    if (!target) return;
-    try {
-      await deactivateOffer({
-        productId: product.id,
-        offerId: target.id,
-      }).unwrap();
-      toast("Offer deactivated.");
-      setTarget(null);
-    } catch (error) {
-      toastError(apiErrorMessage(error, "The offer could not be deactivated."));
-    }
-  };
+  const {
+    updateState,
+    deactivateState,
+    dialog,
+    setDialog,
+    target,
+    setTarget,
+    offers,
+    toggleActive,
+    confirmDeactivate,
+  } = useOffersManager({ product });
 
   return (
     <Card>
@@ -71,9 +34,9 @@ export default function OffersManager({ product }: { product: AdminProduct }) {
         title="Offers"
         description="Offers must be lower than the regular price and cannot overlap other active offers."
         actions={
-          <Btn size="sm" onClick={() => setDialog({ open: true })}>
+          <CmsButton variant="outline" size="sm" onClick={() => setDialog({ open: true })}>
             <Plus className="size-3.5" /> Add offer
-          </Btn>
+          </CmsButton>
         }
       />
       {offers.length === 0 ? (
@@ -115,27 +78,27 @@ export default function OffersManager({ product }: { product: AdminProduct }) {
                   </td>
                   <td className="px-3 py-2">
                     <div className="flex items-center justify-end gap-1">
-                      <Btn
+                      <CmsButton variant="outline"
                         size="sm"
                         disabled={updateState.isLoading}
                         onClick={() => void toggleActive(offer)}
                       >
                         <Power className="size-3.5" />
                         {offer.isActive ? "Pause" : "Activate"}
-                      </Btn>
-                      <Btn
+                      </CmsButton>
+                      <CmsButton variant="outline"
                         size="sm"
                         onClick={() => setDialog({ open: true, offer })}
                       >
                         <Pencil className="size-3.5" /> Edit
-                      </Btn>
-                      <Btn
+                      </CmsButton>
+                      <CmsButton
                         size="sm"
-                        variant="dangerOutline"
+                        variant="destructive"
                         onClick={() => setTarget(offer)}
                       >
                         Deactivate
-                      </Btn>
+                      </CmsButton>
                     </div>
                   </td>
                 </tr>

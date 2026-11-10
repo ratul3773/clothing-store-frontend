@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, Store } from 'lucide-react'
+import { ArrowRight, Eye, EyeClosed, LockKeyhole, Mail, Store } from 'lucide-react'
 import { settings } from '@/data/site'
 import { Card } from '@/components/cms/ui'
 import { useForm } from 'react-hook-form'
@@ -12,6 +12,7 @@ import AlertText from '@/components/common/Alert'
 import { FormField } from '@/components/common/form-field'
 import { CmsButton } from '@/components/ui/button'
 import Link from 'next/link'
+import { FadeArc } from '@/components/animation/fade-arc'
 
 export default function AdminLogin() {
     const [showPassword, setShowPassword] = useState(false);
@@ -55,6 +56,7 @@ export default function AdminLogin() {
                             label="Email"
                             type="email"
                             autoComplete="email"
+                            isInput
                             placeholder="you@example.com"
                             startIcon={Mail}
                             required
@@ -68,6 +70,7 @@ export default function AdminLogin() {
                             type={showPassword ? "text" : "password"}
                             placeholder="Your password"
                             startIcon={LockKeyhole}
+                            isInput
                             endAction={
                                 <CmsButton
                                     type="button"
@@ -79,7 +82,7 @@ export default function AdminLogin() {
                                     }
                                     className="absolute right-2 top-1 size-8"
                                 >
-                                    {showPassword ? <EyeOff /> : <Eye />}
+                                    {showPassword ? <EyeClosed /> : <Eye />}
                                 </CmsButton>
                             }
                             required
@@ -101,9 +104,9 @@ export default function AdminLogin() {
                         disabled={form.formState.isSubmitting}
                     >
                         {form.formState.isSubmitting
-                            ? 'Signing in...'
-                            : 'Sign in'}
-                        <ArrowRight className="ml-2 h-4 w-4" />
+                            ? <><FadeArc className="size-3.5" /> Signing in...</>
+                            : <>Sign in <ArrowRight className=" h-4 w-4" /></>
+                        }
                     </CmsButton>
                 </form>
                 <p className="mt-4 rounded bg-muted p-2 text-xs text-muted-foreground">Demo: {settings.admin.email} / {settings.admin.password}</p>

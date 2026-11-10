@@ -1,18 +1,17 @@
 "use client";
 
-import Image from "next/image";
-import { useState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { CmsButton } from "@/components/ui/button";
+import useCategoriesTable from "../_hooks/useCategoriesTable";
 
-import AlertDialogText from "@/components/common/Alert-Dialogue";
+import { Pencil, Trash2 } from "lucide-react";
+import Image from "next/image";
+
 import DataTable, { type Column } from "@/components/cms/DataTable";
-import { Badge, Btn, Empty } from "@/components/cms/ui";
-import { useStore } from "@/components/providers/StoreProvider";
-import { cn } from "@/lib/utils";
-import { apiErrorMessage } from "@/redux/api.utils";
-import { useDeleteCategoryMutation } from "@/redux/apis/category.api";
-import type { CategoryRow } from "@/redux/apis/types/category.types";
 import TableSkeleton from "@/components/cms/TableSkeleton";
+import { Badge, Empty } from "@/components/cms/ui";
+import AlertDialogText from "@/components/common/Alert-Dialogue";
+import { cn } from "@/lib/utils";
+import type { CategoryRow } from "@/redux/apis/types/category.types";
 
 type Props = {
   rows: CategoryRow[];
@@ -26,29 +25,11 @@ type Props = {
 export default function CategoriesTable({
   rows,
   selected,
-  onSelect,
   onCreate,
   onEdit,
   isLoading,
 }: Props) {
-  const { toast, toastError } = useStore();
-  const [deleteCategory, deleteState] = useDeleteCategoryMutation();
-  const [target, setTarget] = useState<CategoryRow | null>(null);
-
-  const confirmDelete = async () => {
-    if (!target) return;
-    try {
-      const result = await deleteCategory(target.id).unwrap();
-      if (result.archived) {
-        toast("Category archived because products still reference it.");
-      } else {
-        toast("Category deleted.");
-      }
-      setTarget(null);
-    } catch (error) {
-      toastError(apiErrorMessage(error, "The category could not be deleted."));
-    }
-  };
+  const { deleteState, target, setTarget, confirmDelete } = useCategoriesTable();
 
   const columns: Column<CategoryRow>[] = [
     {
@@ -128,10 +109,10 @@ export default function CategoriesTable({
       align: "right",
       cell: (category) => (
         <div className="flex items-center justify-end gap-1">
-          <Btn size="sm" onClick={() => onEdit(category)}>
+          <CmsButton variant="outline" size="sm" onClick={() => onEdit(category)}>
             <Pencil className="size-3.5" /> Edit
-          </Btn>
-          <Btn
+          </CmsButton>
+          <CmsButton
             size="icon"
             variant="ghost"
             className="size-7 text-red-600"
@@ -139,7 +120,7 @@ export default function CategoriesTable({
             aria-label={`Delete ${category.name}`}
           >
             <Trash2 className="size-3.5" />
-          </Btn>
+          </CmsButton>
         </div>
       ),
     },
@@ -159,9 +140,9 @@ export default function CategoriesTable({
             title="No categories yet"
             description="Categories organise products. Create a parent category first, then add children."
             action={
-              <Btn variant="primary" onClick={onCreate}>
+              <CmsButton variant="default" onClick={onCreate}>
                 New category
-              </Btn>
+              </CmsButton>
             }
           />
         }

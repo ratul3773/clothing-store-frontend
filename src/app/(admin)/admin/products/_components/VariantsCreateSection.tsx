@@ -1,57 +1,32 @@
 "use client";
+import { CmsButton } from "@/components/ui/button";
+import { useWatch } from "react-hook-form";
 
-import { useState } from "react";
+import { FormField } from "@/components/common/form-field";
 import { Plus, Trash2 } from "lucide-react";
+import { useFieldArray, type UseFormReturn } from "react-hook-form";
+import type { ProductDraftFormValues } from "../_schemas/product.schema";
 
-import {
-  Badge,
-  Btn,
-  Card,
-  CardHeader,
-  Field,
-  Input,
-} from "@/components/cms/ui";
+import { Badge, Card, CardHeader } from "@/components/cms/ui";
 
 import { SIZE_PRESETS } from "../_constants/products.constants";
 import {
-  stockMatrixKey,
-  type CreateColorDraft,
+  stockMatrixKey
 } from "../_types/products.types";
 
-type Props = {
-  colors: CreateColorDraft[];
-  onColorsChange: (colors: CreateColorDraft[]) => void;
-  sizes: string[];
-  onSizesChange: (sizes: string[]) => void;
-  stock: Record<string, string>;
-  onStockChange: (stock: Record<string, string>) => void;
-  threshold: string;
-  onThresholdChange: (threshold: string) => void;
-  errors?: {
-    colors?: string;
-    sizes?: string;
-    variants?: string;
-  };
-};
+type Props = { form: UseFormReturn<ProductDraftFormValues> };
 
 const createKey = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
     : `c${Date.now()}${Math.random().toString(16).slice(2)}`;
 
-export default function VariantsCreateSection({
-  colors,
-  onColorsChange,
-  sizes,
-  onSizesChange,
-  stock,
-  onStockChange,
-  threshold,
-  onThresholdChange,
-  errors,
-}: Props) {
-  const [sizeInput, setSizeInput] = useState("");
-
+export default function VariantsCreateSection({ form }: Props) {
+  const { colors, sizes, stock, sizeInput } = useWatch({ control: form.control, compute: (values) => values });
+  const { fields, append, remove } = useFieldArray({ control: form.control, name: "colors" });
+  const setSizeInput = (value: string) => form.setValue("sizeInput", value);
+  const onSizesChange = (value: string[]) => form.setValue("sizes", value, { shouldDirty: true, shouldValidate: form.formState.isSubmitted });
+  const errors = form.formState.errors;
   const addSize = (raw: string) => {
     const size = raw.trim();
     if (!size) return;
@@ -61,18 +36,6 @@ export default function VariantsCreateSection({
     }
     onSizesChange([...sizes, size]);
     setSizeInput("");
-  };
-
-  const setColor = (key: string, patch: Partial<CreateColorDraft>) => {
-    onColorsChange(
-      colors.map((color) =>
-        color.key === key ? { ...color, ...patch } : color,
-      ),
-    );
-  };
-
-  const setStock = (key: string, value: string) => {
-    onStockChange({ ...stock, [key]: value });
   };
 
   return (
@@ -88,17 +51,14 @@ export default function VariantsCreateSection({
               <h4 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Colours
               </h4>
-              <Btn
+              <CmsButton variant="outline"
                 size="sm"
                 onClick={() =>
-                  onColorsChange([
-                    ...colors,
-                    { key: createKey(), name: "", hex: "" },
-                  ])
+                  append({ key: createKey(), name: "", hex: "" })
                 }
               >
                 <Plus className="size-3.5" /> Add colour
-              </Btn>
+              </CmsButton>
             </div>
 
             {colors.length === 0 ? (
@@ -108,28 +68,13 @@ export default function VariantsCreateSection({
             ) : (
               <div className="space-y-2">
                 {colors.map((color, index) => (
-                  <div key={color.key} className="flex items-start gap-2">
+                  <div key={fields[index].id} className="flex items-start gap-2">
                     <div
                       className="mt-1 size-6 shrink-0 rounded-full border border-border"
                       style={{ background: color.hex || "transparent" }}
                     />
-                    <Input
-                      value={color.name}
-                      placeholder={`Colour ${index + 1} name`}
-                      onChange={(event) =>
-                        setColor(color.key, { name: event.target.value })
-                      }
-                      aria-label={`Colour ${index + 1} name`}
-                    />
-                    <Input
-                      value={color.hex}
-                      placeholder="#1F2937"
-                      className="w-28 font-mono"
-                      onChange={(event) =>
-                        setColor(color.key, { hex: event.target.value })
-                      }
-                      aria-label={`Colour ${index + 1} hex`}
-                    />
+                    <FormField form={form} id={`colors.${index}.name`} name={`colors.${index}.name`} label={`Colour ${index + 1} name`} isAdmin isInput placeholder={`Colour ${index + 1} name`} />
+                    <FormField form={form} id={`colors.${index}.hex`} name={`colors.${index}.hex`} label={`Colour ${index + 1} hex`} isAdmin isInput placeholder="#1F2937" className="w-28 font-mono" />
                     <input
                       type="color"
                       value={
@@ -138,31 +83,27 @@ export default function VariantsCreateSection({
                           : "#000000"
                       }
                       onChange={(event) =>
-                        setColor(color.key, {
-                          hex: event.target.value.toUpperCase(),
-                        })
+                        form.setValue(`colors.${index}.hex`, event.target.value.toUpperCase(), { shouldDirty: true, shouldValidate: form.formState.isSubmitted })
                       }
                       aria-label={`Choose colour ${index + 1}`}
                       className="mt-1 h-6 w-7 cursor-pointer rounded border border-border bg-card p-0"
                     />
-                    <Btn
+                    <CmsButton
                       size="icon"
                       variant="ghost"
                       aria-label={`Remove colour ${index + 1}`}
                       onClick={() =>
-                        onColorsChange(
-                          colors.filter((entry) => entry.key !== color.key),
-                        )
+                        remove(index)
                       }
                     >
                       <Trash2 className="size-3.5" />
-                    </Btn>
+                    </CmsButton>
                   </div>
                 ))}
               </div>
             )}
             {errors?.colors && (
-              <p className="mt-2 text-xs text-red-600">{errors.colors}</p>
+              <p className="mt-2 text-xs text-red-600">{errors.colors.root?.message ?? errors.colors.message}</p>
             )}
           </div>
 
@@ -171,21 +112,15 @@ export default function VariantsCreateSection({
               Sizes
             </h4>
             <div className="flex gap-2">
-              <Input
-                value={sizeInput}
-                placeholder="e.g. M"
-                onChange={(event) => setSizeInput(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === ",") {
-                    event.preventDefault();
-                    addSize(sizeInput);
-                  }
-                }}
-                aria-label="New size"
-              />
-              <Btn onClick={() => addSize(sizeInput)}>
+              <FormField form={form} id={"sizeInput"} name={"sizeInput"} label="New size" isAdmin isInput placeholder="e.g. M" onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === ",") {
+                  event.preventDefault();
+                  addSize(sizeInput);
+                }
+              }} />
+              <CmsButton variant="outline" onClick={() => addSize(sizeInput)}>
                 <Plus className="size-3.5" /> Add
-              </Btn>
+              </CmsButton>
             </div>
 
             <div className="mt-2 flex flex-wrap gap-1.5">
@@ -220,7 +155,7 @@ export default function VariantsCreateSection({
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {SIZE_PRESETS.map((preset) => (
-                  <Btn
+                  <CmsButton variant="outline"
                     key={preset.label}
                     size="sm"
                     onClick={() => {
@@ -239,25 +174,16 @@ export default function VariantsCreateSection({
                     }}
                   >
                     {preset.label}
-                  </Btn>
+                  </CmsButton>
                 ))}
               </div>
             </div>
             {errors?.sizes && (
-              <p className="mt-2 text-xs text-red-600">{errors.sizes}</p>
+              <p className="mt-2 text-xs text-red-600">{errors.sizes.message}</p>
             )}
 
             <div className="mt-4">
-              <Field
-                label="Low stock threshold (all new variants)"
-                hint="Variants at or below this count show as low stock."
-              >
-                <Input
-                  value={threshold}
-                  inputMode="numeric"
-                  onChange={(event) => onThresholdChange(event.target.value)}
-                />
-              </Field>
+              <FormField form={form} id={"threshold"} name={"threshold"} label="Low stock threshold (all new variants)" isAdmin isInput inputMode="numeric" />
             </div>
           </div>
         </div>
@@ -314,19 +240,7 @@ export default function VariantsCreateSection({
                       </td>
                       {sizes.map((size) => (
                         <td key={size} className="px-2 py-2 text-center">
-                          <Input
-                            value={stock[stockMatrixKey(color.key, size)] ?? ""}
-                            inputMode="numeric"
-                            placeholder="0"
-                            className="mx-auto h-7 w-16 text-center"
-                            onChange={(event) =>
-                              setStock(
-                                stockMatrixKey(color.key, size),
-                                event.target.value,
-                              )
-                            }
-                            aria-label={`${color.name || "Colour"} ${size} opening stock`}
-                          />
+                          <FormField form={form} id={`stock.${stockMatrixKey(color.key, size)}`} name={`stock.${stockMatrixKey(color.key, size)}`} label={`${color.name || "Colour"} ${size} opening stock`} isAdmin isInput inputMode="numeric" placeholder="0" className="mx-auto w-16 text-center [&_[data-slot=field-label]]:sr-only [&_input]:h-7" />
                         </td>
                       ))}
                       <td className="px-2 py-2 text-right tabular-nums">
@@ -343,9 +257,6 @@ export default function VariantsCreateSection({
                 })}
               </tbody>
             </table>
-          )}
-          {errors?.variants && (
-            <p className="mt-2 text-xs text-red-600">{errors.variants}</p>
           )}
         </div>
       </Card>

@@ -1,25 +1,23 @@
 "use client";
 
-import { useForm, useWatch } from "react-hook-form";
+
+import { FormField } from "@/components/common/form-field";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Btn } from "@/components/cms/ui";
-import {
-  SwitchField,
-  TextareaField,
-  TextField,
-} from "@/components/common/form-controls";
+import { useForm, useWatch } from "react-hook-form";
+import useComboSubmit, {
+  type ComboEditorProps,
+} from "../_hooks/useComboSubmit";
+import { comboFormSchema } from "../_schemas/combo.schema";
 import {
   comboDraft,
   emptyComboDraft,
   type ComboDraft,
 } from "../_utils/combo.utils";
-import { comboFormSchema } from "../_schemas/combo.schema";
-import useComboSubmit, {
-  type ComboEditorProps,
-} from "../_hooks/useComboSubmit";
 import ComboConflictNotice from "./ComboConflictNotice";
-import ComboPricingSummary from "./ComboPricingSummary";
 import ComboItemsList from "./ComboItemsList";
+import ComboPricingSummary from "./ComboPricingSummary";
+import { CmsButton } from "@/components/ui/button";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 export default function ComboEditor(props: ComboEditorProps) {
   const form = useForm<ComboDraft>({
@@ -73,14 +71,28 @@ export default function ComboEditor(props: ComboEditorProps) {
             deactivated it. Review the active setting below.
           </p>
         )}
-        <TextField form={form} name="name" label="Name" maxLength={200} />
-        <TextareaField
+        <FormField
+          isAdmin
+          isInput
+          id="name"
+          form={form}
+          name="name"
+          label="Name"
+          maxLength={200}
+        />
+        <FormField
+          isAdmin
+          isTextArea
+          id="description"
           form={form}
           name="description"
           label="Description"
           maxLength={10000}
         />
-        <TextField
+        <FormField
+          isAdmin
+          isInput
+          id="price"
           form={form}
           name="price"
           label="Combo price (BDT taka)"
@@ -90,26 +102,35 @@ export default function ComboEditor(props: ComboEditorProps) {
           step={1}
         />
         <ComboPricingSummary items={items} price={price} />
-        <SwitchField
+        <FormField
+          isAdmin
+          isSwitch
+          id="isActive"
           form={form}
           name="isActive"
           label="Active"
           description="Active combos also need an eligible schedule and publicly available components to appear in the shop."
         />
         <div className="grid gap-3 sm:grid-cols-2">
-          <TextField
+          <FormField
+            isAdmin
+            isInput
+            id="startsAt"
             form={form}
             name="startsAt"
             label="Starts at - Asia/Dhaka (UTC+06:00)"
-            hint="Inclusive; blank means no start boundary"
+            description="Inclusive; blank means no start boundary"
             type="datetime-local"
             step={1}
           />
-          <TextField
+          <FormField
+            isAdmin
+            isInput
+            id="endsAt"
             form={form}
             name="endsAt"
             label="Ends at - Asia/Dhaka (UTC+06:00)"
-            hint="Exclusive; blank means no end boundary"
+            description="Exclusive; blank means no end boundary"
             type="datetime-local"
             step={1}
           />
@@ -117,18 +138,17 @@ export default function ComboEditor(props: ComboEditorProps) {
         <ComboItemsList form={form} busy={busy} />
       </fieldset>
       <div className="sticky -bottom-4 -mx-5 -mb-4 mt-4 flex justify-end gap-2 border-t border-border bg-card px-5 py-3">
-        <Btn disabled={busy} onClick={() => props.onOpenChange(false)}>
+        <CmsButton disabled={busy} onClick={() => props.onOpenChange(false)}>
           Cancel
-        </Btn>
-        <Btn
+        </CmsButton>
+        <CmsButton
           type="submit"
-          variant="primary"
           disabled={
             busy || (!!baseline && !replacement && !form.formState.isDirty)
           }
         >
-          {busy ? "Saving..." : replacement ? "Save replacement" : "Save combo"}
-        </Btn>
+          {busy ? <><FadeArc className="size-3.5"/>Saving...</> : replacement ? "Save replacement" : "Save combo"}
+        </CmsButton>
       </div>
     </form>
   );

@@ -1,5 +1,6 @@
 'use client'
 
+import { CmsButton } from "@/components/ui/button";
 import Image from 'next/image'
 import { useState } from 'react'
 import { ArrowDown, ArrowUp, Pencil, Plus, Sparkles, Trash2 } from 'lucide-react'
@@ -8,7 +9,7 @@ import { deleteBanner, saveBanner, uid } from '@/data/cms'
 import { useCms } from '@/lib/useCms'
 import { useStore } from '@/components/providers/StoreProvider'
 import DataTable from '@/components/cms/DataTable'
-import { Badge, Btn, Card, Empty, PageHeader, Switch } from '@/components/cms/ui'
+import { Badge, Card, Empty, PageHeader, Switch } from '@/components/cms/ui';
 import { sampleBanners, scheduleLabel } from '../_utils/banner.utils'
 import BannerForm from './BannerForm'
 import AlertDialogText from '@/components/common/Alert-Dialogue'
@@ -46,13 +47,13 @@ export default function BannersView() {
 
   return (
     <>
-      <PageHeader title="Banners" description="Hero slides and promo banners shown on the storefront." crumbs={['Admin', 'Banners']} actions={<Btn variant="primary" onClick={() => open(null)}><Plus className="size-4" />New banner</Btn>} />
+      <PageHeader title="Banners" description="Hero slides and promo banners shown on the storefront." crumbs={['Admin', 'Banners']} actions={<CmsButton variant="default" onClick={() => open(null)}><Plus className="size-4" />New banner</CmsButton>} />
       <Card>
         <DataTable
           rows={sorted}
           rowKey={(b) => b.id}
           onRowClick={open}
-          empty={<Empty title="No banners yet" description="The storefront hero falls back to its default until you add an active hero banner." action={<Btn variant="primary" onClick={loadSamples}><Sparkles className="size-4" />Load sample banners</Btn>} />}
+          empty={<Empty title="No banners yet" description="The storefront hero falls back to its default until you add an active hero banner." action={<CmsButton variant="default" onClick={loadSamples}><Sparkles className="size-4" />Load sample banners</CmsButton>} />}
           columns={[
             { key: 'img', header: 'Preview', cell: (b) => (
               <Image width={96} height={48} src={b.image} alt="" className="h-12 w-24 rounded border border-border object-cover" />
@@ -62,8 +63,8 @@ export default function BannersView() {
             { key: 'ord', header: 'Order', cell: (b) => (
               <span className="inline-flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                 <span className="w-5 tabular-nums">{b.order}</span>
-                <Btn size="icon" variant="ghost" className="size-7" aria-label="Move up" onClick={() => move(b, -1)}><ArrowUp className="size-3.5" /></Btn>
-                <Btn size="icon" variant="ghost" className="size-7" aria-label="Move down" onClick={() => move(b, 1)}><ArrowDown className="size-3.5" /></Btn>
+                <CmsButton size="icon" variant="ghost" className="size-7" aria-label="Move up" onClick={() => move(b, -1)}><ArrowUp className="size-3.5" /></CmsButton>
+                <CmsButton size="icon" variant="ghost" className="size-7" aria-label="Move down" onClick={() => move(b, 1)}><ArrowDown className="size-3.5" /></CmsButton>
               </span>
             ) },
             { key: 'sch', header: 'Schedule', cell: (b) => <span className="text-muted-foreground">{scheduleLabel(b)}</span> },
@@ -71,8 +72,8 @@ export default function BannersView() {
             { key: 'act', header: 'Active', cell: (b) => <span onClick={(e) => e.stopPropagation()}><Switch checked={b.active} onChange={(v) => { saveBanner({ ...b, active: v }); toast(v ? 'Banner activated' : 'Banner deactivated') }} /></span> },
             { key: 'ops', header: '', align: 'right', cell: (b) => (
               <span className="inline-flex gap-1" onClick={(e) => e.stopPropagation()}>
-                <Btn size="icon" variant="ghost" aria-label="Edit" onClick={() => open(b)}><Pencil className="size-4" /></Btn>
-                <Btn size="icon" variant="ghost" aria-label="Delete" onClick={() => setDel(b)}><Trash2 className="size-4 text-red-600" /></Btn>
+                <CmsButton size="icon" variant="ghost" aria-label="Edit" onClick={() => open(b)}><Pencil className="size-4" /></CmsButton>
+                <CmsButton size="icon" variant="ghost" aria-label="Delete" onClick={() => setDel(b)}><Trash2 className="size-4 text-red-600" /></CmsButton>
               </span>
             ) },
           ]}

@@ -91,6 +91,7 @@ export default function SignUpForm() {
                             name="name"
                             placeholder="Your name"
                             startIcon={UserRound}
+                            isInput
                             required
                         />
 
@@ -101,6 +102,7 @@ export default function SignUpForm() {
                             name="phone"
                             placeholder="01XXXXXXXXX"
                             startIcon={Phone}
+                            isInput
                             required
                         />
 
@@ -112,6 +114,7 @@ export default function SignUpForm() {
                             type="email"
                             placeholder="you@example.com"
                             startIcon={Mail}
+                            isInput
                             required
                         />
 
@@ -123,6 +126,7 @@ export default function SignUpForm() {
                             type={showPassword ? "text" : "password"}
                             placeholder="Create a password"
                             startIcon={LockKeyhole}
+                            isInput
                             endAction={
                                 <Button
                                     type="button"
@@ -148,6 +152,7 @@ export default function SignUpForm() {
                             type={showPassword ? "text" : "password"}
                             placeholder="Confirm your password"
                             startIcon={LockKeyhole}
+                            isInput
                             endAction={
                                 <Button
                                     type="button"

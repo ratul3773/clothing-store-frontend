@@ -1,9 +1,10 @@
 "use client";
 
+import { CmsButton } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 
 import DataTable, { type Column } from "@/components/cms/DataTable";
-import { Badge, Btn, Empty } from "@/components/cms/ui";
+import { Badge, Empty } from "@/components/cms/ui";
 import { bdt } from "@/lib/utils";
 import type { AdminProduct } from "@/redux/apis/types/product.types";
 
@@ -124,9 +125,9 @@ export default function ProductsTable({
           className="flex flex-wrap items-center justify-end gap-1"
           onClick={(event) => event.stopPropagation()}
         >
-          <Btn size="sm" onClick={() => onEdit(product)} aria-label={`Edit ${product.name}`}>
+          <CmsButton variant="outline" size="sm" onClick={() => onEdit(product)} aria-label={`Edit ${product.name}`}>
             <Pencil className="size-3.5" /> Edit
-          </Btn>
+          </CmsButton>
           <ProductStatusActions product={product} size="sm" />
         </div>
       ),
@@ -150,9 +151,9 @@ export default function ProductsTable({
             title="No products yet"
             description="Create a draft product, add colours, variants, and images, then publish it."
             action={
-              <Btn variant="primary" onClick={onCreate}>
+              <CmsButton variant="default" onClick={onCreate}>
                 New product
-              </Btn>
+              </CmsButton>
             }
           />
         }

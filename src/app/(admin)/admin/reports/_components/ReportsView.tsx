@@ -1,8 +1,9 @@
 'use client'
 
+import { CmsButton } from "@/components/ui/button";
 import { useMemo, useState } from 'react'
 import { Download } from 'lucide-react'
-import { Btn, PageHeader } from '@/components/cms/ui'
+import { PageHeader } from '@/components/cms/ui';
 import { useStore } from '@/components/providers/StoreProvider'
 import { useCms } from '@/lib/useCms'
 import useNow from '@/lib/useNow'
@@ -57,7 +58,7 @@ export default function ReportsView() {
                 </button>
               ))}
             </div>
-            <Btn onClick={exportCsv} disabled={!list.length}><Download className="size-4" /> Export CSV</Btn>
+            <CmsButton variant="outline" onClick={exportCsv} disabled={!list.length}><Download className="size-4" /> Export CSV</CmsButton>
           </>
         }
       />

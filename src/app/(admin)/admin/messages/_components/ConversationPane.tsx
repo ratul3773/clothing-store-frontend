@@ -1,28 +1,30 @@
 'use client'
 
-import { useState } from 'react'
-import { CheckCircle2, Mail, Phone, RotateCcw, Trash2 } from 'lucide-react'
-import { deleteMessage, patchMessage, type Message } from '@/data/cms'
-import { useStore } from '@/components/providers/StoreProvider'
-import AlertDialogText from '@/components/common/Alert-Dialogue'
-import { Badge, Btn, Empty, Field, Textarea } from '@/components/cms/ui'
+import { CmsButton } from "@/components/ui/button";
 import { fmtDateTime, statusTone } from '@/app/(admin)/admin/messages/_utils/messages.utils'
+import { Badge, Empty } from '@/components/cms/ui';
+import AlertDialogText from '@/components/common/Alert-Dialogue'
+import { FormField } from '@/components/common/form-field'
+import { useStore } from '@/components/providers/StoreProvider'
+import { deleteMessage, patchMessage, type Message } from '@/data/cms'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { CheckCircle2, Mail, Phone, RotateCcw, Trash2 } from 'lucide-react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { replySchema } from '../_schemas/reply.schema'
 
 export default function ConversationPane({ message: m, onDeleted }: { message: Message | undefined; onDeleted: () => void }) {
   const { toast } = useStore()
-  const [text, setText] = useState('')
-  const [error, setError] = useState('')
+  const form = useForm({ resolver: zodResolver(replySchema), defaultValues: { text: '' } })
   const [confirm, setConfirm] = useState(false)
 
   if (!m) return <Empty title="Select a message" description="Choose a conversation from the inbox to read and reply." />
 
-  const send = () => {
-    if (!text.trim()) return setError('Write a reply first')
-    setError('')
-    patchMessage(m.id, { replies: [...m.replies, { text: text.trim(), at: new Date().toISOString() }], status: 'open' })
-    setText('')
+  const send = form.handleSubmit(({ text }) => {
+    patchMessage(m.id, { replies: [...m.replies, { text, at: new Date().toISOString() }], status: 'open' })
+    form.reset()
     toast('Reply added')
-  }
+  })
 
   return (
     <div className="flex h-full flex-col">
@@ -38,11 +40,11 @@ export default function ConversationPane({ message: m, onDeleted }: { message: M
         </div>
         <div className="flex gap-2">
           {m.status === 'resolved' ? (
-            <Btn onClick={() => { patchMessage(m.id, { status: 'open' }); toast('Conversation reopened') }}><RotateCcw className="size-4" />Reopen</Btn>
+            <CmsButton variant="outline" onClick={() => { patchMessage(m.id, { status: 'open' }); toast('Conversation reopened') }}><RotateCcw className="size-4" />Reopen</CmsButton>
           ) : (
-            <Btn onClick={() => { patchMessage(m.id, { status: 'resolved' }); toast('Marked as resolved') }}><CheckCircle2 className="size-4" />Mark resolved</Btn>
+            <CmsButton variant="outline" onClick={() => { patchMessage(m.id, { status: 'resolved' }); toast('Marked as resolved') }}><CheckCircle2 className="size-4" />Mark resolved</CmsButton>
           )}
-          <Btn variant="dangerOutline" onClick={() => setConfirm(true)}><Trash2 className="size-4" />Delete</Btn>
+          <CmsButton variant="destructive" onClick={() => setConfirm(true)}><Trash2 className="size-4" />Delete</CmsButton>
         </div>
       </div>
       <div className="flex-1 space-y-3 overflow-y-auto bg-muted/30 p-4">
@@ -57,12 +59,10 @@ export default function ConversationPane({ message: m, onDeleted }: { message: M
           </div>
         ))}
       </div>
-      <div className="space-y-2 border-t border-border p-4">
-        <Field label="Reply" error={error}>
-          <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Type your reply" />
-        </Field>
-        <Btn variant="primary" onClick={send}>Send reply</Btn>
-      </div>
+      <form onSubmit={send} noValidate className="space-y-2 border-t border-border p-4">
+        <FormField form={form} id="message-reply" name="text" isAdmin isTextArea label="Reply" placeholder="Type your reply" />
+        <CmsButton type="submit" variant="default">Send reply</CmsButton>
+      </form>
       <AlertDialogText mode="normal" open={confirm} onOpenChange={setConfirm} title="Delete message?" description="This conversation and its replies will be permanently removed." actionType="delete" onConfirm={() => { deleteMessage(m.id); toast('Message deleted'); onDeleted() }} />
     </div>
   )

@@ -1,9 +1,10 @@
 'use client'
 
+import { CmsButton } from "@/components/ui/button";
 import Link from 'next/link'
-import { Btn, Card, CardHeader } from '@/components/cms/ui'
+import { Card, CardHeader } from '@/components/cms/ui';
 import DataTable from '@/components/cms/DataTable'
-import StatusBadge from '@/components/cms/StatusBadge'
+import StatusBadge from '@/components/common/StatusBadge'
 import { useNavigate } from '@/lib/nav'
 import { bdt } from '@/lib/utils'
 import type { Order } from '@/data/orders'
@@ -13,7 +14,7 @@ export default function DashboardRecentOrders({ orders }: { orders: Order[] }) {
   const rows = [...orders].sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)).slice(0, 8)
   return (
     <Card>
-      <CardHeader title="Recent orders" actions={<Link href="/admin/orders"><Btn size="sm">View all</Btn></Link>} />
+      <CardHeader title="Recent orders" actions={<Link href="/admin/orders"><CmsButton variant="outline" size="sm">View all</CmsButton></Link>} />
       <DataTable
         rows={rows}
         rowKey={(o) => o.id}
