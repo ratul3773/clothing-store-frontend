@@ -14,6 +14,7 @@ import {
 import { orderLabel } from "@/lib/order-rules";
 import { apiErrorMessage } from "@/redux/api.utils";
 import ManualOrderLines from "./ManualOrderLines";
+import { FadeArc } from "@/components/animation/fade-arc";
 
 export default function ManualOrderModal({
   owner,
@@ -95,7 +96,7 @@ export default function ManualOrderModal({
                 }
                 onClick={() => void create()}
               >
-                Create COD order
+                {attempt.pending ? <><FadeArc className="size-3.5" /> Creating…</> : "Create order"}
               </CmsButton>
             </>
           )}

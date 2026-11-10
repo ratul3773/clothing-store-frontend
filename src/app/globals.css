@@ -108,6 +108,8 @@
   --accent: #ff6a4d;
   --accent-foreground: #1a0d09;
   --moss: #8fd3ad;
+  --success: #00c853;
+  --warning: #ff8f00;
   --border: rgba(236, 230, 216, 0.18);
   --ring: #ff6a4d;
   --destructive: oklch(0.704 0.191 22.216);
